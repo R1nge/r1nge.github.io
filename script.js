@@ -1,27 +1,9 @@
-const createModButton = document.querySelector('.load-mod-button');
+const audioDataPrototype = {
+    Path: "",
+    Volume: 0
+}
 
-createModButton.addEventListener('click', function () {
-    const input = document.createElement('input');
-    input.type = 'file';
-
-    input.onchange = e => {
-        const file = e.target.files[0];
-
-        const reader = new FileReader();
-        reader.readAsText(file, 'UTF-8');
-
-        reader.onload = readerEvent => {
-            const json = readerEvent.target.result;
-            const gameConfig = JSON.parse(json);
-            console.log(gameConfig);
-        }
-    }
-
-    input.click();
-});
-
-
-const gameConfig = {
+const gameConfigPrototype = {
     ModName: "",
     ModIconPath: "",
     ContainerImagePath: "",
@@ -39,7 +21,27 @@ const gameConfig = {
     MainMenuBackgroundPath: ""
 }
 
-const audioData = {
-    Path: "",
-    Volume: 0
-}
+const modDataElement = document.querySelector('.mod-data');
+const createModButtonElement = document.querySelector('.load-mod-button');
+
+createModButtonElement.addEventListener('click', function () {
+    const input = document.createElement('input');
+    input.type = 'file';
+
+    input.onchange = e => {
+        const file = e.target.files[0];
+
+        const reader = new FileReader();
+        reader.readAsText(file, 'UTF-8');
+
+        reader.onload = readerEvent => {
+            const json = readerEvent.target.result;
+            console.log(json);
+            const parsedGameConfig = JSON.parse(json);
+            modDataElement.innerHTML = parsedGameConfig.ModName;
+            console.log(parsedGameConfig);
+        };
+    };
+
+    input.click();
+});
