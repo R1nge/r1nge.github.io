@@ -1,4 +1,4 @@
-const createModButton = document.querySelector('.create-mod-button');
+const createModButton = document.querySelector('.load-mod-button');
 
 createModButton.addEventListener('click', function () {
     const input = document.createElement('input');

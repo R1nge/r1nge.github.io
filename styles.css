@@ -2,14 +2,17 @@ body {
     height: 100%;
     margin: 0;
     display: flex;
-    justify-content: center;
-    align-items: flex-end;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
 }
 
-.create-mod-button {
+.load-mod-button {
     padding: 10px 20px;
     background-color: #4CAF50;
     color: white;
     border: none;
     cursor: pointer;
+    position: fixed;
+    bottom: 20px; /* adjust this value to change the distance from the bottom */
 }
