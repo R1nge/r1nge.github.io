@@ -43,6 +43,11 @@ const suikaIconsOrdered = [];
 const suikaAudiosDataOrdered = [];
 const suikaDropChancesOrdered = [];
 
+//Files
+let modIconFile = null;
+let containerImageFile = null;
+
+
 function readFiles(files) {
     for (const file of files) {
         if (file.name === "config.json") {
@@ -62,10 +67,12 @@ function readFiles(files) {
 
                 for (const file of files) {
                     if (file.name === parsedConfig.ModIconPath) {
+                        modIconFile = file;
                         showImage(file, modIconElement.id, gameConfig.ModIconPath);
                     }
 
                     if (file.name === parsedConfig.ContainerImagePath) {
+                        containerImageFile = file;
                         showImage(file, containerImageElement.id, gameConfig.ContainerImagePath);
                     }
                 }
@@ -238,20 +245,21 @@ async function submitDropChances() {
     }
 
     //TODO: save json
-    await downloadModZip(gameConfig.ModName, gameConfig);
+    await downloadModZip(gameConfig.ModName, gameConfig, modIconFile);
 
     alert(k);
 }
 
-async function downloadModZip(filename, dataObjToWrite) {
-    const configData = JSON.stringify(dataObjToWrite);
+async function downloadModZip(modName, configData, modIconImage, containerImage) {
+    const configDataString = JSON.stringify(configData);
     
-    const configFile = {name: "config.json", lastModified: new Date(), input: configData}
-    const blob = await downloadZip([configFile]).blob();
+    const configFile = {name: "config.json", lastModified: new Date(), input: configDataString};
+    const iconFile = {name: modIconImage.name, lastModified: new Date(), input: modIconImage};
+    const blob = await downloadZip([configFile, iconFile]).blob();
     
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = filename;
+    link.download = modName;
     link.click();
     link.remove();
 
