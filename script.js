@@ -21,27 +21,44 @@ const gameConfigPrototype = {
     MainMenuBackgroundPath: ""
 }
 
-const modDataElement = document.querySelector('.mod-data');
-const createModButtonElement = document.querySelector('.load-mod-button');
+const modTitleElement = document.querySelector('#mod-title');
+const modIconElement = document.querySelector('#mod-icon');
+const loadModButtonElement = document.querySelector('#load-mod-button');
 
-createModButtonElement.addEventListener('click', function () {
-    const input = document.createElement('input');
-    input.type = 'file';
+function readFiles(files) {
+    for (const file of files) {
+        if (file.name === "config.json") {
+            const reader = new FileReader();
+            reader.readAsText(file, 'UTF-8');
 
-    input.onchange = e => {
-        const file = e.target.files[0];
+            reader.onload = readerEvent => {
+                const configJson = readerEvent.target.result;
+                const parsedConfig = JSON.parse(configJson);
+                applyParsedData(parsedConfig);
 
-        const reader = new FileReader();
-        reader.readAsText(file, 'UTF-8');
+                for (const file of files) {
+                    if (file.name === parsedConfig.ModIconPath) {
+                        showImage(file, modIconElement.id);
+                    }
+                }
 
-        reader.onload = readerEvent => {
-            const json = readerEvent.target.result;
-            console.log(json);
-            const parsedGameConfig = JSON.parse(json);
-            modDataElement.innerHTML = parsedGameConfig.ModName;
-            console.log(parsedGameConfig);
-        };
-    };
+            }
+        }
+    }
+}
 
-    input.click();
+function showImage(imageFile, elementId) {
+    const tempPath = URL.createObjectURL(imageFile);
+    const img = document.querySelector(`#${elementId}`);
+    img.style.display = "block";
+    img.src = tempPath;
+}
+
+function applyParsedData(parsedGameConfig) {
+    modTitleElement.textContent = parsedGameConfig.ModName;
+    modIconElement.src = parsedGameConfig.ModIconPath;
+}
+
+loadModButtonElement.addEventListener('change', (event) => {
+    readFiles(event.target.files);
 });
