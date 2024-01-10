@@ -7,8 +7,8 @@ const audioData = {
 
 let gameConfig = {
     ModName: "", //load/save
-    ModIconPath: "", //load/save
-    ContainerImagePath: "", //load/save
+    ModIconPath: "", //load
+    ContainerImagePath: "", //load
     SuikaSkinsImagesPaths: [], //load/save
     SuikaIconsPaths: [], //load/save
     SuikaAudios: [], //AudioData //load/save
@@ -71,12 +71,12 @@ function readFiles(files) {
                 for (const file of files) {
                     if (file.name === parsedConfig.ModIconPath) {
                         modIconFile = file;
-                        showImage(file, modIconElement.id, gameConfig.ModIconPath);
+                        showImage(file, modIconElement.id);
                     }
 
                     if (file.name === parsedConfig.ContainerImagePath) {
                         containerImageFile = file;
-                        showImage(file, containerImageElement.id, gameConfig.ContainerImagePath);
+                        showImage(file, containerImageElement.id);
                     }
                 }
 
@@ -135,7 +135,6 @@ function readFiles(files) {
                     addAudioControl(fileAndData, suikaAudiosElement);
                 }
                 
-                
                 //SuikaDropChances
 
                 for (const suikaDropChance of parsedConfig.SuikaDropChances) {
@@ -152,14 +151,13 @@ function readFiles(files) {
     }
 }
 
-function showImage(imageFile, elementId, valueToAssign) {
+function showImage(imageFile, elementId) {
     const tempPath = URL.createObjectURL(imageFile);
     const img = document.querySelector(`#${elementId}`);
     img.style.display = "block";
     img.src = tempPath;
-    valueToAssign = tempPath;
     img.onclick = () => {
-        changeImageSingle(imageFile, img, img);
+        changeImageSingle(imageFile, img);
     }
 }
 
@@ -173,11 +171,13 @@ function addImage(imageFile, element, array) {
     element.append(item);
 }
 
-function changeImageSingle(imageFile, element, item) {
+function changeImageSingle(imageFile, item) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
     input.onchange = (event) => {
+        
+        //TODO: change icon file
         const newFile = event.target.files[0];
         item.src = URL.createObjectURL(newFile);
     };
