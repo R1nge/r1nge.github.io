@@ -1,6 +1,6 @@
 const audioData = {
-    Path: "",
-    Volume: 0
+    path: "",
+    volume: 0
 }
 
 const gameConfig = {
@@ -24,12 +24,16 @@ const gameConfig = {
 const modTitleElement = document.querySelector('#mod-title');
 const modIconElement = document.querySelector('#mod-icon');
 const containerImageElement = document.querySelector('#container-image');
+
 const suikaSkinsImageElement = document.querySelector('#suika-skins-images');
 const suikaIconsImageElement = document.querySelector('#suika-icons-images');
+const suikaAudiosElement = document.querySelector('#suika-audios');
+
 const loadModButtonElement = document.querySelector('#load-mod-button');
 
 const suikaSkinsOrdered = [];
 const suikaIconsOrdered = [];
+const suikaAudiosOrdered = [];
 
 function readFiles(files) {
     for (const file of files) {
@@ -43,7 +47,8 @@ function readFiles(files) {
 
                 modTitleElement.textContent = parsedConfig.ModName;
 
-                removeImages(suikaSkinsImageElement, suikaSkinsOrdered);
+                removeAllChildren(suikaSkinsImageElement, suikaSkinsOrdered);
+                removeAllChildren(suikaIconsImageElement, suikaIconsOrdered);
 
                 for (const file of files) {
                     if (file.name === parsedConfig.ModIconPath) {
@@ -56,12 +61,12 @@ function readFiles(files) {
                 }
 
                 const filesObject = {};
-                
-                // SuikaSkinsImages
-                
+
                 for (const file of files) {
                     filesObject[file.name] = file;
                 }
+
+                // SuikaSkinsImages
 
                 for (const suikaSkinsImagePath of parsedConfig.SuikaSkinsImagesPaths) {
                     const matchedFile = filesObject[suikaSkinsImagePath];
@@ -73,17 +78,31 @@ function readFiles(files) {
                 for (const file of suikaSkinsOrdered) {
                     addImage(file, suikaSkinsImageElement, suikaSkinsOrdered);
                 }
-                
+
                 //SuikaIcons
+
                 for (const suikaIconPath of parsedConfig.SuikaIconsPaths) {
                     const matchedFile = filesObject[suikaIconPath];
                     if (matchedFile) {
                         suikaIconsOrdered.push(matchedFile);
                     }
                 }
-                
+
                 for (const file of suikaIconsOrdered) {
                     addImage(file, suikaIconsImageElement, suikaIconsOrdered);
+                }
+
+                //SuikaAudios
+
+                for (const suikaAudio of parsedConfig.SuikaAudios) {
+                    const matchedFile = filesObject[suikaAudio.path];
+                    if (matchedFile) {
+                        suikaAudiosOrdered.push(matchedFile);
+                    }
+                }
+
+                for (const file of suikaAudiosOrdered) {
+                    addAudioControl(file, suikaAudiosElement, suikaAudiosOrdered);
                 }
             }
         }
@@ -142,12 +161,27 @@ function addImageAtIndex(imageFile, element, index, array) {
     }
 }
 
-function removeImages(element, array) {
+function removeAllChildren(element, array) {
     while (element.firstChild) {
         element.removeChild(element.firstChild);
     }
-    
+
     array.splice(0, array.length);
+}
+
+function addAudioControl(audioFile, element, array) {
+    const item = document.createElement("audio");
+    item.src = URL.createObjectURL(audioFile);
+    item.controls = true;
+    item.onclick = () => {
+        //changeImage(imageFile, element, item, array);
+    }
+    
+    item.onvolumechange = () => {
+        alert(item.volume);
+    }
+    
+    element.append(item);
 }
 
 loadModButtonElement.addEventListener('change', (event) => {
