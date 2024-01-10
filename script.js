@@ -31,9 +31,11 @@ const suikaAudiosElement = document.querySelector('#suika-audios');
 
 const loadModButtonElement = document.querySelector('#load-mod-button');
 
+
 const suikaSkinsOrdered = [];
 const suikaIconsOrdered = [];
 const suikaAudiosDataOrdered = [];
+const suikaDropChancesOrdered = [];
 
 function readFiles(files) {
     for (const file of files) {
@@ -96,13 +98,11 @@ function readFiles(files) {
 
                 for (const suikaAudio of parsedConfig.SuikaAudios) {
                     const matchedFile = filesObject[suikaAudio.path];
-                    
+
                     let fileAndData = {
                         matchedFile, suikaAudio
                     }
-                    
-                    
-                    
+
                     if (matchedFile) {
                         fileAndData.matchedFile = matchedFile;
                         fileAndData.suikaAudio = suikaAudio;
@@ -110,7 +110,7 @@ function readFiles(files) {
                         suikaAudiosDataOrdered.push(fileAndData);
                     }
                 }
-                
+
                 for (const fileAndData of suikaAudiosDataOrdered) {
                     addAudioControl(fileAndData, suikaAudiosElement);
                 }
@@ -186,14 +186,28 @@ function addAudioControl(fileAndData, element) {
     item.onclick = () => {
         //changeImage(imageFile, element, item, array);
     }
-    
+
     item.volume = fileAndData.suikaAudio.volume;
-    
+
     item.onvolumechange = () => {
         //alert(item.volume);
     }
-    
+
     element.append(item);
+}
+
+function submitDropChances() {
+    let k = "The respective values are :";
+    let input = document.getElementsByName('dropChances[]');
+
+
+    for (let i = 0; i < input.length; i++) {
+        let a = input[i];
+        suikaDropChancesOrdered.push(a.value);
+        k = k + "array[" + i + "].value= " + a.value + " ";
+    }
+
+    alert(k);
 }
 
 loadModButtonElement.addEventListener('change', (event) => {
