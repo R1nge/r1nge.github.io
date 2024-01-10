@@ -25,9 +25,11 @@ const modTitleElement = document.querySelector('#mod-title');
 const modIconElement = document.querySelector('#mod-icon');
 const containerImageElement = document.querySelector('#container-image');
 const suikaSkinsImageElement = document.querySelector('#suika-skins-images');
+const suikaIconsImageElement = document.querySelector('#suika-icons-images');
 const loadModButtonElement = document.querySelector('#load-mod-button');
 
 const suikaSkinsOrdered = [];
+const suikaIconsOrdered = [];
 
 function readFiles(files) {
     for (const file of files) {
@@ -54,7 +56,9 @@ function readFiles(files) {
                 }
 
                 const filesObject = {};
-
+                
+                // SuikaSkinsImages
+                
                 for (const file of files) {
                     filesObject[file.name] = file;
                 }
@@ -68,6 +72,18 @@ function readFiles(files) {
 
                 for (const file of suikaSkinsOrdered) {
                     addImage(file, suikaSkinsImageElement, suikaSkinsOrdered);
+                }
+                
+                //SuikaIcons
+                for (const suikaIconPath of parsedConfig.SuikaIconsPaths) {
+                    const matchedFile = filesObject[suikaIconPath];
+                    if (matchedFile) {
+                        suikaIconsOrdered.push(matchedFile);
+                    }
+                }
+                
+                for (const file of suikaIconsOrdered) {
+                    addImage(file, suikaIconsImageElement, suikaIconsOrdered);
                 }
             }
         }
