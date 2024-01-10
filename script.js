@@ -51,6 +51,7 @@ function readFiles(files) {
 
                 removeAllChildren(suikaSkinsImageElement, suikaSkinsOrdered);
                 removeAllChildren(suikaIconsImageElement, suikaIconsOrdered);
+                removeAllChildren(suikaAudiosElement, suikaAudiosDataOrdered);
 
                 for (const file of files) {
                     if (file.name === parsedConfig.ModIconPath) {
@@ -124,6 +125,9 @@ function showImage(imageFile, elementId) {
     const img = document.querySelector(`#${elementId}`);
     img.style.display = "block";
     img.src = tempPath;
+    img.onclick = () => {
+        changeImageSingle(imageFile, img, img);
+    }
 }
 
 function addImage(imageFile, element, array) {
@@ -131,19 +135,32 @@ function addImage(imageFile, element, array) {
     item.className = "image";
     item.src = URL.createObjectURL(imageFile);
     item.onclick = () => {
-        changeImage(imageFile, element, item, array);
+        changeImageArray(imageFile, element, item, array);
     }
     element.append(item);
 }
 
-function changeImage(imageFile, element, item, array) {
-    URL.revokeObjectURL(imageFile.src);
-    element.removeChild(item);
-
+function changeImageSingle(imageFile, element, item) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
     input.onchange = (event) => {
+        const newFile = event.target.files[0];
+        item.src = URL.createObjectURL(newFile);
+    };
+    input.click();
+}
+
+function changeImageArray(imageFile, element, item, array) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (event) => {
+        
+        URL.revokeObjectURL(imageFile.src);
+        element.removeChild(item);
+        
+        
         const newFile = event.target.files[0];
 
         const index = array.findIndex((file) => file.name === imageFile.name);
@@ -160,7 +177,7 @@ function addImageAtIndex(imageFile, element, index, array) {
     item.className = "image";
     item.src = URL.createObjectURL(imageFile);
     item.onclick = () => {
-        changeImage(imageFile, element, item, array);
+        changeImageArray(imageFile, element, item, array);
     }
 
     if (index === element.children.length) {
@@ -184,7 +201,7 @@ function addAudioControl(fileAndData, element) {
     item.src = URL.createObjectURL(fileAndData.matchedFile);
     item.controls = true;
     item.onclick = () => {
-        //changeImage(imageFile, element, item, array);
+        //changeImageArray(imageFile, element, item, array);
     }
 
     item.volume = fileAndData.suikaAudio.volume;
