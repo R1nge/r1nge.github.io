@@ -1,4 +1,4 @@
-import { downloadZip } from "./client-zip.js";
+import {downloadZip} from "./client-zip.js";
 
 const audioData = {
     path: "",
@@ -53,7 +53,7 @@ function readFiles(files) {
                 const configJson = readerEvent.target.result;
                 const parsedConfig = JSON.parse(configJson);
                 gameConfig = parsedConfig;
-                
+
                 modTitleElement.textContent = gameConfig.ModName;
 
                 removeAllChildren(suikaSkinsImageElement, suikaSkinsOrdered);
@@ -231,55 +231,31 @@ async function submitDropChances() {
         suikaDropChancesOrdered.push(a.value);
         k = k + "array[" + i + "].value= " + a.value + " ";
     }
-    
-    
-    
+
+
     for (let i = 0; i < suikaSkinsOrdered.length; i++) {
-       gameConfig.SuikaSkinsImagesPaths[i] = suikaSkinsOrdered[i].name;
+        gameConfig.SuikaSkinsImagesPaths[i] = suikaSkinsOrdered[i].name;
     }
-    
-    //saveModDataJson("config.json", gameConfig);
 
     //TODO: save json
-    await downloadTestZip();
-    
+    await downloadModZip(gameConfig.ModName, gameConfig);
+
     alert(k);
 }
 
-async function downloadTestZip() {
-    // define what we want in the ZIP
-    const code = await fetch("https://raw.githubusercontent.com/Touffy/client-zip/master/src/index.ts")
-    const intro = { name: "intro.txt", lastModified: new Date(), input: "Hello. This is the client-zip library." }
-
-    // get the ZIP stream in a Blob
-    const blob = await downloadZip([intro, code]).blob()
-
-    // make and click a temporary link to download the Blob
-    const link = document.createElement("a")
-    link.href = URL.createObjectURL(blob)
-    link.download = "test.zip"
-    link.click()
-    link.remove()
-
-    // in real life, don't forget to revoke your Blob URLs if you use them
-}
-
-function saveModDataJson(filename, dataObjToWrite) {
-    const blob = new Blob([JSON.stringify(dataObjToWrite)], {type: "text/json"});
+async function downloadModZip(filename, dataObjToWrite) {
+    const configData = JSON.stringify(dataObjToWrite);
+    
+    const configFile = {name: "config.json", lastModified: new Date(), input: configData}
+    const blob = await downloadZip([configFile]).blob();
+    
     const link = document.createElement("a");
-
+    link.href = URL.createObjectURL(blob);
     link.download = filename;
-    link.href = window.URL.createObjectURL(blob);
-    link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
+    link.click();
+    link.remove();
 
-    const evt = new MouseEvent("click", {
-        view: window,
-        bubbles: true,
-        cancelable: true,
-    });
-
-    link.dispatchEvent(evt);
-    link.remove()
+    URL.revokeObjectURL(blob);
 }
 
 loadModButtonElement.addEventListener('change', (event) => {
