@@ -46,6 +46,7 @@ const suikaDropChancesOrdered = [];
 //Files
 let modIconFile = null;
 let containerImageFile = null;
+const suikaSkinsImagesFiles = [];
 
 
 function readFiles(files) {
@@ -88,6 +89,7 @@ function readFiles(files) {
                 for (const suikaSkinsImagePath of parsedConfig.SuikaSkinsImagesPaths) {
                     const matchedFile = filesObject[suikaSkinsImagePath];
                     if (matchedFile) {
+                        suikaSkinsImagesFiles.push(matchedFile);
                         suikaSkinsOrdered.push(matchedFile);
                     }
                 }
@@ -229,34 +231,40 @@ function addAudioControl(fileAndData, element) {
 }
 
 async function submitDropChances() {
-    let k = "The respective values are :";
     let input = document.getElementsByName('dropChances[]');
-
 
     for (let i = 0; i < input.length; i++) {
         let a = input[i];
         suikaDropChancesOrdered.push(a.value);
-        k = k + "array[" + i + "].value= " + a.value + " ";
     }
-
 
     for (let i = 0; i < suikaSkinsOrdered.length; i++) {
         gameConfig.SuikaSkinsImagesPaths[i] = suikaSkinsOrdered[i].name;
     }
 
-    //TODO: save json
-    await downloadModZip(gameConfig.ModName, gameConfig, modIconFile);
-
-    alert(k);
+    await downloadModZip(gameConfig.ModName, gameConfig, modIconFile, containerImageFile, suikaSkinsImagesFiles);
 }
 
-async function downloadModZip(modName, configData, modIconImage, containerImage) {
+async function downloadModZip(modName, configData, modIconImage, containerImage, suikaSkinsFiles) {
     const configDataString = JSON.stringify(configData);
-    
+
     const configFile = {name: "config.json", lastModified: new Date(), input: configDataString};
     const iconFile = {name: modIconImage.name, lastModified: new Date(), input: modIconImage};
-    const blob = await downloadZip([configFile, iconFile]).blob();
-    
+    const containerFile = {name: containerImage.name, lastModified: new Date(), input: containerImage};
+
+    const suikaSkinFiles = [];
+
+    for (let i = 0; i < configData.SuikaSkinsImagesPaths.length; i++) {
+        suikaSkinFiles.push({
+            name: configData.SuikaSkinsImagesPaths[i],
+            lastModified: new Date(),
+            input: suikaSkinsFiles[i]
+        });
+    }
+
+    const files = [configFile, iconFile, containerFile, ...suikaSkinFiles];
+    const blob = await downloadZip(files).blob();
+
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = modName;
