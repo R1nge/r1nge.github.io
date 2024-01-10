@@ -7,6 +7,12 @@ body {
     align-items: center;
 }
 
+.image {
+    display: block;
+    width: 128px;
+    height: 128px;
+}
+
 #load-mod-button {
     padding: 10px 20px;
     background-color: #4CAF50;
@@ -15,4 +21,8 @@ body {
     cursor: pointer;
     position: fixed;
     bottom: 20px; /* adjust this value to change the distance from the bottom */
+}
+
+#suika-skins-images{
+    columns: 3;
 }

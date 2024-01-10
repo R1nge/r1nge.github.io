@@ -23,6 +23,8 @@ const gameConfigPrototype = {
 
 const modTitleElement = document.querySelector('#mod-title');
 const modIconElement = document.querySelector('#mod-icon');
+const containerImageElement = document.querySelector('#container-image');
+const suikaSkinsImageElement = document.querySelector('#suika-skins-images');
 const loadModButtonElement = document.querySelector('#load-mod-button');
 
 function readFiles(files) {
@@ -36,12 +38,38 @@ function readFiles(files) {
                 const parsedConfig = JSON.parse(configJson);
                 applyParsedData(parsedConfig);
 
+                removeImages(suikaSkinsImageElement);
+
+                console.log(parsedConfig.ModIconPath);
+
                 for (const file of files) {
                     if (file.name === parsedConfig.ModIconPath) {
                         showImage(file, modIconElement.id);
                     }
+
+                    if (file.name === parsedConfig.ContainerImagePath) {
+                        showImage(file, containerImageElement.id);
+                    }
                 }
 
+                const filesObject = {};
+
+                for (const file of files) {
+                    filesObject[file.name] = file;
+                }
+
+                const orderedFiles = [];
+
+                for (const suikaSkinsImagePath of parsedConfig.SuikaSkinsImagesPaths) {
+                    const matchedFile = filesObject[suikaSkinsImagePath];
+                    if (matchedFile) {
+                        orderedFiles.push(matchedFile);
+                    }
+                }
+
+                for (const file of orderedFiles) {
+                    addImage(file, suikaSkinsImageElement);
+                }
             }
         }
     }
@@ -54,9 +82,21 @@ function showImage(imageFile, elementId) {
     img.src = tempPath;
 }
 
+function addImage(imageFile, element) {
+    let item = document.createElement("img");
+    item.className = "image";
+    item.src = URL.createObjectURL(imageFile);
+    element.append(item);
+}
+
+function removeImages(element) {
+    while (element.firstChild) {
+        element.removeChild(element.firstChild);
+    }
+}
+
 function applyParsedData(parsedGameConfig) {
     modTitleElement.textContent = parsedGameConfig.ModName;
-    modIconElement.src = parsedGameConfig.ModIconPath;
 }
 
 loadModButtonElement.addEventListener('change', (event) => {
