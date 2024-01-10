@@ -266,7 +266,7 @@ async function submitDropChances() {
 }
 
 async function downloadModZip(modName, configData, modIconImage, containerImage, suikaSkinsFiles, suikaIconsFiles, suikaAudiosFiles) {
-    const configDataString = JSON.stringify(configData);
+    const configDataString = JSON.stringify(configData, null, 2);
 
     const configFile = {name: "config.json", lastModified: new Date(), input: configDataString};
     const iconFile = {name: modIconImage.name, lastModified: new Date(), input: modIconImage};
