@@ -27,7 +27,7 @@ const containerImageElement = document.querySelector('#container-image');
 const suikaSkinsImageElement = document.querySelector('#suika-skins-images');
 const loadModButtonElement = document.querySelector('#load-mod-button');
 
-const orderedFiles = [];
+const suikaSkinsOrdered = [];
 
 function readFiles(files) {
     for (const file of files) {
@@ -41,7 +41,7 @@ function readFiles(files) {
 
                 modTitleElement.textContent = parsedConfig.ModName;
 
-                removeImages(suikaSkinsImageElement);
+                removeImages(suikaSkinsImageElement, suikaSkinsOrdered);
 
                 for (const file of files) {
                     if (file.name === parsedConfig.ModIconPath) {
@@ -62,12 +62,12 @@ function readFiles(files) {
                 for (const suikaSkinsImagePath of parsedConfig.SuikaSkinsImagesPaths) {
                     const matchedFile = filesObject[suikaSkinsImagePath];
                     if (matchedFile) {
-                        orderedFiles.push(matchedFile);
+                        suikaSkinsOrdered.push(matchedFile);
                     }
                 }
 
-                for (const file of orderedFiles) {
-                    addImage(file, suikaSkinsImageElement);
+                for (const file of suikaSkinsOrdered) {
+                    addImage(file, suikaSkinsImageElement, suikaSkinsOrdered);
                 }
             }
         }
@@ -81,17 +81,17 @@ function showImage(imageFile, elementId) {
     img.src = tempPath;
 }
 
-function addImage(imageFile, element) {
+function addImage(imageFile, element, array) {
     const item = document.createElement("img");
     item.className = "image";
     item.src = URL.createObjectURL(imageFile);
     item.onclick = () => {
-        changeImage(imageFile, element, item);
+        changeImage(imageFile, element, item, array);
     }
     element.append(item);
 }
 
-function changeImage(imageFile, element, item) {
+function changeImage(imageFile, element, item, array) {
     URL.revokeObjectURL(imageFile.src);
     element.removeChild(item);
 
@@ -101,21 +101,21 @@ function changeImage(imageFile, element, item) {
     input.onchange = (event) => {
         const newFile = event.target.files[0];
 
-        const index = orderedFiles.findIndex((file) => file.name === imageFile.name);
+        const index = array.findIndex((file) => file.name === imageFile.name);
         if (index !== -1) {
-            orderedFiles[index] = newFile;
+            array[index] = newFile;
         }
-        addImageAtIndex(newFile, element, index);
+        addImageAtIndex(newFile, element, index, array);
     };
     input.click();
 }
 
-function addImageAtIndex(imageFile, element, index) {
+function addImageAtIndex(imageFile, element, index, array) {
     const item = document.createElement("img");
     item.className = "image";
     item.src = URL.createObjectURL(imageFile);
     item.onclick = () => {
-        changeImage(imageFile, element, item);
+        changeImage(imageFile, element, item, array);
     }
 
     if (index === element.children.length) {
@@ -126,10 +126,12 @@ function addImageAtIndex(imageFile, element, index) {
     }
 }
 
-function removeImages(element) {
+function removeImages(element, array) {
     while (element.firstChild) {
         element.removeChild(element.firstChild);
     }
+    
+    array.splice(0, array.length);
 }
 
 loadModButtonElement.addEventListener('change', (event) => {
