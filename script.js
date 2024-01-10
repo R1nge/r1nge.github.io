@@ -33,7 +33,7 @@ const loadModButtonElement = document.querySelector('#load-mod-button');
 
 const suikaSkinsOrdered = [];
 const suikaIconsOrdered = [];
-const suikaAudiosOrdered = [];
+const suikaAudiosDataOrdered = [];
 
 function readFiles(files) {
     for (const file of files) {
@@ -92,17 +92,27 @@ function readFiles(files) {
                     addImage(file, suikaIconsImageElement, suikaIconsOrdered);
                 }
 
-                //SuikaAudios
+                //SuikaAudiosPaths and SuikaAudiosVolumes
 
                 for (const suikaAudio of parsedConfig.SuikaAudios) {
                     const matchedFile = filesObject[suikaAudio.path];
+                    
+                    let fileAndData = {
+                        matchedFile, suikaAudio
+                    }
+                    
+                    
+                    
                     if (matchedFile) {
-                        suikaAudiosOrdered.push(matchedFile);
+                        fileAndData.matchedFile = matchedFile;
+                        fileAndData.suikaAudio = suikaAudio;
+                        console.log(fileAndData);
+                        suikaAudiosDataOrdered.push(fileAndData);
                     }
                 }
-
-                for (const file of suikaAudiosOrdered) {
-                    addAudioControl(file, suikaAudiosElement, suikaAudiosOrdered);
+                
+                for (const fileAndData of suikaAudiosDataOrdered) {
+                    addAudioControl(fileAndData, suikaAudiosElement);
                 }
             }
         }
@@ -169,16 +179,18 @@ function removeAllChildren(element, array) {
     array.splice(0, array.length);
 }
 
-function addAudioControl(audioFile, element, array) {
+function addAudioControl(fileAndData, element) {
     const item = document.createElement("audio");
-    item.src = URL.createObjectURL(audioFile);
+    item.src = URL.createObjectURL(fileAndData.matchedFile);
     item.controls = true;
     item.onclick = () => {
         //changeImage(imageFile, element, item, array);
     }
     
+    item.volume = fileAndData.suikaAudio.volume;
+    
     item.onvolumechange = () => {
-        alert(item.volume);
+        //alert(item.volume);
     }
     
     element.append(item);
