@@ -12,7 +12,7 @@ let gameConfig = {
     SuikaSkinsImagesPaths: [], //load/save
     SuikaIconsPaths: [], //load/save
     SuikaAudios: [], //AudioData //load/save
-    SuikaDropChances: [], //load/
+    SuikaDropChances: [], //load/save
     TimeBeforeTimerTrigger: 0,
     TimerStartTime: 0,
     InGameBackgroundPath: "",
@@ -37,7 +37,7 @@ downloadButtonElement.addEventListener('click', submitDropChances);
 
 const loadModButtonElement = document.querySelector('#load-mod-button');
 
-
+//Config data
 const suikaSkinsOrdered = [];
 const suikaIconsOrdered = [];
 const suikaAudiosDataOrdered = [];
@@ -133,6 +133,19 @@ function readFiles(files) {
 
                 for (const fileAndData of suikaAudiosDataOrdered) {
                     addAudioControl(fileAndData, suikaAudiosElement);
+                }
+                
+                
+                //SuikaDropChances
+
+                for (const suikaDropChance of parsedConfig.SuikaDropChances) {
+                    suikaDropChancesOrdered.push(suikaDropChance);
+                }
+
+                let input = document.getElementsByName('dropChances[]');
+                for (let i = 0; i < input.length; i++) {
+                    let a = input[i];
+                    a.value = suikaDropChancesOrdered[i];
                 }
             }
         }
@@ -239,6 +252,10 @@ async function submitDropChances() {
     for (let i = 0; i < input.length; i++) {
         let a = input[i];
         suikaDropChancesOrdered.push(a.value);
+    }
+    
+    for (let i = 0; i < suikaDropChancesOrdered.length; i++) {
+        gameConfig.SuikaDropChances[i] = suikaDropChancesOrdered[i];
     }
 
     for (let i = 0; i < suikaSkinsOrdered.length; i++) {
