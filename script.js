@@ -1,16 +1,18 @@
+import { downloadZip } from "./client-zip.js";
+
 const audioData = {
     path: "",
     volume: 0
 }
 
-const gameConfig = {
-    ModName: "",
-    ModIconPath: "",
-    ContainerImagePath: "",
-    SuikaSkinsImagesPaths: [],
-    SuikaIconsPaths: [],
-    SuikaAudios: [], //AudioData
-    SuikaDropChances: [],
+let gameConfig = {
+    ModName: "", //load
+    ModIconPath: "", //load
+    ContainerImagePath: "", //load
+    SuikaSkinsImagesPaths: [], //save/load
+    SuikaIconsPaths: [], //load
+    SuikaAudios: [], //AudioData //load
+    SuikaDropChances: [], //load
     TimeBeforeTimerTrigger: 0,
     TimerStartTime: 0,
     InGameBackgroundPath: "",
@@ -29,6 +31,10 @@ const suikaSkinsImageElement = document.querySelector('#suika-skins-images');
 const suikaIconsImageElement = document.querySelector('#suika-icons-images');
 const suikaAudiosElement = document.querySelector('#suika-audios');
 
+const downloadButtonElement = document.querySelector('#download');
+
+downloadButtonElement.addEventListener('click', submitDropChances);
+
 const loadModButtonElement = document.querySelector('#load-mod-button');
 
 
@@ -46,8 +52,9 @@ function readFiles(files) {
             reader.onload = readerEvent => {
                 const configJson = readerEvent.target.result;
                 const parsedConfig = JSON.parse(configJson);
-
-                modTitleElement.textContent = parsedConfig.ModName;
+                gameConfig = parsedConfig;
+                
+                modTitleElement.textContent = gameConfig.ModName;
 
                 removeAllChildren(suikaSkinsImageElement, suikaSkinsOrdered);
                 removeAllChildren(suikaIconsImageElement, suikaIconsOrdered);
@@ -55,11 +62,11 @@ function readFiles(files) {
 
                 for (const file of files) {
                     if (file.name === parsedConfig.ModIconPath) {
-                        showImage(file, modIconElement.id);
+                        showImage(file, modIconElement.id, gameConfig.ModIconPath);
                     }
 
                     if (file.name === parsedConfig.ContainerImagePath) {
-                        showImage(file, containerImageElement.id);
+                        showImage(file, containerImageElement.id, gameConfig.ContainerImagePath);
                     }
                 }
 
@@ -120,11 +127,12 @@ function readFiles(files) {
     }
 }
 
-function showImage(imageFile, elementId) {
+function showImage(imageFile, elementId, valueToAssign) {
     const tempPath = URL.createObjectURL(imageFile);
     const img = document.querySelector(`#${elementId}`);
     img.style.display = "block";
     img.src = tempPath;
+    valueToAssign = tempPath;
     img.onclick = () => {
         changeImageSingle(imageFile, img, img);
     }
@@ -156,11 +164,11 @@ function changeImageArray(imageFile, element, item, array) {
     input.type = 'file';
     input.accept = 'image/*';
     input.onchange = (event) => {
-        
+
         URL.revokeObjectURL(imageFile.src);
         element.removeChild(item);
-        
-        
+
+
         const newFile = event.target.files[0];
 
         const index = array.findIndex((file) => file.name === imageFile.name);
@@ -213,7 +221,7 @@ function addAudioControl(fileAndData, element) {
     element.append(item);
 }
 
-function submitDropChances() {
+async function submitDropChances() {
     let k = "The respective values are :";
     let input = document.getElementsByName('dropChances[]');
 
@@ -223,8 +231,55 @@ function submitDropChances() {
         suikaDropChancesOrdered.push(a.value);
         k = k + "array[" + i + "].value= " + a.value + " ";
     }
+    
+    
+    
+    for (let i = 0; i < suikaSkinsOrdered.length; i++) {
+       gameConfig.SuikaSkinsImagesPaths[i] = suikaSkinsOrdered[i].name;
+    }
+    
+    //saveModDataJson("config.json", gameConfig);
 
+    //TODO: save json
+    await downloadTestZip();
+    
     alert(k);
+}
+
+async function downloadTestZip() {
+    // define what we want in the ZIP
+    const code = await fetch("https://raw.githubusercontent.com/Touffy/client-zip/master/src/index.ts")
+    const intro = { name: "intro.txt", lastModified: new Date(), input: "Hello. This is the client-zip library." }
+
+    // get the ZIP stream in a Blob
+    const blob = await downloadZip([intro, code]).blob()
+
+    // make and click a temporary link to download the Blob
+    const link = document.createElement("a")
+    link.href = URL.createObjectURL(blob)
+    link.download = "test.zip"
+    link.click()
+    link.remove()
+
+    // in real life, don't forget to revoke your Blob URLs if you use them
+}
+
+function saveModDataJson(filename, dataObjToWrite) {
+    const blob = new Blob([JSON.stringify(dataObjToWrite)], {type: "text/json"});
+    const link = document.createElement("a");
+
+    link.download = filename;
+    link.href = window.URL.createObjectURL(blob);
+    link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
+
+    const evt = new MouseEvent("click", {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+    });
+
+    link.dispatchEvent(evt);
+    link.remove()
 }
 
 loadModButtonElement.addEventListener('change', (event) => {
