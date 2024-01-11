@@ -102,14 +102,34 @@ const suikaIconsFiles = [];
 const suikaAudiosFiles = [];
 const suikaDropChancesOrdered = [];
 
-initUsingLocalFiles(gameConfig, "ModExample/gura.png");
+initUsingLocalFiles(gameConfig, "ModExample/");
 
-function initUsingLocalFiles(config, directoryPath) {
-    fetch(directoryPath)
+function initUsingLocalFiles(config, relativePath) {
+    modTitleElement.textContent = config.ModName;
+    
+    fetch(relativePath + config.ModIconPath)
         .then(response => showImageLocalFiles(response.url, modIconElement.id))
         .catch(error => {
             console.error('Error fetching directory:', error);
         });
+    
+    fetch(relativePath + config.ContainerImagePath)
+        .then(response => showImageLocalFiles(response.url, containerImageElement.id))
+        .catch(error => {
+            console.error('Error fetching directory:', error);
+        })
+    
+    for (const path of config.SuikaSkinsImagesPaths) {
+        fetch(relativePath + path)
+            .then(response => {
+                suikaSkinsImagesFiles.push(response.url);
+                addImageLocalFiles(response.url, suikaSkinsImageElement,  suikaSkinsImagesFiles);
+                return response.url;
+            })
+            .catch(error => {
+                console.error('Error fetching directory:', error);
+            })
+    }
 }
 
 
@@ -242,6 +262,16 @@ function addImage(imageFile, element, array) {
     const item = document.createElement("img");
     item.className = "image";
     item.src = URL.createObjectURL(imageFile);
+    item.onclick = () => {
+        changeImageArray(imageFile, element, item, array);
+    }
+    element.append(item);
+}
+
+function addImageLocalFiles(imageFile, element, array) {
+    const item = document.createElement("img");
+    item.className = "image";
+    item.src = imageFile;
     item.onclick = () => {
         changeImageArray(imageFile, element, item, array);
     }
