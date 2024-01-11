@@ -106,20 +106,11 @@ await initUsingLocalFiles(gameConfig, "ModExample/");
 
 async function initUsingLocalFiles(config, relativePath) {
     modTitleElement.textContent = config.ModName;
-    
-    fetch(relativePath + config.ModIconPath)
-        .then(response => response.blob())
-        .then(blob => {
-            reader.readAsDataURL(blob);
-            
-            reader.onload = readerEvent => {
-                const file = { name: "gura.png", lastModified: new Date(), input: readerEvent.target.result };
 
-                modIconFile = file;
-                showImageLocalFiles(file.input, modIconElement.id);
-            }
-            
-            
+    fetch(relativePath + config.ModIconPath)
+        .then(response => {
+            modIconFile = response.url;
+            showImageLocalFiles(response.url, modIconElement.id);  
         })
         .catch(error => {
             console.error('Error fetching directory:', error);
@@ -160,7 +151,6 @@ function readFiles(files) {
         if (file.name === "config.json") {
             const reader = new FileReader();
             reader.readAsText(file, 'UTF-8');
-
             reader.onload = readerEvent => {
                 //May return an array buffer instead of a string?
                 const configJson = readerEvent.target.result;
@@ -402,8 +392,20 @@ async function downloadModZip(modName, configData, modIconImageFile, containerIm
     const configDataString = JSON.stringify(configData);
     
     const configFile = {name: "config.json", lastModified: new Date(), input: configDataString};
-    const iconFile = {name: modIconFile.name, lastModified: new Date(), input: modIconImageFile};
-    const containerFile = {name: containerImageFile.name, lastModified: new Date(), input: containerImageFile};
+
+    let iconFile;
+    
+    if (modIconFile instanceof File) 
+    {
+        iconFile = {name: modIconFile.name, lastModified: new Date(), input: modIconImageFile};
+    }
+    else
+    {
+                       
+    }
+    
+    
+    //const containerFile = {name: containerImageFile.name, lastModified: new Date(), input: containerImageFile};
 
     const suikaSkinFiles = [];
 
@@ -450,7 +452,7 @@ async function downloadModZip(modName, configData, modIconImageFile, containerIm
     //const suikaAudiosFiles = [];
     //const suikaDropChancesOrdered = [];
 
-    const uniqueFiles = [configFile, ...uniqueFilesOnly([iconFile, containerFile])]; //, ...suikaSkinFiles])]; //, ...suikaIconFiles, ...suikaAudioFiles])];
+    const uniqueFiles = [configFile, ...uniqueFilesOnly([iconFile.input])];  //, containerFile])]; //, ...suikaSkinFiles])]; //, ...suikaIconFiles, ...suikaAudioFiles])];
     const blob = await downloadZip(uniqueFiles).blob();
 
     const link = document.createElement("a");
