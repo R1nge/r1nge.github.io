@@ -23,7 +23,7 @@ type GameConfig = {
     MainMenuBackgroundPath: string
 }
 
-const gameConfig: GameConfig = {
+let gameConfig: GameConfig = {
     ModName: "Default",
     ModIconPath: "gura.png",
     ContainerImagePath: "container.png",
@@ -124,3 +124,26 @@ const suikaSkinsImagesFiles: string[] = [];
 const suikaIconsFiles: string[] = [];
 const suikaAudiosFiles: string[] = [];
 const suikaDropChancesOrdered: number[] = [];
+
+function readFiles(files : FileList) {
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (file.name === "config.json") {
+            const reader = new FileReader();
+            reader.readAsText(file, 'UTF-8');
+            reader.onload = readerEvent => {
+                //May return an array buffer instead of a string
+                const configJson = readerEvent.target.result as string;
+                const parsedConfig = JSON.parse(configJson);
+                gameConfig = parsedConfig;
+                //init(parsedConfig, files);
+            }
+        }
+    }
+}
+
+
+loadModButtonElement.addEventListener('change', (event) => {
+    const inputElement = event.target as HTMLInputElement;
+    readFiles(inputElement.files);
+});

@@ -96,3 +96,23 @@ var suikaSkinsImagesFiles = [];
 var suikaIconsFiles = [];
 var suikaAudiosFiles = [];
 var suikaDropChancesOrdered = [];
+function readFiles(files) {
+    for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        if (file.name === "config.json") {
+            var reader = new FileReader();
+            reader.readAsText(file, 'UTF-8');
+            reader.onload = function (readerEvent) {
+                //May return an array buffer instead of a string
+                var configJson = readerEvent.target.result;
+                var parsedConfig = JSON.parse(configJson);
+                gameConfig = parsedConfig;
+                //init(parsedConfig, files);
+            };
+        }
+    }
+}
+loadModButtonElement.addEventListener('change', function (event) {
+    var inputElement = event.target;
+    readFiles(inputElement.files);
+});
