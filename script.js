@@ -102,29 +102,51 @@ const suikaIconsFiles = [];
 const suikaAudiosFiles = [];
 const suikaDropChancesOrdered = [];
 
-initUsingLocalFiles(gameConfig, "ModExample/");
+await initUsingLocalFiles(gameConfig, "ModExample/");
 
 async function initUsingLocalFiles(config, relativePath) {
     modTitleElement.textContent = config.ModName;
     
     fetch(relativePath + config.ModIconPath)
-        .then(response => showImageLocalFiles(response.url, modIconElement.id))
+        .then(response => response.blob())
+        .then(blob => {
+            reader.readAsDataURL(blob);
+            
+            reader.onload = readerEvent => {
+                const file = { name: "gura.png", lastModified: new Date(), input: readerEvent.target.result };
+
+                modIconFile = file;
+                showImageLocalFiles(file.input, modIconElement.id);
+            }
+            
+            
+        })
         .catch(error => {
             console.error('Error fetching directory:', error);
         });
     
     fetch(relativePath + config.ContainerImagePath)
-        .then(response => showImageLocalFiles(response.url, containerImageElement.id))
+        .then(response => {
+            containerImageFile = response.url;
+            showImageLocalFiles(response.url, containerImageElement.id);
+        })
         .catch(error => {
             console.error('Error fetching directory:', error);
         })
+
+    const reader = new FileReader();
     
     for (const path of config.SuikaSkinsImagesPaths) {
         await fetch(relativePath + path)
-            .then(response => {
-                suikaSkinsImagesFiles.push(response.url);
-                addImageLocalFiles(response.url, suikaSkinsImageElement,  suikaSkinsImagesFiles);
-                return response.url;
+            .then(response => response.blob())
+            .then(blob => {
+                reader.readAsDataURL(blob);
+
+                reader.onload = readerEvent => {
+                    console.log(readerEvent.target.result);
+                    suikaSkinsImagesFiles.push(readerEvent.target.result);
+                    addImageLocalFiles(readerEvent.target.result, suikaSkinsImageElement, suikaSkinsImagesFiles);
+                }
             })
             .catch(error => {
                 console.error('Error fetching directory:', error);
@@ -271,7 +293,7 @@ function addImage(imageFile, element, array) {
 function addImageLocalFiles(imageFile, element, array) {
     const item = document.createElement("img");
     item.className = "image";
-    item.src = imageFile;
+    item.src = imageFile.input;
     item.onclick = () => {
         changeImageArray(imageFile, element, item, array);
     }
@@ -376,12 +398,12 @@ async function submitDropChances() {
     await downloadModZip(gameConfig.ModName, gameConfig, modIconFile, containerImageFile, suikaSkinsImagesFiles, suikaIconsFiles, suikaAudiosFiles);
 }
 
-async function downloadModZip(modName, configData, modIconImage, containerImage, suikaSkinsFiles, suikaIconsFiles, suikaAudiosFiles) {
-    const configDataString = JSON.stringify(configData, null, 2);
-
+async function downloadModZip(modName, configData, modIconImageFile, containerImageFile, suikaSkinsFiles, suikaIconsFiles, suikaAudiosFiles) {
+    const configDataString = JSON.stringify(configData);
+    
     const configFile = {name: "config.json", lastModified: new Date(), input: configDataString};
-    const iconFile = {name: modIconImage.name, lastModified: new Date(), input: modIconImage};
-    const containerFile = {name: containerImage.name, lastModified: new Date(), input: containerImage};
+    const iconFile = {name: modIconFile.name, lastModified: new Date(), input: modIconImageFile};
+    const containerFile = {name: containerImageFile.name, lastModified: new Date(), input: containerImageFile};
 
     const suikaSkinFiles = [];
 
@@ -423,8 +445,12 @@ async function downloadModZip(modName, configData, modIconImage, containerImage,
             return seen;
         });
     }
+    
+    //const suikaIconsFiles = [];
+    //const suikaAudiosFiles = [];
+    //const suikaDropChancesOrdered = [];
 
-    const uniqueFiles = [configFile, ...uniqueFilesOnly([iconFile, containerFile, ...suikaSkinFiles, ...suikaIconFiles, ...suikaAudioFiles])];
+    const uniqueFiles = [configFile, ...uniqueFilesOnly([iconFile, containerFile])]; //, ...suikaSkinFiles])]; //, ...suikaIconFiles, ...suikaAudioFiles])];
     const blob = await downloadZip(uniqueFiles).blob();
 
     const link = document.createElement("a");
