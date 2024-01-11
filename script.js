@@ -1,17 +1,12 @@
 import {downloadZip} from "./client-zip.js";
 
-const audioData = {
-    path: "",
-    volume: 0
-}
-
 let gameConfig = {
-    ModName: "", //load/save
+    ModName: "", //load
     ModIconPath: "", //load
     ContainerImagePath: "", //load
     SuikaSkinsImagesPaths: [], //load/save
     SuikaIconsPaths: [], //load/save
-    SuikaAudios: [], //AudioData //load/save
+    SuikaAudios: [], //AudioData //load
     SuikaDropChances: [], //load/save
     TimeBeforeTimerTrigger: 0,
     TimerStartTime: 0,
@@ -32,24 +27,16 @@ const suikaIconsImageElement = document.querySelector('#suika-icons-images');
 const suikaAudiosElement = document.querySelector('#suika-audios');
 
 const downloadButtonElement = document.querySelector('#download');
-
 downloadButtonElement.addEventListener('click', submitDropChances);
 
 const loadModButtonElement = document.querySelector('#load-mod-button');
 
-//Config data
-const suikaSkinsOrdered = [];
-const suikaIconsOrdered = [];
-const suikaAudiosDataOrdered = [];
-const suikaDropChancesOrdered = [];
-
-//Files
 let modIconFile = null;
 let containerImageFile = null;
 const suikaSkinsImagesFiles = [];
 const suikaIconsFiles = [];
 const suikaAudiosFiles = [];
-
+const suikaDropChancesOrdered = [];
 
 function readFiles(files) {
     for (const file of files) {
@@ -63,10 +50,6 @@ function readFiles(files) {
                 gameConfig = parsedConfig;
 
                 modTitleElement.textContent = gameConfig.ModName;
-
-                removeAllChildren(suikaSkinsImageElement, suikaSkinsOrdered);
-                removeAllChildren(suikaIconsImageElement, suikaIconsOrdered);
-                removeAllChildren(suikaAudiosElement, suikaAudiosDataOrdered);
 
                 for (const file of files) {
                     if (file.name === parsedConfig.ModIconPath) {
@@ -86,68 +69,74 @@ function readFiles(files) {
                     filesObject[file.name] = file;
                 }
 
-                // SuikaSkinsImages
+                removeAllChildren(suikaSkinsImageElement, suikaSkinsImagesFiles);
+                removeAllChildren(suikaIconsImageElement, suikaIconsFiles);
+                removeAllChildren(suikaAudiosElement, suikaAudiosFiles);
 
-                for (const suikaSkinsImagePath of parsedConfig.SuikaSkinsImagesPaths) {
-                    const matchedFile = filesObject[suikaSkinsImagePath];
-                    if (matchedFile) {
-                        suikaSkinsImagesFiles.push(matchedFile);
-                        suikaSkinsOrdered.push(matchedFile);
-                    }
-                }
-
-                for (const file of suikaSkinsOrdered) {
-                    addImage(file, suikaSkinsImageElement, suikaSkinsOrdered);
-                }
-
-                //SuikaIcons
-
-                for (const suikaIconPath of parsedConfig.SuikaIconsPaths) {
-                    const matchedFile = filesObject[suikaIconPath];
-                    if (matchedFile) {
-                        suikaIconsFiles.push(matchedFile);
-                        suikaIconsOrdered.push(matchedFile);
-                    }
-                }
-
-                for (const file of suikaIconsOrdered) {
-                    addImage(file, suikaIconsImageElement, suikaIconsOrdered);
-                }
-
-                //SuikaAudiosPaths and SuikaAudiosVolumes
-
-                for (const suikaAudio of parsedConfig.SuikaAudios) {
-                    const matchedFile = filesObject[suikaAudio.path];
-
-                    let fileAndData = {
-                        matchedFile, suikaAudio
-                    }
-
-                    if (matchedFile) {
-                        fileAndData.matchedFile = matchedFile;
-                        fileAndData.suikaAudio = suikaAudio;
-                        suikaAudiosFiles.push(matchedFile);
-                        suikaAudiosDataOrdered.push(fileAndData);
-                    }
-                }
-
-                for (const fileAndData of suikaAudiosDataOrdered) {
-                    addAudioControl(fileAndData, suikaAudiosElement);
-                }
-                
-                //SuikaDropChances
-
-                for (const suikaDropChance of parsedConfig.SuikaDropChances) {
-                    suikaDropChancesOrdered.push(suikaDropChance);
-                }
-
-                let input = document.getElementsByName('dropChances[]');
-                for (let i = 0; i < input.length; i++) {
-                    let a = input[i];
-                    a.value = suikaDropChancesOrdered[i];
-                }
+                loadSuikaSkinsImages(filesObject, parsedConfig);
+                loadSuikaIcons(filesObject, parsedConfig);
+                loadSuikaAudios(filesObject, parsedConfig);
+                loadSuikaDropChances(parsedConfig);
             }
         }
+    }
+}
+
+function loadSuikaSkinsImages(filesObject, parsedConfig) {
+    for (const suikaSkinsImagePath of parsedConfig.SuikaSkinsImagesPaths) {
+        const matchedFile = filesObject[suikaSkinsImagePath];
+        if (matchedFile) {
+            suikaSkinsImagesFiles.push(matchedFile);
+        }
+    }
+
+    for (const file of suikaSkinsImagesFiles) {
+        addImage(file, suikaSkinsImageElement, suikaSkinsImagesFiles);
+    }
+}
+
+function loadSuikaIcons(filesObject, parsedConfig) {
+    for (const suikaIconPath of parsedConfig.SuikaIconsPaths) {
+        const matchedFile = filesObject[suikaIconPath];
+        if (matchedFile) {
+            suikaIconsFiles.push(matchedFile);
+        }
+    }
+
+    for (const file of suikaIconsFiles) {
+        addImage(file, suikaIconsImageElement, suikaIconsFiles);
+    }
+}
+
+function loadSuikaAudios(filesObject, parsedConfig) {
+    for (const suikaAudio of parsedConfig.SuikaAudios) {
+        const matchedFile = filesObject[suikaAudio.path];
+
+        let fileAndData = {
+            matchedFile, suikaAudio
+        }
+
+        if (matchedFile) {
+            fileAndData.matchedFile = matchedFile;
+            fileAndData.suikaAudio = suikaAudio;
+            suikaAudiosFiles.push(fileAndData);
+        }
+    }
+
+    for (const fileAndData of suikaAudiosFiles) {
+        addAudioControl(fileAndData, suikaAudiosElement);
+    }
+}
+
+function loadSuikaDropChances(filesObject, parsedConfig) {
+    for (const suikaDropChance of parsedConfig.SuikaDropChances) {
+        suikaDropChancesOrdered.push(suikaDropChance);
+    }
+
+    let input = document.getElementsByName('dropChances[]');
+    for (let i = 0; i < input.length; i++) {
+        let a = input[i];
+        a.value = suikaDropChancesOrdered[i];
     }
 }
 
@@ -176,7 +165,7 @@ function changeImageSingle(imageFile, item) {
     input.type = 'file';
     input.accept = 'image/*';
     input.onchange = (event) => {
-        
+
         //TODO: change icon file
         const newFile = event.target.files[0];
         item.src = URL.createObjectURL(newFile);
@@ -253,13 +242,13 @@ async function submitDropChances() {
         let a = input[i];
         suikaDropChancesOrdered.push(a.value);
     }
-    
+
     for (let i = 0; i < suikaDropChancesOrdered.length; i++) {
         gameConfig.SuikaDropChances[i] = suikaDropChancesOrdered[i];
     }
 
-    for (let i = 0; i < suikaSkinsOrdered.length; i++) {
-        gameConfig.SuikaSkinsImagesPaths[i] = suikaSkinsOrdered[i].name;
+    for (let i = 0; i < suikaSkinsImagesFiles.length; i++) {
+        gameConfig.SuikaSkinsImagesPaths[i] = suikaSkinsImagesFiles[i].name;
     }
 
     await downloadModZip(gameConfig.ModName, gameConfig, modIconFile, containerImageFile, suikaSkinsImagesFiles, suikaIconsFiles, suikaAudiosFiles);
@@ -291,9 +280,9 @@ async function downloadModZip(modName, configData, modIconImage, containerImage,
             input: suikaIconsFiles[i]
         });
     }
-    
+
     const suikaAudioFiles = [];
-    
+
     for (let i = 0; i < configData.SuikaAudios.length; i++) {
         suikaAudioFiles.push({
             name: configData.SuikaAudios[i].path,
