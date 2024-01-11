@@ -104,7 +104,7 @@ const suikaDropChancesOrdered = [];
 
 initUsingLocalFiles(gameConfig, "ModExample/");
 
-function initUsingLocalFiles(config, relativePath) {
+async function initUsingLocalFiles(config, relativePath) {
     modTitleElement.textContent = config.ModName;
     
     fetch(relativePath + config.ModIconPath)
@@ -120,7 +120,7 @@ function initUsingLocalFiles(config, relativePath) {
         })
     
     for (const path of config.SuikaSkinsImagesPaths) {
-        fetch(relativePath + path)
+        await fetch(relativePath + path)
             .then(response => {
                 suikaSkinsImagesFiles.push(response.url);
                 addImageLocalFiles(response.url, suikaSkinsImageElement,  suikaSkinsImagesFiles);
