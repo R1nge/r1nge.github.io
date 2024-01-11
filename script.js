@@ -1,21 +1,85 @@
 import {downloadZip} from "./client-zip.js";
 
 let gameConfig = {
-    ModName: "", //load
-    ModIconPath: "", //load
-    ContainerImagePath: "", //load
-    SuikaSkinsImagesPaths: [], //load/save
-    SuikaIconsPaths: [], //load/save
-    SuikaAudios: [], //AudioData //load
-    SuikaDropChances: [], //load/save
-    TimeBeforeTimerTrigger: 0,
-    TimerStartTime: 0,
-    InGameBackgroundPath: "",
-    LoadingScreenBackgroundPath: "",
-    LoadingScreenIconPath: "",
-    PlayerSkinPath: "",
-    MergeSoundsAudios: [], //AudioData
-    MainMenuBackgroundPath: ""
+    ModName: "Default", //load
+    ModIconPath: "gura.png", //load
+    ContainerImagePath: "container.png", //load
+    SuikaSkinsImagesPaths: [
+        "yagoo.png",
+        "sana.png",
+        "ollie.png",
+        "aqua.png",
+        "ayame.png",
+        "fubuki.png",
+        "gura.png",
+        "hakos.png",
+        "mio.png",
+        "kobo.png",
+        "koyori.png",
+        "towa.png"
+    ], //load/save
+    SuikaIconsPaths: [
+        "yagoo.png",
+        "sana.png",
+        "ollie.png",
+        "aqua.png",
+        "ayame.png",
+        "fubuki.png",
+        "gura.png",
+        "hakos.png",
+        "mio.png",
+        "kobo.png",
+        "koyori.png",
+        "towa.png"
+    ], //load/save
+    SuikaAudios: [
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "song1.mp3", "volume": 0.1},
+        {"path": "song1.mp3", "volume": 0.1},
+        {"path": "song1.mp3", "volume": 0.1},
+        {"path": "song1.mp3", "volume": 0.1},
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "silence.mp3", "volume": 1}
+    ], //AudioData //load
+    SuikaDropChances: [
+        0.1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+    ], //load/save
+    TimeBeforeTimerTrigger: 1,
+    TimerStartTime: 5,
+    InGameBackgroundPath: "background.png",
+    LoadingScreenBackgroundPath: "background.png",
+    LoadingScreenIconPath: "gura.png",
+    PlayerSkinPath: "gura.png",
+    MergeSoundsAudios: [
+        {"path": "yagoo.ogg", "volume": 0.25},
+        {"path": "sana.ogg", "volume": 0.25},
+        {"path": "ollie.ogg", "volume": 0.1},
+        {"path": "aqua.ogg", "volume": 0.25},
+        {"path": "ayame.ogg", "volume": 0.15},
+        {"path": "fubuki.ogg", "volume": 0.5},
+        {"path": "gura.ogg", "volume": 0.25},
+        {"path": "hakos.ogg", "volume": 0.2},
+        {"path": "mio.ogg", "volume": 0.3},
+        {"path": "kobo.ogg", "volume": 0.25},
+        {"path": "koyori.ogg", "volume": 0.25},
+        {"path": "towa.ogg", "volume": 0.25}
+    ], //AudioData
+    MainMenuBackgroundPath: "background.png"
 }
 
 const modTitleElement = document.querySelector('#mod-title');
@@ -38,6 +102,17 @@ const suikaIconsFiles = [];
 const suikaAudiosFiles = [];
 const suikaDropChancesOrdered = [];
 
+initUsingLocalFiles(gameConfig, "ModExample/gura.png");
+
+function initUsingLocalFiles(config, directoryPath) {
+    fetch(directoryPath)
+        .then(response => showImageLocalFiles(response.url, modIconElement.id))
+        .catch(error => {
+            console.error('Error fetching directory:', error);
+        });
+}
+
+
 function readFiles(files) {
     for (const file of files) {
         if (file.name === "config.json") {
@@ -45,41 +120,45 @@ function readFiles(files) {
             reader.readAsText(file, 'UTF-8');
 
             reader.onload = readerEvent => {
+                //May return an array buffer instead of a string?
                 const configJson = readerEvent.target.result;
                 const parsedConfig = JSON.parse(configJson);
                 gameConfig = parsedConfig;
-
-                modTitleElement.textContent = gameConfig.ModName;
-
-                for (const file of files) {
-                    if (file.name === parsedConfig.ModIconPath) {
-                        modIconFile = file;
-                        showImage(file, modIconElement.id);
-                    }
-
-                    if (file.name === parsedConfig.ContainerImagePath) {
-                        containerImageFile = file;
-                        showImage(file, containerImageElement.id);
-                    }
-                }
-
-                const filesObject = {};
-
-                for (const file of files) {
-                    filesObject[file.name] = file;
-                }
-
-                removeAllChildren(suikaSkinsImageElement, suikaSkinsImagesFiles);
-                removeAllChildren(suikaIconsImageElement, suikaIconsFiles);
-                removeAllChildren(suikaAudiosElement, suikaAudiosFiles);
-
-                loadSuikaSkinsImages(filesObject, parsedConfig);
-                loadSuikaIcons(filesObject, parsedConfig);
-                loadSuikaAudios(filesObject, parsedConfig);
-                loadSuikaDropChances(parsedConfig);
+                init(parsedConfig, files);
             }
         }
     }
+}
+
+function init(parsedConfig, files) {
+    modTitleElement.textContent = gameConfig.ModName;
+    
+    for (const file of files) {
+        if (file.name === parsedConfig.ModIconPath) {
+            modIconFile = file;
+            showImage(file, modIconElement.id);
+        }
+
+        if (file.name === parsedConfig.ContainerImagePath) {
+            containerImageFile = file;
+            showImage(file, containerImageElement.id);
+        }
+    }
+
+    const filesObject = {};
+
+    for (const file of files) {
+        filesObject[file.name] = file;
+    }
+
+    removeAllChildren(suikaSkinsImageElement, suikaSkinsImagesFiles);
+    removeAllChildren(suikaIconsImageElement, suikaIconsFiles);
+    removeAllChildren(suikaAudiosElement, suikaAudiosFiles);
+
+    loadSuikaSkinsImages(filesObject, parsedConfig);
+    loadSuikaIcons(filesObject, parsedConfig);
+    loadSuikaAudios(filesObject, parsedConfig);
+    loadSuikaDropChances(parsedConfig);
 }
 
 function loadSuikaSkinsImages(filesObject, parsedConfig) {
@@ -145,6 +224,15 @@ function showImage(imageFile, elementId) {
     const img = document.querySelector(`#${elementId}`);
     img.style.display = "block";
     img.src = tempPath;
+    img.onclick = () => {
+        changeImageSingle(imageFile, img);
+    }
+}
+
+function showImageLocalFiles(imageFile, elementId) {
+    const img = document.querySelector(`#${elementId}`);
+    img.style.display = "block";
+    img.src = imageFile;
     img.onclick = () => {
         changeImageSingle(imageFile, img);
     }
@@ -219,20 +307,24 @@ function removeAllChildren(element, array) {
 }
 
 function addAudioControl(fileAndData, element) {
-    const item = document.createElement("audio");
-    item.src = URL.createObjectURL(fileAndData.matchedFile);
-    item.controls = true;
-    item.onclick = () => {
+    const audioElement = document.createElement("audio");
+    const link = document.createElement("a");
+    const audioFile = URL.createObjectURL(fileAndData.matchedFile);
+    link.href = audioFile;
+    audioElement.src = audioFile;
+    audioElement.controls = true;
+    audioElement.onclick = () => {
         //changeImageArray(imageFile, element, item, array);
     }
 
-    item.volume = fileAndData.suikaAudio.volume;
+    audioElement.volume = fileAndData.suikaAudio.volume;
 
-    item.onvolumechange = () => {
+    audioElement.onvolumechange = () => {
         //alert(item.volume);
     }
-
-    element.append(item);
+    
+    //TODO: append change sound button
+    element.append(audioElement);
 }
 
 async function submitDropChances() {
