@@ -91,6 +91,12 @@ const suikaSkinsImageElement = document.querySelector('#suika-skins-images');
 const suikaIconsImageElement = document.querySelector('#suika-icons-images');
 const suikaAudiosElement = document.querySelector('#suika-audios');
 
+const inGameBackgroundElement = document.querySelector('#in-game-background-image');
+const loadingScreenBackgroundElement = document.querySelector('#loading-screen-background-image');
+const loadingScreenIconElement = document.querySelector('#loading-screen-icon-image');
+const playerSkinElement = document.querySelector('#player-skin-image');
+const mainMenuBackgroundElement = document.querySelector('#main-menu-background-image');
+
 const downloadButtonElement = document.querySelector('#download');
 downloadButtonElement.addEventListener('click', submitDropChances);
 
@@ -153,24 +159,22 @@ async function initUsingLocalFiles(config, relativePath) {
     //
 
     fetchLocalImage(relativePath + config.InGameBackgroundPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, ...);
-         inGameBackgroundFile = new File([blobAndFile.file], config.InGameBackgroundPath, {type: 'image/png'});
-    })
+        showImageLocalFiles(blobAndFile.blob, inGameBackgroundElement.id);
+        inGameBackgroundFile = new File([blobAndFile.file], config.InGameBackgroundPath, {type: 'image/png'});
+    });
 
     fetchLocalImage(relativePath + config.LoadingScreenBackgroundPath).then(blobAndFile => {
-            showImageLocalFiles(blobAndFile.blob, ...);
-            loadingScreenBackgroundFile = new File([blobAndFile.file], config.LoadingScreenBackgroundPath, {type: 'image/png'});
-        }
-    )
+        showImageLocalFiles(blobAndFile.blob, loadingScreenBackgroundElement.id);
+        loadingScreenBackgroundFile = new File([blobAndFile.file], config.LoadingScreenBackgroundPath, {type: 'image/png'});
+    });
 
     fetchLocalImage(relativePath + config.LoadingScreenIconPath).then(blobAndFile => {
-            showImageLocalFiles(blobAndFile.blob, ...);
-            loadingScreenIconFile = new File([blobAndFile.file], config.LoadingScreenIconPath, {type: 'image/png'});
-        }
-    )
+        showImageLocalFiles(blobAndFile.blob, loadingScreenIconElement.id);
+        loadingScreenIconFile = new File([blobAndFile.file], config.LoadingScreenIconPath, {type: 'image/png'});
+    });
 
     fetchLocalImage(relativePath + config.PlayerSkinPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, ...);
+        showImageLocalFiles(blobAndFile.blob, playerSkinElement.id);
         playerSkinFile = new File([blobAndFile.file], config.PlayerSkinPath, {type: 'image/png'});
     });
 
@@ -178,7 +182,7 @@ async function initUsingLocalFiles(config, relativePath) {
     //
 
     fetchLocalImage(relativePath + config.MainMenuBackgroundPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, ...);
+        showImageLocalFiles(blobAndFile.blob, mainMenuBackgroundElement.id);
         mainMenuBackgroundFile = new File([blobAndFile.file], config.MainMenuBackgroundPath, {type: 'image/png'});
     });
 }
