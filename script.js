@@ -106,42 +106,13 @@ await initUsingLocalFiles(gameConfig, "ModExample/");
 
 async function initUsingLocalFiles(config, relativePath) {
     modTitleElement.textContent = config.ModName;
-    
-    fetch(relativePath + config.ModIconPath)
-        .then((response) => {
-            const reader = response.body.getReader();
-            return new ReadableStream({
-                start(controller) {
-                    return pump();
-                    function pump() {
-                        return reader.read().then(({ done, value }) => {
-                            // When no more data needs to be consumed, close the stream
-                            if (done) {
-                                controller.close();
-                                return;
-                            }
-                            // Enqueue the next data chunk into our target stream
-                            controller.enqueue(value);
-                            return pump();
-                        });
-                    }
-                },
-            });
-        })
-        // Create a new response out of the stream
-        .then((stream) => new Response(stream))
-        // Create an object URL for the response
-        .then((response) => response.blob())
-        .then((blob) => {
-            modIconFile = new File([blob], config.ModIconPath);
-            return URL.createObjectURL(blob);
-        })
-        // Update image
-        .then((url) => {
-            showImageLocalFiles(url, modIconElement.id);
-        })
-        .catch((err) => console.error(err));
-    
+
+    fetchLocalImage(relativePath + config.ModIconPath).then(blobAndFile => {
+        showImageLocalFiles(blobAndFile.blob, modIconElement.id);
+        modIconFile = new File([blobAndFile.file], config.ModIconPath, {type: 'image/png'});
+    });
+
+
     fetch(relativePath + config.ContainerImagePath)
         .then(response => {
             containerImageFile = response.url;
@@ -152,7 +123,7 @@ async function initUsingLocalFiles(config, relativePath) {
         })
 
     const reader = new FileReader();
-    
+
     for (const path of config.SuikaSkinsImagesPaths) {
         await fetch(relativePath + path)
             .then(response => response.blob())
@@ -169,6 +140,39 @@ async function initUsingLocalFiles(config, relativePath) {
                 console.error('Error fetching directory:', error);
             })
     }
+}
+
+function fetchLocalImage(relativePath, fileName) {
+    return fetch(relativePath)
+        .then((response) => {
+            const reader = response.body.getReader();
+            return new ReadableStream({
+                start(controller) {
+                    return pump();
+
+                    function pump() {
+                        return reader.read().then(({done, value}) => {
+                            // When no more data needs to be consumed, close the stream
+                            if (done) {
+                                controller.close();
+                                return;
+                            }
+                            // Enqueue the next data chunk into our target stream
+                            controller.enqueue(value);
+                            return pump();
+                        });
+                    }
+                },
+            });
+        })
+        .then((stream) => new Response(stream))
+        .then((response) => response.blob())
+        .then((blob) => {
+            let blobURL = URL.createObjectURL(blob);
+            let file = new File([blob], fileName, {type: 'image/png'});
+            return { blob: blobURL, file: file} ;
+        })
+        .catch((err) => console.error(err));
 }
 
 
@@ -191,7 +195,7 @@ function readFiles(files) {
 
 function init(parsedConfig, files) {
     modTitleElement.textContent = gameConfig.ModName;
-    
+
     for (const file of files) {
         if (file.name === parsedConfig.ModIconPath) {
             modIconFile = file;
@@ -391,7 +395,7 @@ function addAudioControl(fileAndData, element) {
     audioElement.onvolumechange = () => {
         //alert(item.volume);
     }
-    
+
     //TODO: append change sound button
     element.append(audioElement);
 }
@@ -417,7 +421,7 @@ async function submitDropChances() {
 
 async function downloadModZip(modName, configData, modIconImageFile, containerImageFile, suikaSkinsFiles, suikaIconsFiles, suikaAudiosFiles) {
     const configDataString = JSON.stringify(configData);
-    
+
     const configFile = {name: "config.json", lastModified: new Date(), input: configDataString};
     const iconFile = {name: modIconFile.name, lastModified: new Date(), input: modIconImageFile};
     const containerFile = {name: containerImageFile.name, lastModified: new Date(), input: containerImageFile};
@@ -462,7 +466,7 @@ async function downloadModZip(modName, configData, modIconImageFile, containerIm
             return seen;
         });
     }
-    
+
     //const suikaIconsFiles = [];
     //const suikaAudiosFiles = [];
     //const suikaDropChancesOrdered = [];
