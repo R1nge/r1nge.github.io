@@ -118,10 +118,19 @@ async function initUsingLocalFiles(config, relativePath) {
     })
 
     for (const path of config.SuikaSkinsImagesPaths) {
-        fetchLocalImage(relativePath + path).then(blobAndFile => {
+        await fetchLocalImage(relativePath + path).then(blobAndFile => {
             let image = new File([blobAndFile.file], path, {type: 'image/png'});
             suikaSkinsImagesFiles.push(image);
-            addImageLocalFiles(blobAndFile.blob, suikaSkinsImageElement, suikaSkinsImagesFiles);
+            console.log(image.name)
+            addImageLocalFiles(blobAndFile.blob, image.name, suikaSkinsImageElement, suikaSkinsImagesFiles);
+        })
+    }
+
+    for (const path of config.SuikaIconsPaths) {
+        await fetchLocalImage(relativePath + path).then(blobAndFile => {
+            let image = new File([blobAndFile.file], path, {type: 'image/png'});
+            suikaIconsFiles.push(image);
+            addImageLocalFiles(blobAndFile.blob, image.name, suikaIconsImageElement, suikaIconsFiles);
         })
     }
 }
@@ -289,17 +298,18 @@ function addImage(imageFile, element, array) {
     item.className = "image";
     item.src = URL.createObjectURL(imageFile);
     item.onclick = () => {
-        changeImageArray(imageFile, element, item, array);
+        changeImageArray(imageFile, imageFile.name, element, item, array);
     }
     element.append(item);
 }
 
-function addImageLocalFiles(imageFile, element, array) {
+function addImageLocalFiles(imageFile, name, element, array) {
     const item = document.createElement("img");
     item.className = "image";
     item.src = imageFile;
     item.onclick = () => {
-        changeImageArray(imageFile, element, item, array);
+        //TODO: it gets a blob url, not file name
+        changeImageArray(imageFile, name, element, item, array);
     }
     element.append(item);
 }
@@ -317,22 +327,22 @@ function changeImageSingle(imageFile, item) {
     input.click();
 }
 
-function changeImageArray(imageFile, element, item, array) {
+function changeImageArray(imageFile, name, element, item, array) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
     input.onchange = (event) => {
 
-        URL.revokeObjectURL(imageFile.src);
+        URL.revokeObjectURL(imageFile);
         element.removeChild(item);
-
 
         const newFile = event.target.files[0];
 
-        const index = array.findIndex((file) => file.name === imageFile.name);
+        const index = array.findIndex((file) => file.name === name);
         if (index !== -1) {
             array[index] = newFile;
         }
+
         addImageAtIndex(newFile, element, index, array);
     };
     input.click();
@@ -454,7 +464,7 @@ async function downloadModZip(modName, configData, modIconImageFile, containerIm
     //const suikaAudiosFiles = [];
     //const suikaDropChancesOrdered = [];
 
-    const uniqueFiles = [configFile, ...uniqueFilesOnly([iconFile, containerFile, ...suikaSkinFiles])]; //, ...suikaIconFiles, ...suikaAudioFiles])];
+    const uniqueFiles = [configFile, ...uniqueFilesOnly([iconFile, containerFile, ...suikaSkinFiles, ...suikaIconFiles])]; //, ...suikaAudioFiles])];
     const blob = await downloadZip(uniqueFiles).blob();
 
     const link = document.createElement("a");
