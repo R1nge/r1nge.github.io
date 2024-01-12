@@ -241,12 +241,12 @@ function init(parsedConfig, files) {
 
     for (const file of files) {
         if (file.name === parsedConfig.ModIconPath) {
-            modIconFile = file;
+            modIconFile.file = file;
             showImage(file, modIconElement.id);
         }
 
         if (file.name === parsedConfig.ContainerImagePath) {
-            containerImageFile = file;
+            containerImageFile.file = file;
             showImage(file, containerImageElement.id);
         }
     }
@@ -492,9 +492,16 @@ async function downloadModZip(modName, configData) {
             return seen;
         });
     }
+    
     //TODO: suika audios, merge audios
+    
+    const suikaAudioFiles = [];
 
-    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile.file, containerImageFile.file, ...suikaSkinsImagesFiles, ...suikaIconsFiles, loadingScreenIconFile.file, inGameBackgroundFile.file, mainMenuBackgroundFile.file, playerSkinFile.file])]; //, ...suikaAudioFiles])];
+    for (const suikaAudioFile of suikaAudiosFiles) {
+        suikaAudioFiles.push(suikaAudioFile.matchedFile);
+    }
+
+    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile.file, containerImageFile.file, ...suikaSkinsImagesFiles, ...suikaIconsFiles, ...suikaAudioFiles, loadingScreenIconFile.file, inGameBackgroundFile.file, mainMenuBackgroundFile.file, playerSkinFile.file])]; //, ...suikaAudioFiles])];
     const blob = await downloadZip(uniqueFiles).blob();
 
     const link = document.createElement("a");
