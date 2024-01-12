@@ -120,14 +120,21 @@ await initUsingLocalFiles(gameConfig, "ModExample/");
 async function initUsingLocalFiles(config, relativePath) {
     modTitleElement.textContent = config.ModName;
 
+    console.log(fetchLocalImage(relativePath + config.ModIconPath) instanceof Promise);
+
+    //TODO: create file
+    
     fetchLocalImage(relativePath + config.ModIconPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, modIconElement.id);
-        modIconFile = new File([blobAndFile.file], config.ModIconPath, {type: 'image/png'});
+        showImageLocalFiles(blobAndFile.blob, modIconElement.id).then(file => {
+            modIconFile = new File([file], config.ModIconPath, {type: 'image/png'});
+            console.log("RESOLVED MOD ICON")
+        });
     });
 
     fetchLocalImage(relativePath + config.ContainerImagePath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, containerImageElement.id);
-        containerImageFile = new File([blobAndFile.file], config.ContainerImagePath, {type: 'image/png'});
+        showImageLocalFiles(blobAndFile.blob, containerImageElement.id).then(blob => {
+            containerImageFile = new File([blob], config.ContainerImagePath, {type: 'image/png'});
+        });
     })
 
     for (const path of config.SuikaSkinsImagesPaths) {
@@ -158,32 +165,44 @@ async function initUsingLocalFiles(config, relativePath) {
     //TODO: timer start time
     //
 
-    fetchLocalImage(relativePath + config.InGameBackgroundPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, inGameBackgroundElement.id);
-        inGameBackgroundFile = new File([blobAndFile.file], config.InGameBackgroundPath, {type: 'image/png'});
+    fetchLocalImage(relativePath + config.LoadingScreenBackgroundPath).then(blobAndFile => {
+        showImageLocalFiles(blobAndFile.blob, loadingScreenBackgroundElement.id).then(blob => {
+            loadingScreenBackgroundFile = new File([blob], config.LoadingScreenBackgroundPath, {type: 'image/png'});
+            console.log("DONE LOADING BACKGROUND");
+        })
     });
 
-    fetchLocalImage(relativePath + config.LoadingScreenBackgroundPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, loadingScreenBackgroundElement.id);
-        loadingScreenBackgroundFile = new File([blobAndFile.file], config.LoadingScreenBackgroundPath, {type: 'image/png'});
+    fetchLocalImage(relativePath + config.InGameBackgroundPath).then(blobAndFile => {
+        showImageLocalFiles(blobAndFile.blob, inGameBackgroundElement.id).then(file => {
+            inGameBackgroundFile = new File([file], config.InGameBackgroundPath, {type: 'image/png'});
+            console.log("DONE LOADING IN GAME BACKGROUND");
+        })
     });
+
 
     fetchLocalImage(relativePath + config.LoadingScreenIconPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, loadingScreenIconElement.id);
-        loadingScreenIconFile = new File([blobAndFile.file], config.LoadingScreenIconPath, {type: 'image/png'});
+        showImageLocalFiles(blobAndFile.blob, loadingScreenIconElement.id).then(file => {
+            loadingScreenIconFile = new File([file], config.LoadingScreenIconPath, {type: 'image/png'});
+            console.log("DONE LOADING LOADING SCREEN ICON");
+        });
     });
 
     fetchLocalImage(relativePath + config.PlayerSkinPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, playerSkinElement.id);
-        playerSkinFile = new File([blobAndFile.file], config.PlayerSkinPath, {type: 'image/png'});
+        showImageLocalFiles(blobAndFile.blob, playerSkinElement.id).then(file => {
+            playerSkinFile = new File([file], config.PlayerSkinPath, {type: 'image/png'});
+            console.log("DONE LOADING PLAYER SKIN");
+        });
     });
 
     //TODO: merge sounds audios
     //
 
     fetchLocalImage(relativePath + config.MainMenuBackgroundPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, mainMenuBackgroundElement.id);
-        mainMenuBackgroundFile = new File([blobAndFile.file], config.MainMenuBackgroundPath, {type: 'image/png'});
+        showImageLocalFiles(blobAndFile.blob, mainMenuBackgroundElement.id).then(file => {
+                mainMenuBackgroundFile = new File([file], config.MainMenuBackgroundPath, {type: 'image/png'});
+                console.log("DONE LOADING MAIN MENU BACKGROUND");
+            }
+        );
     });
 }
 
@@ -337,17 +356,25 @@ function showImage(imageFile, elementId) {
 }
 
 function showImageLocalFiles(imageFile, elementId) {
-    const img = document.querySelector(`#${elementId}`);
-    img.style.display = "block";
-    img.src = imageFile;
-    img.onclick = () => {
-        changeImageSingle(imageFile, img).then(
-            file => {
-                img.src = URL.createObjectURL(file);
-                mainMenuBackgroundFile = file;
-            }
-        );
-    }
+    return new Promise((resolve, reject) => {
+        const img = document.querySelector(`#${elementId}`);
+        img.style.display = "block";
+        img.src = imageFile;
+        
+        img.onclick = () => {
+            return changeImageSingle(imageFile, img)
+                .then(file => {
+                    //img.src = URL.createObjectURL(file);
+                    console.log("RESOLVE SHOW IMAGE LOCAL")
+                    return resolve(file); // Resolve the promise with the file
+                })
+                .catch(error => {
+                    reject(error); // Reject the promise with the error
+                });
+        };
+
+        return resolve(imageFile);
+    });
 }
 
 function addImage(imageFile, element, array) {
@@ -374,12 +401,13 @@ function changeImageSingle(imageFile, item) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    
+
     return new Promise((resolve, reject) => {
         input.onchange = (event) => {
             const newFile = event.target.files[0];
             item.src = URL.createObjectURL(newFile);
-            resolve(newFile);
+            console.log("RESOLVE CHNAGE IMAGE SINGLE")
+            return resolve(newFile);
         };
         input.click();
     });
