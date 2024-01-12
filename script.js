@@ -119,15 +119,10 @@ await initUsingLocalFiles(gameConfig, "ModExample/");
 
 async function initUsingLocalFiles(config, relativePath) {
     modTitleElement.textContent = config.ModName;
-
-    console.log(fetchLocalImage(relativePath + config.ModIconPath) instanceof Promise);
-
-    //TODO: create file
-
+    
     fetchLocalImage(relativePath + config.ModIconPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, modIconElement.id, modIconFile);
         modIconFile.file = new File([blobAndFile.blob], config.ModIconPath, {type: 'image/png'});
-        console.log("RESOLVED MOD ICON")
     });
 
     fetchLocalImage(relativePath + config.ContainerImagePath).then(blobAndFile => {
@@ -139,7 +134,6 @@ async function initUsingLocalFiles(config, relativePath) {
         await fetchLocalImage(relativePath + path).then(blobAndFile => {
             let image = new File([blobAndFile.file], path, {type: 'image/png'});
             suikaSkinsImagesFiles.push(image);
-            console.log(image.name)
             addImageLocalFiles(blobAndFile.blob, image.name, suikaSkinsImageElement, suikaSkinsImagesFiles);
         })
     }
@@ -172,7 +166,6 @@ async function initUsingLocalFiles(config, relativePath) {
         showImageLocalFiles(blobAndFile.blob, inGameBackgroundElement.id, inGameBackgroundFile);
         inGameBackgroundFile.file = new File([blobAndFile.blob], config.InGameBackgroundPath, {type: 'image/png'});
     });
-
 
     fetchLocalImage(relativePath + config.LoadingScreenIconPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, loadingScreenIconElement.id, loadingScreenIconFile);
@@ -380,7 +373,6 @@ function changeImageSingle(imageFile, item, reference) {
     input.onchange = (event) => {
         const newFile = event.target.files[0];
         item.src = URL.createObjectURL(newFile);
-        //TODO: just give up and create a function for each image???
         reference.file = newFile;
     };
     input.click();
@@ -456,9 +448,12 @@ function addAudioControl(fileAndData, element) {
 async function submitDropChances() {
     let input = document.getElementsByName('dropChances[]');
 
+    
+    let suikaDropChancesOrdered = [];
+    
     for (let i = 0; i < input.length; i++) {
         let a = input[i];
-        suikaDropChancesOrdered.push(a.value);
+        suikaDropChancesOrdered.push(parseFloat(a.value));
     }
 
     for (let i = 0; i < suikaDropChancesOrdered.length; i++) {
