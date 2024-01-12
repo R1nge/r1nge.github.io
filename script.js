@@ -366,14 +366,14 @@ function showImageLocalFiles(imageFile, elementId) {
                 .then(file => {
                     //img.src = URL.createObjectURL(file);
                     console.log("RESOLVE SHOW IMAGE LOCAL")
-                    return resolve(file); // Resolve the promise with the file
+                    resolve(file); // Resolve the promise with the file
                 })
                 .catch(error => {
                     reject(error); // Reject the promise with the error
                 });
         };
 
-        return resolve(imageFile);
+        resolve(imageFile);
     });
 }
 
@@ -407,7 +407,7 @@ function changeImageSingle(imageFile, item) {
             const newFile = event.target.files[0];
             item.src = URL.createObjectURL(newFile);
             console.log("RESOLVE CHNAGE IMAGE SINGLE")
-            return resolve(newFile);
+            resolve(newFile);
         };
         input.click();
     });
