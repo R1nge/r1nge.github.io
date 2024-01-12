@@ -108,22 +108,39 @@ async function initUsingLocalFiles(config, relativePath) {
     modTitleElement.textContent = config.ModName;
     
     fetch(relativePath + config.ModIconPath)
-        .then(response => response.blob())
-        .then(blob => {
-            reader.readAsDataURL(blob);
-            
-            reader.onload = readerEvent => {
-                const file = { name: "gura.png", lastModified: new Date(), input: readerEvent.target.result };
-
-                modIconFile = file;
-                showImageLocalFiles(file.input, modIconElement.id);
-            }
-            
-            
+        .then((response) => {
+            const reader = response.body.getReader();
+            return new ReadableStream({
+                start(controller) {
+                    return pump();
+                    function pump() {
+                        return reader.read().then(({ done, value }) => {
+                            // When no more data needs to be consumed, close the stream
+                            if (done) {
+                                controller.close();
+                                return;
+                            }
+                            // Enqueue the next data chunk into our target stream
+                            controller.enqueue(value);
+                            return pump();
+                        });
+                    }
+                },
+            });
         })
-        .catch(error => {
-            console.error('Error fetching directory:', error);
-        });
+        // Create a new response out of the stream
+        .then((stream) => new Response(stream))
+        // Create an object URL for the response
+        .then((response) => response.blob())
+        .then((blob) => {
+            modIconFile = new File([blob], config.ModIconPath);
+            return URL.createObjectURL(blob);
+        })
+        // Update image
+        .then((url) => {
+            showImageLocalFiles(url, modIconElement.id);
+        })
+        .catch((err) => console.error(err));
     
     fetch(relativePath + config.ContainerImagePath)
         .then(response => {
@@ -450,7 +467,7 @@ async function downloadModZip(modName, configData, modIconImageFile, containerIm
     //const suikaAudiosFiles = [];
     //const suikaDropChancesOrdered = [];
 
-    const uniqueFiles = [configFile, ...uniqueFilesOnly([iconFile, containerFile])]; //, ...suikaSkinFiles])]; //, ...suikaIconFiles, ...suikaAudioFiles])];
+    const uniqueFiles = [configFile, ...uniqueFilesOnly([iconFile])]; //, containerFile])]; //, ...suikaSkinFiles])]; //, ...suikaIconFiles, ...suikaAudioFiles])];
     const blob = await downloadZip(uniqueFiles).blob();
 
     const link = document.createElement("a");
