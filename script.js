@@ -112,33 +112,17 @@ async function initUsingLocalFiles(config, relativePath) {
         modIconFile = new File([blobAndFile.file], config.ModIconPath, {type: 'image/png'});
     });
 
-
-    fetch(relativePath + config.ContainerImagePath)
-        .then(response => {
-            containerImageFile = response.url;
-            showImageLocalFiles(response.url, containerImageElement.id);
-        })
-        .catch(error => {
-            console.error('Error fetching directory:', error);
-        })
-
-    const reader = new FileReader();
+    fetchLocalImage(relativePath + config.ContainerImagePath).then(blobAndFile => {
+        showImageLocalFiles(blobAndFile.blob, containerImageElement.id);
+        containerImageFile = new File([blobAndFile.file], config.ContainerImagePath, {type: 'image/png'});
+    })
 
     for (const path of config.SuikaSkinsImagesPaths) {
-        await fetch(relativePath + path)
-            .then(response => response.blob())
-            .then(blob => {
-                reader.readAsDataURL(blob);
-
-                reader.onload = readerEvent => {
-                    console.log(readerEvent.target.result);
-                    suikaSkinsImagesFiles.push(readerEvent.target.result);
-                    addImageLocalFiles(readerEvent.target.result, suikaSkinsImageElement, suikaSkinsImagesFiles);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching directory:', error);
-            })
+        fetchLocalImage(relativePath + path).then(blobAndFile => {
+            let image = new File([blobAndFile.file], path, {type: 'image/png'});
+            suikaSkinsImagesFiles.push(image);
+            addImageLocalFiles(blobAndFile.blob, suikaSkinsImageElement, suikaSkinsImagesFiles);
+        })
     }
 }
 
@@ -170,11 +154,10 @@ function fetchLocalImage(relativePath, fileName) {
         .then((blob) => {
             let blobURL = URL.createObjectURL(blob);
             let file = new File([blob], fileName, {type: 'image/png'});
-            return { blob: blobURL, file: file} ;
+            return {blob: blobURL, file: file};
         })
         .catch((err) => console.error(err));
 }
-
 
 function readFiles(files) {
     for (const file of files) {
@@ -314,7 +297,7 @@ function addImage(imageFile, element, array) {
 function addImageLocalFiles(imageFile, element, array) {
     const item = document.createElement("img");
     item.className = "image";
-    item.src = imageFile.input;
+    item.src = imageFile;
     item.onclick = () => {
         changeImageArray(imageFile, element, item, array);
     }
@@ -471,7 +454,7 @@ async function downloadModZip(modName, configData, modIconImageFile, containerIm
     //const suikaAudiosFiles = [];
     //const suikaDropChancesOrdered = [];
 
-    const uniqueFiles = [configFile, ...uniqueFilesOnly([iconFile])]; //, containerFile])]; //, ...suikaSkinFiles])]; //, ...suikaIconFiles, ...suikaAudioFiles])];
+    const uniqueFiles = [configFile, ...uniqueFilesOnly([iconFile, containerFile, ...suikaSkinFiles])]; //, ...suikaIconFiles, ...suikaAudioFiles])];
     const blob = await downloadZip(uniqueFiles).blob();
 
     const link = document.createElement("a");
