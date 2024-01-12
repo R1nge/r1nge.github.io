@@ -1,9 +1,9 @@
 import {downloadZip} from "./client-zip.js";
 
 let gameConfig = {
-    ModName: "Default", //load
-    ModIconPath: "gura.png", //load
-    ContainerImagePath: "container.png", //load
+    ModName: "Default",
+    ModIconPath: "gura.png",
+    ContainerImagePath: "container.png",
     SuikaSkinsImagesPaths: [
         "yagoo.png",
         "sana.png",
@@ -17,7 +17,7 @@ let gameConfig = {
         "kobo.png",
         "koyori.png",
         "towa.png"
-    ], //load/save
+    ],
     SuikaIconsPaths: [
         "yagoo.png",
         "sana.png",
@@ -31,7 +31,7 @@ let gameConfig = {
         "kobo.png",
         "koyori.png",
         "towa.png"
-    ], //load/save
+    ],
     SuikaAudios: [
         {"path": "silence.mp3", "volume": 1},
         {"path": "silence.mp3", "volume": 1},
@@ -45,7 +45,7 @@ let gameConfig = {
         {"path": "silence.mp3", "volume": 1},
         {"path": "silence.mp3", "volume": 1},
         {"path": "silence.mp3", "volume": 1}
-    ], //AudioData //load
+    ],
     SuikaDropChances: [
         0.1,
         1,
@@ -57,8 +57,9 @@ let gameConfig = {
         1,
         1,
         1,
+        1,
         1
-    ], //load/save
+    ],
     TimeBeforeTimerTrigger: 1,
     TimerStartTime: 5,
     InGameBackgroundPath: "background.png",
@@ -78,7 +79,7 @@ let gameConfig = {
         {"path": "kobo.ogg", "volume": 0.25},
         {"path": "koyori.ogg", "volume": 0.25},
         {"path": "towa.ogg", "volume": 0.25}
-    ], //AudioData
+    ],
     MainMenuBackgroundPath: "background.png"
 }
 
@@ -132,6 +133,21 @@ async function initUsingLocalFiles(config, relativePath) {
             suikaIconsFiles.push(image);
             addImageLocalFiles(blobAndFile.blob, image.name, suikaIconsImageElement, suikaIconsFiles);
         })
+    }
+    
+    //TODO: audios
+    
+    
+    //TODO: dropchances
+
+    for (const suikaDropChance of config.SuikaDropChances) {
+        suikaDropChancesOrdered.push(suikaDropChance);
+    }
+
+    let input = document.getElementsByName('dropChances[]');
+    for (let i = 0; i < input.length; i++) {
+        let a = input[i];
+        a.value = suikaDropChancesOrdered[i];
     }
 }
 
@@ -308,7 +324,6 @@ function addImageLocalFiles(imageFile, name, element, array) {
     item.className = "image";
     item.src = imageFile;
     item.onclick = () => {
-        //TODO: it gets a blob url, not file name
         changeImageArray(imageFile, name, element, item, array);
     }
     element.append(item);
@@ -379,6 +394,7 @@ function addAudioControl(fileAndData, element) {
     link.href = audioFile;
     audioElement.src = audioFile;
     audioElement.controls = true;
+    //TODO: add change support
     audioElement.onclick = () => {
         //changeImageArray(imageFile, element, item, array);
     }
@@ -409,6 +425,7 @@ async function submitDropChances() {
         gameConfig.SuikaSkinsImagesPaths[i] = suikaSkinsImagesFiles[i].name;
     }
 
+    //TODO: create a separate download button
     await downloadModZip(gameConfig.ModName, gameConfig, modIconFile, containerImageFile, suikaSkinsImagesFiles, suikaIconsFiles, suikaAudiosFiles);
 }
 
