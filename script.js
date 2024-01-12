@@ -332,7 +332,7 @@ function showImage(imageFile, elementId) {
     img.style.display = "block";
     img.src = tempPath;
     img.onclick = () => {
-        changeImageSingle(imageFile, img);
+        img.src = changeImageSingle(imageFile, img);
     }
 }
 
@@ -341,7 +341,12 @@ function showImageLocalFiles(imageFile, elementId) {
     img.style.display = "block";
     img.src = imageFile;
     img.onclick = () => {
-        changeImageSingle(imageFile, img);
+        changeImageSingle(imageFile, img).then(
+            file => {
+                img.src = URL.createObjectURL(file);
+                mainMenuBackgroundFile = file;
+            }
+        );
     }
 }
 
@@ -369,13 +374,15 @@ function changeImageSingle(imageFile, item) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.onchange = (event) => {
-
-        //TODO: change icon file
-        const newFile = event.target.files[0];
-        item.src = URL.createObjectURL(newFile);
-    };
-    input.click();
+    
+    return new Promise((resolve, reject) => {
+        input.onchange = (event) => {
+            const newFile = event.target.files[0];
+            item.src = URL.createObjectURL(newFile);
+            resolve(newFile);
+        };
+        input.click();
+    });
 }
 
 function changeImageArray(imageFile, name, element, item, array) {
@@ -460,11 +467,11 @@ async function submitDropChances() {
     for (let i = 0; i < suikaSkinsImagesFiles.length; i++) {
         gameConfig.SuikaSkinsImagesPaths[i] = suikaSkinsImagesFiles[i].name;
     }
-    
+
     for (let i = 0; i < suikaIconsFiles.length; i++) {
         gameConfig.SuikaIconsPaths[i] = suikaIconsFiles[i].name;
     }
-    
+
     gameConfig.LoadingScreenBackgroundPath = loadingScreenIconFile.name;
     gameConfig.InGameBackgroundPath = inGameBackgroundFile.name;
     gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.name;
@@ -491,7 +498,7 @@ async function downloadModZip(modName, configData) {
     }
     //TODO: suika audios, merge audios
 
-    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile, containerImageFile, ...suikaSkinsImagesFiles, ...suikaIconsFiles, loadingScreenIconFile, inGameBackgroundFile,  mainMenuBackgroundFile, playerSkinFile])]; //, ...suikaAudioFiles])];
+    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile, containerImageFile, ...suikaSkinsImagesFiles, ...suikaIconsFiles, loadingScreenIconFile, inGameBackgroundFile, mainMenuBackgroundFile, playerSkinFile])]; //, ...suikaAudioFiles])];
     const blob = await downloadZip(uniqueFiles).blob();
 
     const link = document.createElement("a");
