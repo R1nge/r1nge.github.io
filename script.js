@@ -137,18 +137,9 @@ async function initUsingLocalFiles(config, relativePath) {
     
     //TODO: audios
     
+    //
     
-    //TODO: dropchances
-
-    for (const suikaDropChance of config.SuikaDropChances) {
-        suikaDropChancesOrdered.push(suikaDropChance);
-    }
-
-    let input = document.getElementsByName('dropChances[]');
-    for (let i = 0; i < input.length; i++) {
-        let a = input[i];
-        a.value = suikaDropChancesOrdered[i];
-    }
+    loadSuikaDropChances(gameConfig);
 }
 
 function fetchLocalImage(relativePath, fileName) {
@@ -278,7 +269,7 @@ function loadSuikaAudios(filesObject, parsedConfig) {
     }
 }
 
-function loadSuikaDropChances(filesObject, parsedConfig) {
+function loadSuikaDropChances(parsedConfig) {
     for (const suikaDropChance of parsedConfig.SuikaDropChances) {
         suikaDropChancesOrdered.push(suikaDropChance);
     }
