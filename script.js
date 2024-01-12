@@ -103,6 +103,12 @@ const suikaIconsFiles = [];
 const suikaAudiosFiles = [];
 const suikaDropChancesOrdered = [];
 
+let inGameBackgroundFile = null;
+let loadingScreenBackgroundFile = null;
+let loadingScreenIconFile = null;
+let playerSkinFile = null;
+let mainMenuBackgroundFile = null;
+
 await initUsingLocalFiles(gameConfig, "ModExample/");
 
 async function initUsingLocalFiles(config, relativePath) {
@@ -134,12 +140,47 @@ async function initUsingLocalFiles(config, relativePath) {
             addImageLocalFiles(blobAndFile.blob, image.name, suikaIconsImageElement, suikaIconsFiles);
         })
     }
-    
-    //TODO: audios
-    
+
+    //TODO: suika audios
+
     //
-    
+
     loadSuikaDropChances(gameConfig);
+
+    //TODO: time before timer trigger
+    //
+    //TODO: timer start time
+    //
+
+    fetchLocalImage(relativePath + config.InGameBackgroundPath).then(blobAndFile => {
+        showImageLocalFiles(blobAndFile.blob, ...);
+         inGameBackgroundFile = new File([blobAndFile.file], config.InGameBackgroundPath, {type: 'image/png'});
+    })
+
+    fetchLocalImage(relativePath + config.LoadingScreenBackgroundPath).then(blobAndFile => {
+            showImageLocalFiles(blobAndFile.blob, ...);
+            loadingScreenBackgroundFile = new File([blobAndFile.file], config.LoadingScreenBackgroundPath, {type: 'image/png'});
+        }
+    )
+
+    fetchLocalImage(relativePath + config.LoadingScreenIconPath).then(blobAndFile => {
+            showImageLocalFiles(blobAndFile.blob, ...);
+            loadingScreenIconFile = new File([blobAndFile.file], config.LoadingScreenIconPath, {type: 'image/png'});
+        }
+    )
+
+    fetchLocalImage(relativePath + config.PlayerSkinPath).then(blobAndFile => {
+        showImageLocalFiles(blobAndFile.blob, ...);
+        playerSkinFile = new File([blobAndFile.file], config.PlayerSkinPath, {type: 'image/png'});
+    });
+
+    //TODO: merge sounds audios
+    //
+
+    fetchLocalImage(relativePath + config.MainMenuBackgroundPath).then(blobAndFile => {
+        showImageLocalFiles(blobAndFile.blob, ...);
+        mainMenuBackgroundFile = new File([blobAndFile.file], config.MainMenuBackgroundPath, {type: 'image/png'});
+    });
 }
 
 function fetchLocalImage(relativePath, fileName) {
