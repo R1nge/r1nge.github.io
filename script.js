@@ -102,18 +102,18 @@ downloadButtonElement.addEventListener('click', submitDropChances);
 
 const loadModButtonElement = document.querySelector('#load-mod-button');
 
-let modIconFile = null;
-let containerImageFile = null;
+let modIconFile = {file: null};
+let containerImageFile = {file: null};
 const suikaSkinsImagesFiles = [];
 const suikaIconsFiles = [];
 const suikaAudiosFiles = [];
 const suikaDropChancesOrdered = [];
 
-let inGameBackgroundFile = null;
-let loadingScreenBackgroundFile = null;
-let loadingScreenIconFile = null;
-let playerSkinFile = null;
-let mainMenuBackgroundFile = null;
+let inGameBackgroundFile = {file: null};
+let loadingScreenBackgroundFile = {file: null};
+let loadingScreenIconFile = {file: null};
+let playerSkinFile = {file: null};
+let mainMenuBackgroundFile = {file: null};
 
 await initUsingLocalFiles(gameConfig, "ModExample/");
 
@@ -123,19 +123,17 @@ async function initUsingLocalFiles(config, relativePath) {
     console.log(fetchLocalImage(relativePath + config.ModIconPath) instanceof Promise);
 
     //TODO: create file
-    
+
     fetchLocalImage(relativePath + config.ModIconPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, modIconElement.id).then(file => {
-            modIconFile = new File([file], config.ModIconPath, {type: 'image/png'});
-            console.log("RESOLVED MOD ICON")
-        });
+        showImageLocalFiles(blobAndFile.blob, modIconElement.id, modIconFile);
+        modIconFile.file = new File([blobAndFile.blob], config.ModIconPath, {type: 'image/png'});
+        console.log("RESOLVED MOD ICON")
     });
 
     fetchLocalImage(relativePath + config.ContainerImagePath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, containerImageElement.id).then(blob => {
-            containerImageFile = new File([blob], config.ContainerImagePath, {type: 'image/png'});
-        });
-    })
+        showImageLocalFiles(blobAndFile.blob, containerImageElement.id, containerImageFile);
+        containerImageFile.file = new File([blobAndFile.blob], config.ContainerImagePath, {type: 'image/png'});
+    });
 
     for (const path of config.SuikaSkinsImagesPaths) {
         await fetchLocalImage(relativePath + path).then(blobAndFile => {
@@ -166,43 +164,32 @@ async function initUsingLocalFiles(config, relativePath) {
     //
 
     fetchLocalImage(relativePath + config.LoadingScreenBackgroundPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, loadingScreenBackgroundElement.id).then(blob => {
-            loadingScreenBackgroundFile = new File([blob], config.LoadingScreenBackgroundPath, {type: 'image/png'});
-            console.log("DONE LOADING BACKGROUND");
-        })
+        showImageLocalFiles(blobAndFile.blob, loadingScreenBackgroundElement.id, loadingScreenBackgroundFile);
+        loadingScreenBackgroundFile.file = new File([blobAndFile.blob], config.LoadingScreenBackgroundPath, {type: 'image/png'});
     });
 
     fetchLocalImage(relativePath + config.InGameBackgroundPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, inGameBackgroundElement.id).then(file => {
-            inGameBackgroundFile = new File([file], config.InGameBackgroundPath, {type: 'image/png'});
-            console.log("DONE LOADING IN GAME BACKGROUND");
-        })
+        showImageLocalFiles(blobAndFile.blob, inGameBackgroundElement.id, inGameBackgroundFile);
+        inGameBackgroundFile.file = new File([blobAndFile.blob], config.InGameBackgroundPath, {type: 'image/png'});
     });
 
 
     fetchLocalImage(relativePath + config.LoadingScreenIconPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, loadingScreenIconElement.id).then(file => {
-            loadingScreenIconFile = new File([file], config.LoadingScreenIconPath, {type: 'image/png'});
-            console.log("DONE LOADING LOADING SCREEN ICON");
-        });
+        showImageLocalFiles(blobAndFile.blob, loadingScreenIconElement.id, loadingScreenIconFile);
+        loadingScreenIconFile.file = new File([blobAndFile.blob], config.LoadingScreenIconPath, {type: 'image/png'});
     });
 
     fetchLocalImage(relativePath + config.PlayerSkinPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, playerSkinElement.id).then(file => {
-            playerSkinFile = new File([file], config.PlayerSkinPath, {type: 'image/png'});
-            console.log("DONE LOADING PLAYER SKIN");
-        });
+        showImageLocalFiles(blobAndFile.blob, playerSkinElement.id, playerSkinFile);
+        playerSkinFile.file = new File([blobAndFile.blob], config.PlayerSkinPath, {type: 'image/png'});
     });
 
-    //TODO: merge sounds audios
-    //
+//TODO: merge sounds audios
+//
 
     fetchLocalImage(relativePath + config.MainMenuBackgroundPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, mainMenuBackgroundElement.id).then(file => {
-                mainMenuBackgroundFile = new File([file], config.MainMenuBackgroundPath, {type: 'image/png'});
-                console.log("DONE LOADING MAIN MENU BACKGROUND");
-            }
-        );
+        showImageLocalFiles(blobAndFile.blob, mainMenuBackgroundElement.id, mainMenuBackgroundFile);
+        mainMenuBackgroundFile.file = new File([blobAndFile.blob], config.MainMenuBackgroundPath, {type: 'image/png'});
     });
 }
 
@@ -345,36 +332,24 @@ function loadSuikaDropChances(parsedConfig) {
     }
 }
 
-function showImage(imageFile, elementId) {
+function showImage(imageFile, elementId, reference) {
     const tempPath = URL.createObjectURL(imageFile);
     const img = document.querySelector(`#${elementId}`);
     img.style.display = "block";
     img.src = tempPath;
     img.onclick = () => {
-        img.src = changeImageSingle(imageFile, img);
+        changeImageSingle(imageFile, img, reference);
     }
 }
 
-function showImageLocalFiles(imageFile, elementId) {
-    return new Promise((resolve, reject) => {
-        const img = document.querySelector(`#${elementId}`);
-        img.style.display = "block";
-        img.src = imageFile;
-        
-        img.onclick = () => {
-            return changeImageSingle(imageFile, img)
-                .then(file => {
-                    //img.src = URL.createObjectURL(file);
-                    console.log("RESOLVE SHOW IMAGE LOCAL")
-                    resolve(file); // Resolve the promise with the file
-                })
-                .catch(error => {
-                    reject(error); // Reject the promise with the error
-                });
-        };
+function showImageLocalFiles(imageFile, elementId, reference) {
+    const img = document.querySelector(`#${elementId}`);
+    img.style.display = "block";
+    img.src = imageFile;
 
-        resolve(imageFile);
-    });
+    img.onclick = () => {
+        changeImageSingle(imageFile, img, reference);
+    };
 }
 
 function addImage(imageFile, element, array) {
@@ -397,20 +372,18 @@ function addImageLocalFiles(imageFile, name, element, array) {
     element.append(item);
 }
 
-function changeImageSingle(imageFile, item) {
+function changeImageSingle(imageFile, item, reference) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
 
-    return new Promise((resolve, reject) => {
-        input.onchange = (event) => {
-            const newFile = event.target.files[0];
-            item.src = URL.createObjectURL(newFile);
-            console.log("RESOLVE CHNAGE IMAGE SINGLE")
-            resolve(newFile);
-        };
-        input.click();
-    });
+    input.onchange = (event) => {
+        const newFile = event.target.files[0];
+        item.src = URL.createObjectURL(newFile);
+        //TODO: just give up and create a function for each image???
+        reference.file = newFile;
+    };
+    input.click();
 }
 
 function changeImageArray(imageFile, name, element, item, array) {
@@ -500,10 +473,10 @@ async function submitDropChances() {
         gameConfig.SuikaIconsPaths[i] = suikaIconsFiles[i].name;
     }
 
-    gameConfig.LoadingScreenBackgroundPath = loadingScreenIconFile.name;
-    gameConfig.InGameBackgroundPath = inGameBackgroundFile.name;
-    gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.name;
-    gameConfig.PlayerSkinPath = playerSkinFile.name;
+    gameConfig.LoadingScreenBackgroundPath = loadingScreenIconFile.file.name;
+    gameConfig.InGameBackgroundPath = inGameBackgroundFile.file.name;
+    gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.file.name;
+    gameConfig.PlayerSkinPath = playerSkinFile.file.name;
 
     //TODO: create a separate download button
     await downloadModZip(gameConfig.ModName, gameConfig);
@@ -526,7 +499,7 @@ async function downloadModZip(modName, configData) {
     }
     //TODO: suika audios, merge audios
 
-    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile, containerImageFile, ...suikaSkinsImagesFiles, ...suikaIconsFiles, loadingScreenIconFile, inGameBackgroundFile, mainMenuBackgroundFile, playerSkinFile])]; //, ...suikaAudioFiles])];
+    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile.file, containerImageFile.file, ...suikaSkinsImagesFiles, ...suikaIconsFiles, loadingScreenIconFile.file, inGameBackgroundFile.file, mainMenuBackgroundFile.file, playerSkinFile.file])]; //, ...suikaAudioFiles])];
     const blob = await downloadZip(uniqueFiles).blob();
 
     const link = document.createElement("a");
