@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "typescript": "^5.3.3"
+  },
+  "name": "suikamodweb",
+  "description": "A modding website for my suika-like game",
+  "version": "1.0.0",
+  "main": "script.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "R1nge",
+  "license": "ISC"
+}
