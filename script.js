@@ -143,7 +143,7 @@ async function initUsingLocalFiles(config, relativePath) {
             let image = new File([blobAndFile.file], path, {type: 'image/png'});
             suikaSkinsImagesFiles.push(image);
             addImageLocalFiles(blobAndFile.blob, image.name, suikaSkinsImageElement, suikaSkinsImagesFiles);
-        })
+        });
     }
 
     for (const path of config.SuikaIconsPaths) {
@@ -151,11 +151,17 @@ async function initUsingLocalFiles(config, relativePath) {
             let image = new File([blobAndFile.file], path, {type: 'image/png'});
             suikaIconsFiles.push(image);
             addImageLocalFiles(blobAndFile.blob, image.name, suikaIconsImageElement, suikaIconsFiles);
-        })
+        });
     }
 
     //TODO: suika audios
-
+    // for (const path of config.SuikaAudios){
+    //     await fetchLocalAudio(relativePath + path).then(blobAndFile =>{
+    //        let audio = new File([blobAndFile.file], path, {type: 'audio'})
+    //        suikaAudiosFiles.push(audio);
+    //        addAudioControl(audio, )
+    //     });
+    // }
     //
 
     loadSuikaDropChances(gameConfig);
@@ -192,6 +198,39 @@ async function initUsingLocalFiles(config, relativePath) {
         showImageLocalFiles(blobAndFile.blob, mainMenuBackgroundElement.id, mainMenuBackgroundFile);
         mainMenuBackgroundFile.file = new File([blobAndFile.blob], config.MainMenuBackgroundPath, {type: 'image/png'});
     });
+}
+
+function fetchLocalAudio(relativePath, fileName) {
+    return fetch(relativePath)
+        .then((response) => {
+            const reader = response.body.getReader();
+            return new ReadableStream({
+                start(controller) {
+                    return pump();
+
+                    function pump() {
+                        return reader.read().then(({done, value}) => {
+                            // When no more data needs to be consumed, close the stream
+                            if (done) {
+                                controller.close();
+                                return;
+                            }
+                            // Enqueue the next data chunk into our target stream
+                            controller.enqueue(value);
+                            return pump();
+                        });
+                    }
+                },
+            });
+        })
+        .then((stream) => new Response(stream))
+        .then((response) => response.blob())
+        .then((blob) => {
+            let blobURL = URL.createObjectURL(blob);
+            let file = new File([blob], fileName, {type: 'audio'});
+            return {blob: blobURL, file: file};
+        })
+        .catch((err) => console.error(err));
 }
 
 function fetchLocalImage(relativePath, fileName) {
