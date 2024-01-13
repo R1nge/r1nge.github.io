@@ -5,6 +5,7 @@ body {
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
+    background-color: #141516;
 }
 
 .image {
@@ -23,13 +24,17 @@ body {
     bottom: 20px; /* adjust this value to change the distance from the bottom */
 }
 
-#suika-skins-images{
+#suika-skins-images {
 }
 
-#suika-audios{
+#suika-audios {
 }
 
-.column-list{
+p {
+    color: azure;
+}
+
+.column-list {
     columns: 3;
     -webkit-columns: 3;
     -moz-columns: 3;
