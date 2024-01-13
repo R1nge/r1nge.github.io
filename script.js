@@ -1,3 +1,11 @@
+
+//TODO: load suika audios from local config
+//TODO: load merge audios from local config
+//TODO: load/save trigger start delay, timer start time
+//TODO: add an ability to change audios
+//TODO: create a separate download button
+
+
 import {downloadZip} from "./client-zip.js";
 
 let gameConfig = {
@@ -118,7 +126,7 @@ let mainMenuBackgroundFile = {file: null};
 await initUsingLocalFiles(gameConfig, "ModExample/");
 
 async function initUsingLocalFiles(config, relativePath) {
-    modTitleElement.textContent = config.ModName;
+    modTitleElement.value = config.ModName;
     
     fetchLocalImage(relativePath + config.ModIconPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, modIconElement.id, modIconFile);
@@ -237,7 +245,7 @@ function readFiles(files) {
 }
 
 function init(parsedConfig, files) {
-    modTitleElement.textContent = gameConfig.ModName;
+    modTitleElement.value = gameConfig.ModName;
 
     for (const file of files) {
         if (file.name === parsedConfig.ModIconPath) {
@@ -468,6 +476,7 @@ async function submitDropChances() {
         gameConfig.SuikaIconsPaths[i] = suikaIconsFiles[i].name;
     }
 
+    gameConfig.ModName = modTitleElement.value;
     gameConfig.LoadingScreenBackgroundPath = loadingScreenIconFile.file.name;
     gameConfig.InGameBackgroundPath = inGameBackgroundFile.file.name;
     gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.file.name;
