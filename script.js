@@ -5,6 +5,9 @@
 //TODO: add an ability to change audios
 //TODO: create a separate download button
 
+//TODO: dark theme
+//TODO: fix download zip name?
+
 
 import {downloadZip} from "./client-zip.js";
 
