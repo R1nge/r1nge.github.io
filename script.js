@@ -1,4 +1,3 @@
-
 //TODO: load/save trigger start delay, timer start time
 //TODO: load merge audios from local config
 //TODO: add an ability to change audios
@@ -96,6 +95,8 @@ const suikaSkinsImageElement = document.querySelector('#suika-skins-images');
 const suikaIconsImageElement = document.querySelector('#suika-icons-images');
 const suikaAudiosElement = document.querySelector('#suika-audios');
 
+const suikaMergeAudioElement = document.querySelector('#suika-merge-audios');
+
 const inGameBackgroundElement = document.querySelector('#in-game-background-image');
 const loadingScreenBackgroundElement = document.querySelector('#loading-screen-background-image');
 const loadingScreenIconElement = document.querySelector('#loading-screen-icon-image');
@@ -116,6 +117,7 @@ const suikaSkinsImagesFiles = [];
 const suikaIconsFiles = [];
 const suikaAudiosFiles = [];
 const suikaDropChancesOrdered = [];
+const suikaMergeAudioFiles = [];
 
 let inGameBackgroundFile = {file: null};
 let loadingScreenBackgroundFile = {file: null};
@@ -153,7 +155,7 @@ async function initUsingLocalFiles(config, relativePath) {
             addImageLocalFiles(blobAndFile.blob, image.name, suikaIconsImageElement, suikaIconsFiles);
         });
     }
-    
+
     for (const audioData of config.SuikaAudios) {
         await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
             let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
@@ -197,8 +199,21 @@ async function initUsingLocalFiles(config, relativePath) {
         playerSkinFile.file = new File([blobAndFile.file], config.PlayerSkinPath);
     });
 
-//TODO: merge sounds audios
-//
+    for (const audioData of config.MergeSoundsAudios) {
+        await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
+            let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
+            suikaMergeAudioFiles.push(file);
+
+            let suikaAudio = audioData;
+
+            let fileAndData = {
+                file,
+                suikaAudio
+            };
+
+            addAudioControl(fileAndData, suikaMergeAudioElement);
+        });
+    }
 
     fetchLocalFile(relativePath + config.MainMenuBackgroundPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, mainMenuBackgroundElement.id, mainMenuBackgroundFile);
@@ -468,16 +483,13 @@ function addAudioControl(fileAndData, element) {
 async function submitDropChances() {
     let input = document.getElementsByName('dropChances[]');
 
-
-    let suikaDropChancesOrdered = [];
-
     for (let i = 0; i < input.length; i++) {
         let a = input[i];
         suikaDropChancesOrdered.push(parseFloat(a.value));
     }
 }
 
-async function downloadMod(modName, configData) {
+async function downloadMod() {
 
     for (let i = 0; i < suikaDropChancesOrdered.length; i++) {
         gameConfig.SuikaDropChances[i] = suikaDropChancesOrdered[i];
@@ -516,9 +528,7 @@ async function downloadModZip(modName, configData) {
         });
     }
 
-    //TODO: suika audios, merge audios
-
-    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile.file, containerImageFile.file, ...suikaSkinsImagesFiles, ...suikaIconsFiles, ...suikaAudiosFiles, loadingScreenIconFile.file, inGameBackgroundFile.file, mainMenuBackgroundFile.file, playerSkinFile.file])];
+    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile.file, containerImageFile.file, ...suikaSkinsImagesFiles, ...suikaIconsFiles, ...suikaAudiosFiles, ...suikaMergeAudioFiles, loadingScreenIconFile.file, inGameBackgroundFile.file, mainMenuBackgroundFile.file, playerSkinFile.file])];
     const blob = await downloadZip(uniqueFiles).blob();
 
     const link = document.createElement("a");
