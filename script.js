@@ -1,5 +1,5 @@
+//TODO: load async then sort
 //TODO: load/save trigger start delay, timer start time
-//TODO: load merge audios from local config
 //TODO: add an ability to change audios
 
 import {downloadZip} from "./client-zip.js";
@@ -142,17 +142,17 @@ async function initUsingLocalFiles(config, relativePath) {
 
     for (const path of config.SuikaSkinsImagesPaths) {
         await fetchLocalFile(relativePath + path).then(blobAndFile => {
-            let image = new File([blobAndFile.file], path);
-            suikaSkinsImagesFiles.push(image);
-            addImageLocalFiles(blobAndFile.blob, image.name, suikaSkinsImageElement, suikaSkinsImagesFiles);
+            const file = new File([blobAndFile.file], path);
+            suikaSkinsImagesFiles.push(file);
+            addImageLocalFiles(blobAndFile.blob, file.name, suikaSkinsImageElement, suikaSkinsImagesFiles);
         });
     }
 
     for (const path of config.SuikaIconsPaths) {
         await fetchLocalFile(relativePath + path).then(blobAndFile => {
-            let image = new File([blobAndFile.file], path);
-            suikaIconsFiles.push(image);
-            addImageLocalFiles(blobAndFile.blob, image.name, suikaIconsImageElement, suikaIconsFiles);
+            const file = new File([blobAndFile.file], path);
+            suikaIconsFiles.push(file);
+            addImageLocalFiles(blobAndFile.blob, file.name, suikaIconsImageElement, suikaIconsFiles);
         });
     }
 
@@ -161,11 +161,9 @@ async function initUsingLocalFiles(config, relativePath) {
             let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
             suikaAudiosFiles.push(file);
 
-            let suikaAudio = audioData;
-
             let fileAndData = {
-                file,
-                suikaAudio
+                file: file,
+                audio: audioData
             };
 
             addAudioControl(fileAndData, suikaAudiosElement);
@@ -204,11 +202,9 @@ async function initUsingLocalFiles(config, relativePath) {
             let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
             suikaMergeAudioFiles.push(file);
 
-            let suikaAudio = audioData;
-
             let fileAndData = {
-                file,
-                suikaAudio
+                file: file,
+                audio: audioData
             };
 
             addAudioControl(fileAndData, suikaMergeAudioElement);
@@ -333,12 +329,13 @@ function loadSuikaAudios(filesObject, parsedConfig) {
         const file = filesObject[suikaAudio.path];
 
         let fileAndData = {
-            file, suikaAudio
+            file: file, 
+            audio: suikaAudio
         }
 
         if (file) {
             fileAndData.file = file;
-            fileAndData.suikaAudio = suikaAudio;
+            fileAndData.audio = suikaAudio;
             suikaAudiosFiles.push(fileAndData);
         }
     }
@@ -470,7 +467,7 @@ function addAudioControl(fileAndData, element) {
         //changeImageArray(imageFile, element, item, array);
     }
 
-    audioElement.volume = fileAndData.suikaAudio.volume;
+    audioElement.volume = fileAndData.audio.volume;
 
     audioElement.onvolumechange = () => {
         //alert(item.volume);
@@ -483,6 +480,8 @@ function addAudioControl(fileAndData, element) {
 async function submitDropChances() {
     let input = document.getElementsByName('dropChances[]');
 
+    suikaDropChancesOrdered.splice(0, suikaDropChancesOrdered.length);
+    
     for (let i = 0; i < input.length; i++) {
         let a = input[i];
         suikaDropChancesOrdered.push(parseFloat(a.value));
