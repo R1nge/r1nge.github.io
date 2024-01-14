@@ -113,7 +113,7 @@ downloadModButtonElement.addEventListener('click', downloadMod);
 
 let modIconFile = {file: null};
 let containerImageFile = {file: null};
-const suikaSkinsImagesFiles = [];
+const SuikaSkinsImagesFileAndBlob = [];
 const suikaIconsFiles = [];
 const suikaAudiosFiles = [];
 const suikaDropChancesOrdered = [];
@@ -140,13 +140,24 @@ async function initUsingLocalFiles(config, relativePath) {
         containerImageFile.file = new File([blobAndFile.file], config.ContainerImagePath);
     });
 
-    for (const path of config.SuikaSkinsImagesPaths) {
-        await fetchLocalFile(relativePath + path).then(blobAndFile => {
-            const file = new File([blobAndFile.file], path);
-            suikaSkinsImagesFiles.push(file);
-            addImageLocalFiles(blobAndFile.blob, file.name, suikaSkinsImageElement, suikaSkinsImagesFiles);
+    const fetchPromises = config.SuikaSkinsImagesPaths.map(path => {
+        return fetchLocalFile(relativePath + path)
+            .then(blobAndFile => {
+                const file = new File([blobAndFile.file], path);
+
+                const fileAndBlob = {file: file, blob: blobAndFile.blob};
+
+                SuikaSkinsImagesFileAndBlob.push(fileAndBlob);
+            });
+    });
+
+    Promise.all(fetchPromises)
+        .then(() => {
+            config.SuikaSkinsImagesPaths.forEach((path, index) => {
+                const file = SuikaSkinsImagesFileAndBlob[index];
+                addImageLocalFiles(file.blob, file.file.name, suikaSkinsImageElement, SuikaSkinsImagesFileAndBlob);
+            });
         });
-    }
 
     for (const path of config.SuikaIconsPaths) {
         await fetchLocalFile(relativePath + path).then(blobAndFile => {
@@ -288,7 +299,7 @@ function init(parsedConfig, files) {
         filesObject[file.name] = file;
     }
 
-    removeAllChildren(suikaSkinsImageElement, suikaSkinsImagesFiles);
+    removeAllChildren(suikaSkinsImageElement, SuikaSkinsImagesFileAndBlob);
     removeAllChildren(suikaIconsImageElement, suikaIconsFiles);
     removeAllChildren(suikaAudiosElement, suikaAudiosFiles);
 
@@ -302,12 +313,12 @@ function loadSuikaSkinsImages(filesObject, parsedConfig) {
     for (const suikaSkinsImagePath of parsedConfig.SuikaSkinsImagesPaths) {
         const file = filesObject[suikaSkinsImagePath];
         if (file) {
-            suikaSkinsImagesFiles.push(file);
+            SuikaSkinsImagesFileAndBlob.push(file);
         }
     }
 
-    for (const file of suikaSkinsImagesFiles) {
-        addImage(file, suikaSkinsImageElement, suikaSkinsImagesFiles);
+    for (const file of SuikaSkinsImagesFileAndBlob) {
+        addImage(file, suikaSkinsImageElement, SuikaSkinsImagesFileAndBlob);
     }
 }
 
@@ -329,7 +340,7 @@ function loadSuikaAudios(filesObject, parsedConfig) {
         const file = filesObject[suikaAudio.path];
 
         let fileAndData = {
-            file: file, 
+            file: file,
             audio: suikaAudio
         }
 
@@ -481,7 +492,7 @@ async function submitDropChances() {
     let input = document.getElementsByName('dropChances[]');
 
     suikaDropChancesOrdered.splice(0, suikaDropChancesOrdered.length);
-    
+
     for (let i = 0; i < input.length; i++) {
         let a = input[i];
         suikaDropChancesOrdered.push(parseFloat(a.value));
@@ -494,8 +505,11 @@ async function downloadMod() {
         gameConfig.SuikaDropChances[i] = suikaDropChancesOrdered[i];
     }
 
-    for (let i = 0; i < suikaSkinsImagesFiles.length; i++) {
-        gameConfig.SuikaSkinsImagesPaths[i] = suikaSkinsImagesFiles[i].name;
+    const suikaSkinsFiles = [];
+
+    for (let i = 0; i < SuikaSkinsImagesFileAndBlob.length; i++) {
+        suikaSkinsFiles.push(SuikaSkinsImagesFileAndBlob[i].file);
+        gameConfig.SuikaSkinsImagesPaths[i] = SuikaSkinsImagesFileAndBlob[i].file.name;
     }
 
     for (let i = 0; i < suikaIconsFiles.length; i++) {
@@ -508,10 +522,10 @@ async function downloadMod() {
     gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.file.name;
     gameConfig.PlayerSkinPath = playerSkinFile.file.name;
 
-    await downloadModZip(gameConfig.ModName, gameConfig);
+    await downloadModZip(gameConfig.ModName, gameConfig, suikaSkinsFiles);
 }
 
-async function downloadModZip(modName, configData) {
+async function downloadModZip(modName, configData, suikaSkinsFiles) {
     const configDataString = JSON.stringify(configData);
 
     const configFile = {name: "config.json", lastModified: new Date(), input: configDataString};
@@ -527,7 +541,7 @@ async function downloadModZip(modName, configData) {
         });
     }
 
-    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile.file, containerImageFile.file, ...suikaSkinsImagesFiles, ...suikaIconsFiles, ...suikaAudiosFiles, ...suikaMergeAudioFiles, loadingScreenIconFile.file, inGameBackgroundFile.file, mainMenuBackgroundFile.file, playerSkinFile.file])];
+    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile.file, containerImageFile.file, ...suikaSkinsFiles, ...suikaIconsFiles, ...suikaAudiosFiles, ...suikaMergeAudioFiles, loadingScreenIconFile.file, inGameBackgroundFile.file, mainMenuBackgroundFile.file, playerSkinFile.file])];
     const blob = await downloadZip(uniqueFiles).blob();
 
     const link = document.createElement("a");
