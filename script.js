@@ -4,8 +4,6 @@
 //TODO: load/save trigger start delay, timer start time
 //TODO: add an ability to change audios
 
-//TODO: fix container, icon, background download files
-
 
 import {downloadZip} from "./client-zip.js";
 
@@ -134,17 +132,17 @@ async function initUsingLocalFiles(config, relativePath) {
 
     fetchLocalImage(relativePath + config.ModIconPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, modIconElement.id, modIconFile);
-        modIconFile.file = new File([blobAndFile.blob], config.ModIconPath, {type: 'image/png'});
+        modIconFile.file = new File([blobAndFile.file], config.ModIconPath);
     });
 
     fetchLocalImage(relativePath + config.ContainerImagePath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, containerImageElement.id, containerImageFile);
-        containerImageFile.file = new File([blobAndFile.blob], config.ContainerImagePath, {type: 'image/png'});
+        containerImageFile.file = new File([blobAndFile.file], config.ContainerImagePath);
     });
 
     for (const path of config.SuikaSkinsImagesPaths) {
         await fetchLocalImage(relativePath + path).then(blobAndFile => {
-            let image = new File([blobAndFile.file], path, {type: 'image/png'});
+            let image = new File([blobAndFile.file], path);
             suikaSkinsImagesFiles.push(image);
             addImageLocalFiles(blobAndFile.blob, image.name, suikaSkinsImageElement, suikaSkinsImagesFiles);
         });
@@ -152,7 +150,7 @@ async function initUsingLocalFiles(config, relativePath) {
 
     for (const path of config.SuikaIconsPaths) {
         await fetchLocalImage(relativePath + path).then(blobAndFile => {
-            let image = new File([blobAndFile.file], path, {type: 'image/png'});
+            let image = new File([blobAndFile.file], path);
             suikaIconsFiles.push(image);
             addImageLocalFiles(blobAndFile.blob, image.name, suikaIconsImageElement, suikaIconsFiles);
         });
@@ -177,22 +175,22 @@ async function initUsingLocalFiles(config, relativePath) {
 
     fetchLocalImage(relativePath + config.LoadingScreenBackgroundPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, loadingScreenBackgroundElement.id, loadingScreenBackgroundFile);
-        loadingScreenBackgroundFile.file = new File([blobAndFile.blob], config.LoadingScreenBackgroundPath, {type: 'image/png'});
+        loadingScreenBackgroundFile.file = new File([blobAndFile.file], config.LoadingScreenBackgroundPath);
     });
 
     fetchLocalImage(relativePath + config.InGameBackgroundPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, inGameBackgroundElement.id, inGameBackgroundFile);
-        inGameBackgroundFile.file = new File([blobAndFile.blob], config.InGameBackgroundPath, {type: 'image/png'});
+        inGameBackgroundFile.file = new File([blobAndFile.file], config.InGameBackgroundPath);
     });
 
     fetchLocalImage(relativePath + config.LoadingScreenIconPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, loadingScreenIconElement.id, loadingScreenIconFile);
-        loadingScreenIconFile.file = new File([blobAndFile.blob], config.LoadingScreenIconPath, {type: 'image/png'});
+        loadingScreenIconFile.file = new File([blobAndFile.file], config.LoadingScreenIconPath);
     });
 
     fetchLocalImage(relativePath + config.PlayerSkinPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, playerSkinElement.id, playerSkinFile);
-        playerSkinFile.file = new File([blobAndFile.blob], config.PlayerSkinPath, {type: 'image/png'});
+        playerSkinFile.file = new File([blobAndFile.file], config.PlayerSkinPath);
     });
 
 //TODO: merge sounds audios
@@ -200,7 +198,7 @@ async function initUsingLocalFiles(config, relativePath) {
 
     fetchLocalImage(relativePath + config.MainMenuBackgroundPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, mainMenuBackgroundElement.id, mainMenuBackgroundFile);
-        mainMenuBackgroundFile.file = new File([blobAndFile.blob], config.MainMenuBackgroundPath, {type: 'image/png'});
+        mainMenuBackgroundFile.file = new File([blobAndFile.file], config.MainMenuBackgroundPath);
     });
 }
 
@@ -264,7 +262,7 @@ function fetchLocalImage(relativePath, fileName) {
         .then((response) => response.blob())
         .then((blob) => {
             let blobURL = URL.createObjectURL(blob);
-            let file = new File([blob], fileName, {type: 'image/png'});
+            let file = new File([blob], fileName);
             return {blob: blobURL, file: file};
         })
         .catch((err) => console.error(err));
