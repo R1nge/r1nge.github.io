@@ -518,13 +518,7 @@ async function downloadModZip(modName, configData) {
 
     //TODO: suika audios, merge audios
 
-    const suikaAudioFiles = [];
-
-    for (const suikaAudioFile of suikaAudiosFiles) {
-        suikaAudioFiles.push(suikaAudioFile.file);
-    }
-
-    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile.file, containerImageFile.file, ...suikaSkinsImagesFiles, ...suikaIconsFiles, ...suikaAudioFiles, loadingScreenIconFile.file, inGameBackgroundFile.file, mainMenuBackgroundFile.file, playerSkinFile.file])]; //, ...suikaAudioFiles])];
+    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile.file, containerImageFile.file, ...suikaSkinsImagesFiles, ...suikaIconsFiles, ...suikaAudiosFiles, loadingScreenIconFile.file, inGameBackgroundFile.file, mainMenuBackgroundFile.file, playerSkinFile.file])];
     const blob = await downloadZip(uniqueFiles).blob();
 
     const link = document.createElement("a");
