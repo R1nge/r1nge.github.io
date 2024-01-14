@@ -1,9 +1,7 @@
-
+//TODO: load/save trigger start delay, timer start time
 //TODO: load suika audios from local config
 //TODO: load merge audios from local config
-//TODO: load/save trigger start delay, timer start time
 //TODO: add an ability to change audios
-
 
 import {downloadZip} from "./client-zip.js";
 
@@ -130,18 +128,18 @@ await initUsingLocalFiles(gameConfig, "ModExample/");
 async function initUsingLocalFiles(config, relativePath) {
     modTitleElement.value = config.ModName;
 
-    fetchLocalImage(relativePath + config.ModIconPath).then(blobAndFile => {
+    fetchLocalFile(relativePath + config.ModIconPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, modIconElement.id, modIconFile);
         modIconFile.file = new File([blobAndFile.file], config.ModIconPath);
     });
 
-    fetchLocalImage(relativePath + config.ContainerImagePath).then(blobAndFile => {
+    fetchLocalFile(relativePath + config.ContainerImagePath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, containerImageElement.id, containerImageFile);
         containerImageFile.file = new File([blobAndFile.file], config.ContainerImagePath);
     });
 
     for (const path of config.SuikaSkinsImagesPaths) {
-        await fetchLocalImage(relativePath + path).then(blobAndFile => {
+        await fetchLocalFile(relativePath + path).then(blobAndFile => {
             let image = new File([blobAndFile.file], path);
             suikaSkinsImagesFiles.push(image);
             addImageLocalFiles(blobAndFile.blob, image.name, suikaSkinsImageElement, suikaSkinsImagesFiles);
@@ -149,22 +147,28 @@ async function initUsingLocalFiles(config, relativePath) {
     }
 
     for (const path of config.SuikaIconsPaths) {
-        await fetchLocalImage(relativePath + path).then(blobAndFile => {
+        await fetchLocalFile(relativePath + path).then(blobAndFile => {
             let image = new File([blobAndFile.file], path);
             suikaIconsFiles.push(image);
             addImageLocalFiles(blobAndFile.blob, image.name, suikaIconsImageElement, suikaIconsFiles);
         });
     }
+    
+    for (const audioData of config.SuikaAudios) {
+        await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
+            let matchedFile = new File([blobAndFile.file], audioData.path, {type: 'audio'})
+            suikaAudiosFiles.push(matchedFile);
 
-    //TODO: suika audios
-    // for (const path of config.SuikaAudios){
-    //     await fetchLocalAudio(relativePath + path).then(blobAndFile =>{
-    //        let audio = new File([blobAndFile.file], path, {type: 'audio'})
-    //        suikaAudiosFiles.push(audio);
-    //        addAudioControl(audio, )
-    //     });
-    // }
-    //
+            let suikaAudio = audioData;
+
+            let fileAndData = {
+                matchedFile,
+                suikaAudio
+            };
+
+            addAudioControl(fileAndData, suikaAudiosElement);
+        });
+    }
 
     loadSuikaDropChances(gameConfig);
 
@@ -173,22 +177,22 @@ async function initUsingLocalFiles(config, relativePath) {
     //TODO: timer start time
     //
 
-    fetchLocalImage(relativePath + config.LoadingScreenBackgroundPath).then(blobAndFile => {
+    fetchLocalFile(relativePath + config.LoadingScreenBackgroundPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, loadingScreenBackgroundElement.id, loadingScreenBackgroundFile);
         loadingScreenBackgroundFile.file = new File([blobAndFile.file], config.LoadingScreenBackgroundPath);
     });
 
-    fetchLocalImage(relativePath + config.InGameBackgroundPath).then(blobAndFile => {
+    fetchLocalFile(relativePath + config.InGameBackgroundPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, inGameBackgroundElement.id, inGameBackgroundFile);
         inGameBackgroundFile.file = new File([blobAndFile.file], config.InGameBackgroundPath);
     });
 
-    fetchLocalImage(relativePath + config.LoadingScreenIconPath).then(blobAndFile => {
+    fetchLocalFile(relativePath + config.LoadingScreenIconPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, loadingScreenIconElement.id, loadingScreenIconFile);
         loadingScreenIconFile.file = new File([blobAndFile.file], config.LoadingScreenIconPath);
     });
 
-    fetchLocalImage(relativePath + config.PlayerSkinPath).then(blobAndFile => {
+    fetchLocalFile(relativePath + config.PlayerSkinPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, playerSkinElement.id, playerSkinFile);
         playerSkinFile.file = new File([blobAndFile.file], config.PlayerSkinPath);
     });
@@ -196,46 +200,13 @@ async function initUsingLocalFiles(config, relativePath) {
 //TODO: merge sounds audios
 //
 
-    fetchLocalImage(relativePath + config.MainMenuBackgroundPath).then(blobAndFile => {
+    fetchLocalFile(relativePath + config.MainMenuBackgroundPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, mainMenuBackgroundElement.id, mainMenuBackgroundFile);
         mainMenuBackgroundFile.file = new File([blobAndFile.file], config.MainMenuBackgroundPath);
     });
 }
 
-function fetchLocalAudio(relativePath, fileName) {
-    return fetch(relativePath)
-        .then((response) => {
-            const reader = response.body.getReader();
-            return new ReadableStream({
-                start(controller) {
-                    return pump();
-
-                    function pump() {
-                        return reader.read().then(({done, value}) => {
-                            // When no more data needs to be consumed, close the stream
-                            if (done) {
-                                controller.close();
-                                return;
-                            }
-                            // Enqueue the next data chunk into our target stream
-                            controller.enqueue(value);
-                            return pump();
-                        });
-                    }
-                },
-            });
-        })
-        .then((stream) => new Response(stream))
-        .then((response) => response.blob())
-        .then((blob) => {
-            let blobURL = URL.createObjectURL(blob);
-            let file = new File([blob], fileName, {type: 'audio'});
-            return {blob: blobURL, file: file};
-        })
-        .catch((err) => console.error(err));
-}
-
-function fetchLocalImage(relativePath, fileName) {
+function fetchLocalFile(relativePath, fileName) {
     return fetch(relativePath)
         .then((response) => {
             const reader = response.body.getReader();
@@ -525,7 +496,7 @@ async function downloadMod(modName, configData) {
     gameConfig.InGameBackgroundPath = inGameBackgroundFile.file.name;
     gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.file.name;
     gameConfig.PlayerSkinPath = playerSkinFile.file.name;
-    
+
     await downloadModZip(gameConfig.ModName, gameConfig);
 }
 
