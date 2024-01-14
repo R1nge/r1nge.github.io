@@ -3,10 +3,8 @@
 //TODO: load merge audios from local config
 //TODO: load/save trigger start delay, timer start time
 //TODO: add an ability to change audios
-//TODO: create a separate download button
 
-//TODO: dark theme
-//TODO: fix download zip name?
+//TODO: fix container, icon, background download files
 
 
 import {downloadZip} from "./client-zip.js";
@@ -108,10 +106,13 @@ const loadingScreenIconElement = document.querySelector('#loading-screen-icon-im
 const playerSkinElement = document.querySelector('#player-skin-image');
 const mainMenuBackgroundElement = document.querySelector('#main-menu-background-image');
 
-const downloadButtonElement = document.querySelector('#download');
-downloadButtonElement.addEventListener('click', submitDropChances);
+const dropChancesButton = document.querySelector('#download-mod-button');
+dropChancesButton.addEventListener('click', submitDropChances);
 
 const loadModButtonElement = document.querySelector('#load-mod-button');
+const downloadModButtonElement = document.querySelector('#download-mod-button');
+downloadModButtonElement.addEventListener('click', downloadMod);
+
 
 let modIconFile = {file: null};
 let containerImageFile = {file: null};
@@ -130,7 +131,7 @@ await initUsingLocalFiles(gameConfig, "ModExample/");
 
 async function initUsingLocalFiles(config, relativePath) {
     modTitleElement.value = config.ModName;
-    
+
     fetchLocalImage(relativePath + config.ModIconPath).then(blobAndFile => {
         showImageLocalFiles(blobAndFile.blob, modIconElement.id, modIconFile);
         modIconFile.file = new File([blobAndFile.blob], config.ModIconPath, {type: 'image/png'});
@@ -498,13 +499,16 @@ function addAudioControl(fileAndData, element) {
 async function submitDropChances() {
     let input = document.getElementsByName('dropChances[]');
 
-    
+
     let suikaDropChancesOrdered = [];
-    
+
     for (let i = 0; i < input.length; i++) {
         let a = input[i];
         suikaDropChancesOrdered.push(parseFloat(a.value));
     }
+}
+
+async function downloadMod(modName, configData) {
 
     for (let i = 0; i < suikaDropChancesOrdered.length; i++) {
         gameConfig.SuikaDropChances[i] = suikaDropChancesOrdered[i];
@@ -523,8 +527,7 @@ async function submitDropChances() {
     gameConfig.InGameBackgroundPath = inGameBackgroundFile.file.name;
     gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.file.name;
     gameConfig.PlayerSkinPath = playerSkinFile.file.name;
-
-    //TODO: create a separate download button
+    
     await downloadModZip(gameConfig.ModName, gameConfig);
 }
 
@@ -543,9 +546,9 @@ async function downloadModZip(modName, configData) {
             return seen;
         });
     }
-    
+
     //TODO: suika audios, merge audios
-    
+
     const suikaAudioFiles = [];
 
     for (const suikaAudioFile of suikaAudiosFiles) {
