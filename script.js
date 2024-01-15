@@ -158,7 +158,7 @@ async function initUsingLocalFiles(config, relativePath) {
             });
     });
 
-    Promise.all(suikaSkinsFetchPromises)
+    await Promise.all(suikaSkinsFetchPromises)
         .then(() => {
             config.SuikaSkinsImagesPaths.forEach((path, index) => {
                 for (const fileAndBlob of suikaSkinsImagesFileAndBlob) {
@@ -170,7 +170,6 @@ async function initUsingLocalFiles(config, relativePath) {
         });
 
     const suikaIconsFetchPromises = config.SuikaIconsPaths.map(path => {
-
         if (loadedFiles.has(path)) {
             const fileAndBlob = loadedFiles.get(path);
             suikaIconsImagesFileAndBlob.push(fileAndBlob);
