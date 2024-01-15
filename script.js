@@ -163,13 +163,27 @@ async function initUsingLocalFiles(config, relativePath) {
             });
         });
 
-    for (const path of config.SuikaIconsPaths) {
-        await fetchLocalFile(relativePath + path).then(blobAndFile => {
-            const file = new File([blobAndFile.file], path);
-            suikaIconsFiles.push(file);
-            addImageLocalFiles(blobAndFile.blob, file.name, suikaIconsImageElement, suikaIconsFiles);
+    const suikaIconsFetchPromises = config.SuikaIconsPaths.map(path => {
+        return fetchLocalFile(relativePath + path)
+            .then(blobAndFile => {
+                const file = new File([blobAndFile.file], path);
+
+                const fileAndBlob = {file: file, blob: blobAndFile.blob};
+
+                suikaIconsFiles.push(fileAndBlob);
+            });
+    });
+
+    Promise.all(suikaIconsFetchPromises)
+        .then(() => {
+            config.SuikaSkinsImagesPaths.forEach((path, index) => {
+                for (const fileAndBlob of suikaIconsFiles) {
+                    if (fileAndBlob.file.name === path) {
+                        addImageLocalFiles(fileAndBlob.blob, fileAndBlob.file.name, suikaIconsImageElement, suikaIconsFiles);
+                    }
+                }
+            });
         });
-    }
 
     for (const audioData of config.SuikaAudios) {
         await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
