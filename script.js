@@ -1,4 +1,5 @@
 //TODO: load async then sort
+//TODO: cache and re-use already loaded images/audios
 //TODO: load/save trigger start delay, timer start time
 //TODO: add an ability to change audios
 
@@ -113,7 +114,9 @@ downloadModButtonElement.addEventListener('click', downloadMod);
 
 let modIconFile = {file: null};
 let containerImageFile = {file: null};
-const SuikaSkinsImagesFileAndBlob = [];
+const suikaSkinsImagesFileAndBlob = [];
+const loadedFiles = new Map();
+
 const suikaIconsImagesFileAndBlob = [];
 const suikaAudiosFiles = [];
 const suikaDropChancesOrdered = [];
@@ -140,7 +143,6 @@ async function initUsingLocalFiles(config, relativePath) {
         containerImageFile.file = new File([blobAndFile.file], config.ContainerImagePath);
     });
 
-    
     const suikaSkinsFetchPromises = config.SuikaSkinsImagesPaths.map(path => {
         return fetchLocalFile(relativePath + path)
             .then(blobAndFile => {
@@ -148,30 +150,44 @@ async function initUsingLocalFiles(config, relativePath) {
 
                 const fileAndBlob = {file: file, blob: blobAndFile.blob};
 
-                SuikaSkinsImagesFileAndBlob.push(fileAndBlob);
+                if (!loadedFiles.has(file.name)) {
+                    loadedFiles.set(file.name, fileAndBlob);
+                }
+
+                suikaSkinsImagesFileAndBlob.push(fileAndBlob);
             });
     });
 
     Promise.all(suikaSkinsFetchPromises)
         .then(() => {
             config.SuikaSkinsImagesPaths.forEach((path, index) => {
-                for (const fileAndBlob of SuikaSkinsImagesFileAndBlob) {
+                for (const fileAndBlob of suikaSkinsImagesFileAndBlob) {
                     if (fileAndBlob.file.name === path) {
-                        addImageLocalFiles(fileAndBlob.blob, fileAndBlob.file.name, suikaSkinsImageElement, SuikaSkinsImagesFileAndBlob);
+                        addImageLocalFiles(fileAndBlob.blob, fileAndBlob.file.name, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob);
                     }
                 }
             });
         });
 
     const suikaIconsFetchPromises = config.SuikaIconsPaths.map(path => {
-        return fetchLocalFile(relativePath + path)
-            .then(blobAndFile => {
-                const file = new File([blobAndFile.file], path);
 
-                const fileAndBlob = {file: file, blob: blobAndFile.blob};
+        if (loadedFiles.has(path)) {
+            const fileAndBlob = loadedFiles.get(path);
+            suikaIconsImagesFileAndBlob.push(fileAndBlob);
+        } else {
+            return fetchLocalFile(relativePath + path)
+                .then(blobAndFile => {
+                    const file = new File([blobAndFile.file], path);
 
-                suikaIconsImagesFileAndBlob.push(fileAndBlob);
-            });
+                    const fileAndBlob = {file: file, blob: blobAndFile.blob};
+
+                    if (!loadedFiles.has(file.name)) {
+                        loadedFiles.set(file.name, fileAndBlob);
+                    }
+
+                    suikaIconsImagesFileAndBlob.push(fileAndBlob);
+                });
+        }
     });
 
     Promise.all(suikaIconsFetchPromises)
@@ -317,7 +333,7 @@ function init(parsedConfig, files) {
         filesObject[file.name] = file;
     }
 
-    removeAllChildren(suikaSkinsImageElement, SuikaSkinsImagesFileAndBlob);
+    removeAllChildren(suikaSkinsImageElement, suikaSkinsImagesFileAndBlob);
     removeAllChildren(suikaIconsImageElement, suikaIconsImagesFileAndBlob);
     removeAllChildren(suikaAudiosElement, suikaAudiosFiles);
 
@@ -331,12 +347,12 @@ function loadSuikaSkinsImages(filesObject, parsedConfig) {
     for (const suikaSkinsImagePath of parsedConfig.SuikaSkinsImagesPaths) {
         const file = filesObject[suikaSkinsImagePath];
         if (file) {
-            SuikaSkinsImagesFileAndBlob.push(file);
+            suikaSkinsImagesFileAndBlob.push(file);
         }
     }
 
-    for (const file of SuikaSkinsImagesFileAndBlob) {
-        addImage(file, suikaSkinsImageElement, SuikaSkinsImagesFileAndBlob);
+    for (const file of suikaSkinsImagesFileAndBlob) {
+        addImage(file, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob);
     }
 }
 
@@ -525,11 +541,11 @@ async function downloadMod() {
 
     const suikaSkinsFiles = [];
 
-    for (let i = 0; i < SuikaSkinsImagesFileAndBlob.length; i++) {
-        suikaSkinsFiles.push(SuikaSkinsImagesFileAndBlob[i].file);
-        gameConfig.SuikaSkinsImagesPaths[i] = SuikaSkinsImagesFileAndBlob[i].file.name;
+    for (let i = 0; i < suikaSkinsImagesFileAndBlob.length; i++) {
+        suikaSkinsFiles.push(suikaSkinsImagesFileAndBlob[i].file);
+        gameConfig.SuikaSkinsImagesPaths[i] = suikaSkinsImagesFileAndBlob[i].file.name;
     }
-    
+
     const suikaIconsFiles = [];
 
     for (let i = 0; i < suikaIconsImagesFileAndBlob.length; i++) {
