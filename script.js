@@ -134,12 +134,12 @@ async function initUsingLocalFiles(config, relativePath) {
     modTitleElement.value = config.ModName;
 
     fetchLocalFile(relativePath + config.ModIconPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, modIconElement.id, modIconFile);
+        //showImageLocalFiles(blobAndFile.blob, modIconElement.id, modIconFile);
         modIconFile.file = new File([blobAndFile.file], config.ModIconPath);
     });
 
     fetchLocalFile(relativePath + config.ContainerImagePath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, containerImageElement.id, containerImageFile);
+        //showImageLocalFiles(blobAndFile.blob, containerImageElement.id, containerImageFile);
         containerImageFile.file = new File([blobAndFile.file], config.ContainerImagePath);
     });
 
@@ -237,41 +237,53 @@ async function initUsingLocalFiles(config, relativePath) {
     //
 
     fetchLocalFile(relativePath + config.LoadingScreenBackgroundPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, loadingScreenBackgroundElement.id, loadingScreenBackgroundFile);
+        //showImageLocalFiles(blobAndFile.blob, loadingScreenBackgroundElement.id, loadingScreenBackgroundFile);
         loadingScreenBackgroundFile.file = new File([blobAndFile.file], config.LoadingScreenBackgroundPath);
     });
 
     fetchLocalFile(relativePath + config.InGameBackgroundPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, inGameBackgroundElement.id, inGameBackgroundFile);
+        //showImageLocalFiles(blobAndFile.blob, inGameBackgroundElement.id, inGameBackgroundFile);
         inGameBackgroundFile.file = new File([blobAndFile.file], config.InGameBackgroundPath);
     });
 
     fetchLocalFile(relativePath + config.LoadingScreenIconPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, loadingScreenIconElement.id, loadingScreenIconFile);
+        //showImageLocalFiles(blobAndFile.blob, loadingScreenIconElement.id, loadingScreenIconFile);
         loadingScreenIconFile.file = new File([blobAndFile.file], config.LoadingScreenIconPath);
     });
 
     fetchLocalFile(relativePath + config.PlayerSkinPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, playerSkinElement.id, playerSkinFile);
+        //showImageLocalFiles(blobAndFile.blob, playerSkinElement.id, playerSkinFile);
         playerSkinFile.file = new File([blobAndFile.file], config.PlayerSkinPath);
     });
 
     for (const audioData of config.MergeSoundsAudios) {
-        await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
-            let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
-            suikaMergeAudioFiles.push(file);
+        if (loadedFiles.has(audioData.path)) {
+            let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
+            suikaAudiosFiles.push(file);
 
             let fileAndData = {
                 file: file,
                 audio: audioData
             };
 
-            addAudioControl(fileAndData, suikaMergeAudioElement);
-        });
+            addAudioControl(fileAndData, suikaAudiosElement);
+        } else {
+            await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
+                let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
+                suikaMergeAudioFiles.push(file);
+
+                let fileAndData = {
+                    file: file,
+                    audio: audioData
+                };
+
+                addAudioControl(fileAndData, suikaMergeAudioElement);
+            });
+        }
     }
 
     fetchLocalFile(relativePath + config.MainMenuBackgroundPath).then(blobAndFile => {
-        showImageLocalFiles(blobAndFile.blob, mainMenuBackgroundElement.id, mainMenuBackgroundFile);
+        //showImageLocalFiles(blobAndFile.blob, mainMenuBackgroundElement.id, mainMenuBackgroundFile);
         mainMenuBackgroundFile.file = new File([blobAndFile.file], config.MainMenuBackgroundPath);
     });
 }
