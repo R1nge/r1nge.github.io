@@ -1,7 +1,8 @@
-//TODO: load async then sort
-//TODO: cache and re-use already loaded images/audios
+
 //TODO: load/save trigger start delay, timer start time
 //TODO: add an ability to change audios
+
+//TODO: allow only mp3, ogg
 
 import {downloadZip} from "./client-zip.js";
 
@@ -104,6 +105,7 @@ const loadingScreenIconElement = document.querySelector('#loading-screen-icon-im
 const playerSkinElement = document.querySelector('#player-skin-image');
 const mainMenuBackgroundElement = document.querySelector('#main-menu-background-image');
 
+//TODO: fix
 const dropChancesButton = document.querySelector('#download-mod-button');
 dropChancesButton.addEventListener('click', submitDropChances);
 
@@ -471,7 +473,7 @@ function addImageLocalFiles(imageFile, name, element, array) {
 function changeImageSingle(imageFile, item, reference) {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*';
+    input.accept = '.png, .jpg';
 
     input.onchange = (event) => {
         const newFile = event.target.files[0];
@@ -484,7 +486,7 @@ function changeImageSingle(imageFile, item, reference) {
 function changeImageArray(imageFile, name, element, item, array) {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*';
+    input.accept = '.png, .jpg';
     input.onchange = (event) => {
 
         URL.revokeObjectURL(imageFile);
