@@ -173,6 +173,7 @@ async function initUsingLocalFiles(config, relativePath) {
         if (loadedFiles.has(path)) {
             const fileAndBlob = loadedFiles.get(path);
             suikaIconsImagesFileAndBlob.push(fileAndBlob);
+            //TODO: display if alredy has one???
         } else {
             return fetchLocalFile(relativePath + path)
                 .then(blobAndFile => {
@@ -201,8 +202,8 @@ async function initUsingLocalFiles(config, relativePath) {
         });
 
     for (const audioData of config.SuikaAudios) {
-        await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
-            let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
+        if (loadedFiles.has(audioData.path)) {
+            let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
             suikaAudiosFiles.push(file);
 
             let fileAndData = {
@@ -211,7 +212,21 @@ async function initUsingLocalFiles(config, relativePath) {
             };
 
             addAudioControl(fileAndData, suikaAudiosElement);
-        });
+        } else {
+            await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
+                let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
+                suikaAudiosFiles.push(file);
+
+                let fileAndData = {
+                    file: file,
+                    audio: audioData
+                };
+
+                loadedFiles.set(audioData.path, file);
+
+                addAudioControl(fileAndData, suikaAudiosElement);
+            });
+        }
     }
 
     loadSuikaDropChances(gameConfig);
