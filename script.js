@@ -140,7 +140,8 @@ async function initUsingLocalFiles(config, relativePath) {
         containerImageFile.file = new File([blobAndFile.file], config.ContainerImagePath);
     });
 
-    const fetchPromises = config.SuikaSkinsImagesPaths.map(path => {
+    
+    const suikaSkinsFetchPromises = config.SuikaSkinsImagesPaths.map(path => {
         return fetchLocalFile(relativePath + path)
             .then(blobAndFile => {
                 const file = new File([blobAndFile.file], path);
@@ -151,11 +152,14 @@ async function initUsingLocalFiles(config, relativePath) {
             });
     });
 
-    Promise.all(fetchPromises)
+    Promise.all(suikaSkinsFetchPromises)
         .then(() => {
             config.SuikaSkinsImagesPaths.forEach((path, index) => {
-                const file = SuikaSkinsImagesFileAndBlob[index];
-                addImageLocalFiles(file.blob, file.file.name, suikaSkinsImageElement, SuikaSkinsImagesFileAndBlob);
+                for (const fileAndBlob of SuikaSkinsImagesFileAndBlob) {
+                    if (fileAndBlob.file.name === path) {
+                        addImageLocalFiles(fileAndBlob.blob, fileAndBlob.file.name, suikaSkinsImageElement, SuikaSkinsImagesFileAndBlob);
+                    }
+                }
             });
         });
 
