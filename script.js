@@ -259,7 +259,7 @@ async function initUsingLocalFiles(config, relativePath) {
     for (const audioData of config.MergeSoundsAudios) {
         if (loadedFiles.has(audioData.path)) {
             let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
-            suikaAudiosFiles.push(file);
+            suikaMergeAudioFiles.push(file);
 
             let fileAndData = {
                 file: file,
