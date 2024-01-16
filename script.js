@@ -109,7 +109,7 @@ const suikaMergeAudioElement = document.querySelector('#suika-merge-audios');
 const dropChancesButton = document.querySelector('#download-mod-button');
 dropChancesButton.addEventListener('click', submitDropChances);
 
-const loadModButtonElement = document.querySelector('#load-mod-button');
+const loadModButtonElement = document.querySelector('#load-mod-button').children[0];
 const downloadModButtonElement = document.querySelector('#download-mod-button');
 downloadModButtonElement.addEventListener('click', downloadMod);
 
