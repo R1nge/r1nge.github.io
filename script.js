@@ -1,5 +1,4 @@
 
-//TODO: fix yagoo.ogg sound loading error
 //TODO: fix ul doesn't contain li elements
 //TODO: change suika mod sounds to a smaller file
 
@@ -170,12 +169,12 @@ async function initUsingLocalFiles(config, relativePath) {
         if (loadedFiles.has(path)) {
             //It uses the same references???
             const fileAndBlob = loadedFiles.get(path);
-            
+
             const newFileAndBlob = {
                 file: fileAndBlob.file,
                 blob: fileAndBlob.blob
             }
-            
+
             suikaIconsImagesFileAndBlob.push(newFileAndBlob);
             //TODO: display if already has one???
         } else {
@@ -256,6 +255,11 @@ async function initUsingLocalFiles(config, relativePath) {
     });
 
     for (const audioData of config.MergeSoundsAudios) {
+        if (audioData.path === "null" || audioData.path === "") {
+            console.log("Skipping " + audioData.path);
+            continue;
+        }
+
         if (loadedFiles.has(audioData.path)) {
             let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
             suikaMergeAudioFiles.push(file);
@@ -480,7 +484,7 @@ function changeImageArray(imageFile, name, element, item, array) {
         const blob = URL.createObjectURL(newFile);
 
         const index = array.findIndex(data => data['file'].name === name);
-        
+
         if (index !== -1) {
             array[index].file = newFile;
             array[index].blob = blob;
