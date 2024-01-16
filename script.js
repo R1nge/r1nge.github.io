@@ -1,9 +1,8 @@
 
 //TODO: change chances input size (make bigger)
 //TODO: fix yagoo.ogg sound loading error
-//TODO: fix aspect ration of images
+//TODO: fix aspect ratio of images
 //TODO: fix ul doesn't contain li elements
-//TODO: fix button background and foreground color contrast ratio
 //TODO: change suika mod sounds to a smaller file
 
 //TODO: add change ability for single images
