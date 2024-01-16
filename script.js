@@ -1,4 +1,5 @@
 
+//TODO: Interactive elements like buttons and links should be large enough (48x48px) (download button, dropChancesInput)
 //TODO: fix ul doesn't contain li elements
 //TODO: change suika mod sounds to a smaller file
 
