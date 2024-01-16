@@ -1,13 +1,14 @@
 
-//TODO: Interactive elements like buttons and links should be large enough (48x48px) (download button, dropChancesInput)
-//TODO: fix ul doesn't contain li elements
 //TODO: change suika mod sounds to a smaller file
+//TODO: Interactive elements like buttons and links should be large enough (48x48px) (download button, dropChancesInput)
 
 //TODO: add change ability for single images
 //TODO: load/save trigger start delay, timer start time
 
 //TODO: add an ability to change audios
 //TODO: allow only mp3, ogg
+
+//TODO: refactor
 
 import {downloadZip} from "./client-zip.js";
 
@@ -442,24 +443,28 @@ function showImage(imageFile, elementId, reference) {
 }
 
 function addImage(imageFile, element, array) {
+    const li = document.createElement("li");
     const item = document.createElement("img");
+    li.appendChild(item);
     item.className = "image";
     item.src = URL.createObjectURL(imageFile);
     item.onclick = () => {
-        changeImageArray(imageFile, imageFile.name, element, item, array);
+        changeImageArray(imageFile, imageFile.name, element, li, array);
     }
-    element.append(item);
+    element.append(li);
 }
 
 function addImageLocalFiles(imageFile, name, element, array) {
+    const li = document.createElement("li");
     const item = document.createElement("img");
+    li.appendChild(item);
     item.className = "image";
     item.src = imageFile;
     item.alt = name;
     item.onclick = () => {
-        changeImageArray(imageFile, name, element, item, array);
+        changeImageArray(imageFile, name, element, li, array);
     }
-    element.append(item);
+    element.append(li);
 }
 
 function changeImageSingle(imageFile, item, reference) {
@@ -492,7 +497,8 @@ function changeImageArray(imageFile, name, element, item, array) {
         }
 
         URL.revokeObjectURL(imageFile);
-        element.removeChild(item);
+        
+        removeSpecificNode(element, index);
 
         addImageAtIndex(newFile, element, index, array, blob);
     };
@@ -500,7 +506,9 @@ function changeImageArray(imageFile, name, element, item, array) {
 }
 
 function addImageAtIndex(imageFile, element, index, array, blob) {
+    const li = document.createElement("li");
     const item = document.createElement("img");
+    li.appendChild(item);
     item.className = "image";
     item.src = blob;
     item.onclick = () => {
@@ -508,10 +516,17 @@ function addImageAtIndex(imageFile, element, index, array, blob) {
     }
 
     if (index === element.children.length) {
-        element.appendChild(item);
+        element.appendChild(li);
     } else {
         const referenceNode = element.children[index];
-        element.insertBefore(item, referenceNode);
+        element.insertBefore(li, referenceNode);
+    }
+}
+
+function removeSpecificNode(element, index) {
+    const children = element.children;
+    if(children.length > 0) {
+        element.removeChild(children[index]);
     }
 }
 
