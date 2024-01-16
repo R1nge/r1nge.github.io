@@ -1,11 +1,11 @@
 
 //TODO: fix yagoo.ogg sound loading error
-//TODO: fix aspect ratio of images
 //TODO: fix ul doesn't contain li elements
 //TODO: change suika mod sounds to a smaller file
 
 //TODO: add change ability for single images
 //TODO: load/save trigger start delay, timer start time
+
 //TODO: add an ability to change audios
 //TODO: allow only mp3, ogg
 
@@ -78,7 +78,7 @@ let gameConfig = {
     LoadingScreenIconPath: "gura.png",
     PlayerSkinPath: "gura.png",
     MergeSoundsAudios: [
-        {"path": "yagoo.ogg", "volume": 0.25},
+        {"path": "null", "volume": 0},
         {"path": "sana.ogg", "volume": 0.25},
         {"path": "ollie.ogg", "volume": 0.1},
         {"path": "aqua.ogg", "volume": 0.25},
