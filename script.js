@@ -1,3 +1,11 @@
+
+//TODO: change chances input size (make bigger)
+//TODO: fix yagoo.ogg sound loading error
+//TODO: fix aspect ration of images
+//TODO: fix ul doesn't contain li elements
+//TODO: fix button background and foreground color contrast ratio
+//TODO: change suika mod sounds to a smaller file
+
 //TODO: add change ability for single images
 //TODO: load/save trigger start delay, timer start time
 //TODO: add an ability to change audios
@@ -444,6 +452,7 @@ function addImageLocalFiles(imageFile, name, element, array) {
     const item = document.createElement("img");
     item.className = "image";
     item.src = imageFile;
+    item.alt = name;
     item.onclick = () => {
         changeImageArray(imageFile, name, element, item, array);
     }
