@@ -539,7 +539,9 @@ function removeAllChildren(element, array) {
 }
 
 function addAudioControl(fileAndData, element) {
+    const li = document.createElement("li");
     const audioElement = document.createElement("audio");
+    li.appendChild(audioElement);
     const link = document.createElement("a");
     const audioFile = URL.createObjectURL(fileAndData.file);
     link.href = audioFile;
@@ -557,7 +559,7 @@ function addAudioControl(fileAndData, element) {
     }
 
     //TODO: append change sound button
-    element.append(audioElement);
+    element.append(li);
 }
 
 async function submitDropChances() {
