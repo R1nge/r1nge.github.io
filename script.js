@@ -1,5 +1,4 @@
 
-//TODO: change chances input size (make bigger)
 //TODO: fix yagoo.ogg sound loading error
 //TODO: fix aspect ratio of images
 //TODO: fix ul doesn't contain li elements

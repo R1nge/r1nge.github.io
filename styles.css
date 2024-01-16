@@ -18,6 +18,11 @@ ul {
     margin: 0;
 }
 
+input[type="number"] {
+    padding: 20px 10px;
+    line-height: 28px;
+}
+
 .image {
     display: block;
     width: 128px;
