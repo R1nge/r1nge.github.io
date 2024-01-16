@@ -8,6 +8,16 @@ body {
     background-color: #141516;
 }
 
+p {
+    color: azure;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
 .image {
     display: block;
     width: 128px;
@@ -40,12 +50,8 @@ body {
 #suika-audios {
 }
 
-p {
-    color: azure;
-}
-
 .column-list {
-    columns: 3;
-    -webkit-columns: 3;
-    -moz-columns: 3;
+    //columns: 3;
+    //-webkit-columns: 3;
+    //-moz-columns: 3;
 }

@@ -1,7 +1,6 @@
-
+//TODO: add change ability for single images
 //TODO: load/save trigger start delay, timer start time
 //TODO: add an ability to change audios
-
 //TODO: allow only mp3, ogg
 
 import {downloadZip} from "./client-zip.js";
@@ -99,12 +98,6 @@ const suikaAudiosElement = document.querySelector('#suika-audios');
 
 const suikaMergeAudioElement = document.querySelector('#suika-merge-audios');
 
-const inGameBackgroundElement = document.querySelector('#in-game-background-image');
-const loadingScreenBackgroundElement = document.querySelector('#loading-screen-background-image');
-const loadingScreenIconElement = document.querySelector('#loading-screen-icon-image');
-const playerSkinElement = document.querySelector('#player-skin-image');
-const mainMenuBackgroundElement = document.querySelector('#main-menu-background-image');
-
 //TODO: fix
 const dropChancesButton = document.querySelector('#download-mod-button');
 dropChancesButton.addEventListener('click', submitDropChances);
@@ -114,11 +107,11 @@ const downloadModButtonElement = document.querySelector('#download-mod-button');
 downloadModButtonElement.addEventListener('click', downloadMod);
 
 
+const loadedFiles = new Map();
+
 let modIconFile = {file: null};
 let containerImageFile = {file: null};
 const suikaSkinsImagesFileAndBlob = [];
-const loadedFiles = new Map();
-
 const suikaIconsImagesFileAndBlob = [];
 const suikaAudiosFiles = [];
 const suikaDropChancesOrdered = [];
@@ -136,46 +129,41 @@ async function initUsingLocalFiles(config, relativePath) {
     modTitleElement.value = config.ModName;
 
     fetchLocalFile(relativePath + config.ModIconPath).then(blobAndFile => {
-        //showImageLocalFiles(blobAndFile.blob, modIconElement.id, modIconFile);
         modIconFile.file = new File([blobAndFile.file], config.ModIconPath);
     });
 
     fetchLocalFile(relativePath + config.ContainerImagePath).then(blobAndFile => {
-        //showImageLocalFiles(blobAndFile.blob, containerImageElement.id, containerImageFile);
         containerImageFile.file = new File([blobAndFile.file], config.ContainerImagePath);
     });
 
-    const suikaSkinsFetchPromises = config.SuikaSkinsImagesPaths.map(path => {
-        return fetchLocalFile(relativePath + path)
-            .then(blobAndFile => {
-                const file = new File([blobAndFile.file], path);
+    for (const path of config.SuikaSkinsImagesPaths) {
+        await fetchLocalFile(relativePath + path).then(blobAndFile => {
+            const file = new File([blobAndFile.file], path);
 
-                const fileAndBlob = {file: file, blob: blobAndFile.blob};
+            const fileAndBlob = {file: file, blob: blobAndFile.blob};
 
-                if (!loadedFiles.has(file.name)) {
-                    loadedFiles.set(file.name, fileAndBlob);
-                }
+            if (!loadedFiles.has(file.name)) {
+                loadedFiles.set(file.name, fileAndBlob);
+            }
 
-                suikaSkinsImagesFileAndBlob.push(fileAndBlob);
-            });
+            suikaSkinsImagesFileAndBlob.push(fileAndBlob);
+
+        })
+    }
+
+    config.SuikaSkinsImagesPaths.forEach((path, index) => {
+        for (const fileAndBlob of suikaSkinsImagesFileAndBlob) {
+            if (fileAndBlob.file.name === path) {
+                addImageLocalFiles(fileAndBlob.blob, fileAndBlob.file.name, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob);
+            }
+        }
     });
-
-    await Promise.all(suikaSkinsFetchPromises)
-        .then(() => {
-            config.SuikaSkinsImagesPaths.forEach((path, index) => {
-                for (const fileAndBlob of suikaSkinsImagesFileAndBlob) {
-                    if (fileAndBlob.file.name === path) {
-                        addImageLocalFiles(fileAndBlob.blob, fileAndBlob.file.name, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob);
-                    }
-                }
-            });
-        });
 
     const suikaIconsFetchPromises = config.SuikaIconsPaths.map(path => {
         if (loadedFiles.has(path)) {
             const fileAndBlob = loadedFiles.get(path);
             suikaIconsImagesFileAndBlob.push(fileAndBlob);
-            //TODO: display if alredy has one???
+            //TODO: display if already has one???
         } else {
             return fetchLocalFile(relativePath + path)
                 .then(blobAndFile => {
@@ -233,28 +221,24 @@ async function initUsingLocalFiles(config, relativePath) {
 
     loadSuikaDropChances(gameConfig);
 
-    //TODO: time before timer trigger
-    //
-    //TODO: timer start time
-    //
+//TODO: time before timer trigger
+//
+//TODO: timer start time
+//
 
     fetchLocalFile(relativePath + config.LoadingScreenBackgroundPath).then(blobAndFile => {
-        //showImageLocalFiles(blobAndFile.blob, loadingScreenBackgroundElement.id, loadingScreenBackgroundFile);
         loadingScreenBackgroundFile.file = new File([blobAndFile.file], config.LoadingScreenBackgroundPath);
     });
 
     fetchLocalFile(relativePath + config.InGameBackgroundPath).then(blobAndFile => {
-        //showImageLocalFiles(blobAndFile.blob, inGameBackgroundElement.id, inGameBackgroundFile);
         inGameBackgroundFile.file = new File([blobAndFile.file], config.InGameBackgroundPath);
     });
 
     fetchLocalFile(relativePath + config.LoadingScreenIconPath).then(blobAndFile => {
-        //showImageLocalFiles(blobAndFile.blob, loadingScreenIconElement.id, loadingScreenIconFile);
         loadingScreenIconFile.file = new File([blobAndFile.file], config.LoadingScreenIconPath);
     });
 
     fetchLocalFile(relativePath + config.PlayerSkinPath).then(blobAndFile => {
-        //showImageLocalFiles(blobAndFile.blob, playerSkinElement.id, playerSkinFile);
         playerSkinFile.file = new File([blobAndFile.file], config.PlayerSkinPath);
     });
 
@@ -285,7 +269,6 @@ async function initUsingLocalFiles(config, relativePath) {
     }
 
     fetchLocalFile(relativePath + config.MainMenuBackgroundPath).then(blobAndFile => {
-        //showImageLocalFiles(blobAndFile.blob, mainMenuBackgroundElement.id, mainMenuBackgroundFile);
         mainMenuBackgroundFile.file = new File([blobAndFile.file], config.MainMenuBackgroundPath);
     });
 }
@@ -440,16 +423,6 @@ function showImage(imageFile, elementId, reference) {
     }
 }
 
-function showImageLocalFiles(imageFile, elementId, reference) {
-    const img = document.querySelector(`#${elementId}`);
-    img.style.display = "block";
-    img.src = imageFile;
-
-    img.onclick = () => {
-        changeImageSingle(imageFile, img, reference);
-    };
-}
-
 function addImage(imageFile, element, array) {
     const item = document.createElement("img");
     item.className = "image";
@@ -489,25 +462,30 @@ function changeImageArray(imageFile, name, element, item, array) {
     input.accept = '.png, .jpg';
     input.onchange = (event) => {
 
+        const newFile = event.target.files[0];
+        const blob = URL.createObjectURL(newFile);
+
+        const index = array.findIndex(data => data['file'].name === name);
+
+        
+        //TODO: fix either index, or array, or addImage
+        if (index !== -1) {
+            array[index].file = newFile;
+            array[index].blob = blob;
+        }
+
         URL.revokeObjectURL(imageFile);
         element.removeChild(item);
 
-        const newFile = event.target.files[0];
-
-        const index = array.findIndex((file) => file.name === name);
-        if (index !== -1) {
-            array[index] = newFile;
-        }
-
-        addImageAtIndex(newFile, element, index, array);
+        addImageAtIndex(newFile, element, index, array, blob);
     };
     input.click();
 }
 
-function addImageAtIndex(imageFile, element, index, array) {
+function addImageAtIndex(imageFile, element, index, array, blob) {
     const item = document.createElement("img");
     item.className = "image";
-    item.src = URL.createObjectURL(imageFile);
+    item.src = blob;
     item.onclick = () => {
         changeImageArray(imageFile, element, item, array);
     }
@@ -569,16 +547,16 @@ async function downloadMod() {
 
     const suikaSkinsFiles = [];
 
-    for (let i = 0; i < suikaSkinsImagesFileAndBlob.length; i++) {
+    for (let i = 0; i < gameConfig.SuikaSkinsImagesPaths.length; i++) {
         suikaSkinsFiles.push(suikaSkinsImagesFileAndBlob[i].file);
         gameConfig.SuikaSkinsImagesPaths[i] = suikaSkinsImagesFileAndBlob[i].file.name;
     }
 
     const suikaIconsFiles = [];
 
-    for (let i = 0; i < suikaIconsImagesFileAndBlob.length; i++) {
+    for (let i = 0; i < gameConfig.SuikaIconsPaths.length; i++) {
         suikaIconsFiles.push(suikaIconsImagesFileAndBlob[i].file);
-        gameConfig.SuikaIconsPaths[i] = suikaIconsFiles[i].name;
+        gameConfig.SuikaIconsPaths[i] = suikaIconsImagesFileAndBlob[i].file.name;
     }
 
     gameConfig.ModName = modTitleElement.value;
