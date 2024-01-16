@@ -159,37 +159,44 @@ async function initUsingLocalFiles(config, relativePath) {
         }
     });
 
-    const suikaIconsFetchPromises = config.SuikaIconsPaths.map(path => {
+
+    for (const path of config.SuikaIconsPaths) {
         if (loadedFiles.has(path)) {
+            //It uses the same references???
             const fileAndBlob = loadedFiles.get(path);
-            suikaIconsImagesFileAndBlob.push(fileAndBlob);
+            
+            const newFileAndBlob = {
+                file: fileAndBlob.file,
+                blob: fileAndBlob.blob
+            }
+            
+            suikaIconsImagesFileAndBlob.push(newFileAndBlob);
             //TODO: display if already has one???
         } else {
-            return fetchLocalFile(relativePath + path)
-                .then(blobAndFile => {
-                    const file = new File([blobAndFile.file], path);
 
-                    const fileAndBlob = {file: file, blob: blobAndFile.blob};
 
-                    if (!loadedFiles.has(file.name)) {
-                        loadedFiles.set(file.name, fileAndBlob);
-                    }
+            await fetchLocalFile(relativePath + path).then(blobAndFile => {
+                const file = new File([blobAndFile.file], path);
 
-                    suikaIconsImagesFileAndBlob.push(fileAndBlob);
-                });
+                const fileAndBlob = {file: file, blob: blobAndFile.blob};
+
+                if (!loadedFiles.has(file.name)) {
+                    loadedFiles.set(file.name, fileAndBlob);
+                }
+
+                suikaSkinsImagesFileAndBlob.push(fileAndBlob);
+
+            })
+        }
+    }
+
+    config.SuikaSkinsImagesPaths.forEach((path, index) => {
+        for (const fileAndBlob of suikaIconsImagesFileAndBlob) {
+            if (fileAndBlob.file.name === path) {
+                addImageLocalFiles(fileAndBlob.blob, fileAndBlob.file.name, suikaIconsImageElement, suikaIconsImagesFileAndBlob);
+            }
         }
     });
-
-    Promise.all(suikaIconsFetchPromises)
-        .then(() => {
-            config.SuikaSkinsImagesPaths.forEach((path, index) => {
-                for (const fileAndBlob of suikaIconsImagesFileAndBlob) {
-                    if (fileAndBlob.file.name === path) {
-                        addImageLocalFiles(fileAndBlob.blob, fileAndBlob.file.name, suikaIconsImageElement, suikaIconsImagesFileAndBlob);
-                    }
-                }
-            });
-        });
 
     for (const audioData of config.SuikaAudios) {
         if (loadedFiles.has(audioData.path)) {
@@ -466,9 +473,7 @@ function changeImageArray(imageFile, name, element, item, array) {
         const blob = URL.createObjectURL(newFile);
 
         const index = array.findIndex(data => data['file'].name === name);
-
         
-        //TODO: fix either index, or array, or addImage
         if (index !== -1) {
             array[index].file = newFile;
             array[index].blob = blob;
