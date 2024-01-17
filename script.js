@@ -1,5 +1,5 @@
 
-//TODO: change suika mod sounds to a smaller file
+
 //TODO: Interactive elements like buttons and links should be large enough (48x48px) (download button, dropChancesInput)
 
 //TODO: add change ability for single images
@@ -12,7 +12,7 @@
 //TODO: extract new methods
 //TODO: create a component for audio control, buttons(?)
 
-//TODO: use template tag???
+//TODO: change suika mod sounds to a smaller file
 
 import {downloadZip} from "./client-zip.js";
 

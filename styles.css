@@ -24,7 +24,7 @@ label {
     color: azure;
 }
 
-#wrapper{
+#wrapper {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -41,20 +41,20 @@ label {
     width: 100%;
 }
 
-#child-top-div{
+#child-top-div {
     display: inline-flex;
     margin: auto;
 }
 
-.child-of-child-top-div{
+.child-of-child-top-div {
     padding: 32px 16px 32px;
 }
 
-#suika-skins{
+#suika-skins {
     width: 370px;
 }
 
-#bottom-div{
+#bottom-div {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -62,18 +62,18 @@ label {
     width: 100%;
 }
 
-#child-bottom-div{
+#child-bottom-div {
     display: inline-flex;
     margin: auto;
 }
 
-.child-of-child-bottom-div{
+.child-of-child-bottom-div {
     width: 128px;
     height: auto;
     margin: 12px;
 }
 
-.column-list{
+.column-list {
     display: grid;
     align-items: center;
     grid-column: 3;
