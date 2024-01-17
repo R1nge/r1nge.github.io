@@ -12,6 +12,8 @@
 //TODO: extract new methods
 //TODO: create a component for audio control, buttons(?)
 
+//TODO: use template tag???
+
 import {downloadZip} from "./client-zip.js";
 
 let gameConfig = {
@@ -628,3 +630,9 @@ async function downloadModZip(modName, configData, suikaSkinsFiles, suikaIconsFi
 loadModButtonElement.addEventListener('change', (event) => {
     readFiles(event.target.files);
 });
+
+class CustomMusicPlayer extends HTMLAudioElement {
+    constructor() {
+        super();
+    }
+}

@@ -54,6 +54,25 @@ label {
     width: 370px;
 }
 
+#bottom-div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    width: 100%;
+}
+
+#child-bottom-div{
+    display: inline-flex;
+    margin: auto;
+}
+
+.child-of-child-bottom-div{
+    width: 128px;
+    height: auto;
+    margin: 12px;
+}
+
 .column-list{
     display: grid;
     align-items: center;
@@ -86,10 +105,4 @@ label {
     cursor: pointer;
     position: fixed;
     bottom: 20px; /* adjust this value to change the distance from the bottom */
-}
-
-#suika-skins-list {
-}
-
-#suika-audios-list {
 }
