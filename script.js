@@ -1,16 +1,14 @@
 
-
-//TODO: Interactive elements like buttons and links should be large enough (48x48px) (download button, dropChancesInput)
-
-//TODO: add change ability for single images
-//TODO: load/save trigger start delay, timer start time
-
+//TODO: create a component for audio control, buttons(?)
 //TODO: add an ability to change audios
 //TODO: allow only mp3, ogg
 
+//TODO: Interactive elements like buttons and links should be large enough (48x48px) (download button, dropChancesInput)
+
+//TODO: load/save trigger start delay, timer start time
+
 //TODO: refactor
 //TODO: extract new methods
-//TODO: create a component for audio control, buttons(?)
 
 //TODO: change suika mod sounds to a smaller file
 
@@ -96,6 +94,12 @@ const modTitleElement = document.querySelector('#mod-title');
 const modIconElement = document.querySelector('#mod-icon');
 const containerImageElement = document.querySelector('#container-image');
 
+const inGameBackgroundElement = document.querySelector('#in-game-background-image');
+const loadingScreenBackgroundElement = document.querySelector('#loading-screen-background-image');
+const loadingScreenIconElement = document.querySelector('#loading-screen-icon-image');
+const playerSkinElement = document.querySelector('#player-skin-image');
+const mainMenuBackgroundElement = document.querySelector('#main-menu-background-image');
+
 const suikaSkinsImageElement = document.querySelector('#suika-skins-list');
 const suikaIconsImageElement = document.querySelector('#suika-icons-list');
 const suikaAudiosElement = document.querySelector('#suika-audios-list');
@@ -134,10 +138,12 @@ async function initUsingLocalFiles(config, relativePath) {
 
     fetchLocalFile(relativePath + config.ModIconPath).then(blobAndFile => {
         modIconFile.file = new File([blobAndFile.file], config.ModIconPath);
+        addChangeImageSingleEvent(blobAndFile.file, modIconElement, modIconFile);
     });
 
     fetchLocalFile(relativePath + config.ContainerImagePath).then(blobAndFile => {
         containerImageFile.file = new File([blobAndFile.file], config.ContainerImagePath);
+        addChangeImageSingleEvent(blobAndFile.file, containerImageElement, containerImageFile);
     });
 
     for (const path of config.SuikaSkinsImagesPaths) {
@@ -158,7 +164,7 @@ async function initUsingLocalFiles(config, relativePath) {
     config.SuikaSkinsImagesPaths.forEach((path, index) => {
         for (const fileAndBlob of suikaSkinsImagesFileAndBlob) {
             if (fileAndBlob.file.name === path) {
-                addImageLocalFiles(fileAndBlob.blob, fileAndBlob.file.name, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob);
+                addImage(fileAndBlob.blob, fileAndBlob.file.name, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob, true);
             }
         }
     });
@@ -197,7 +203,7 @@ async function initUsingLocalFiles(config, relativePath) {
     config.SuikaSkinsImagesPaths.forEach((path, index) => {
         for (const fileAndBlob of suikaIconsImagesFileAndBlob) {
             if (fileAndBlob.file.name === path) {
-                addImageLocalFiles(fileAndBlob.blob, fileAndBlob.file.name, suikaIconsImageElement, suikaIconsImagesFileAndBlob);
+                addImage(fileAndBlob.blob, fileAndBlob.file.name, suikaIconsImageElement, suikaIconsImagesFileAndBlob, true);
             }
         }
     });
@@ -239,18 +245,22 @@ async function initUsingLocalFiles(config, relativePath) {
 
     fetchLocalFile(relativePath + config.LoadingScreenBackgroundPath).then(blobAndFile => {
         loadingScreenBackgroundFile.file = new File([blobAndFile.file], config.LoadingScreenBackgroundPath);
+        addChangeImageSingleEvent(blobAndFile.file, loadingScreenBackgroundElement, loadingScreenBackgroundFile);
     });
 
     fetchLocalFile(relativePath + config.InGameBackgroundPath).then(blobAndFile => {
         inGameBackgroundFile.file = new File([blobAndFile.file], config.InGameBackgroundPath);
+        addChangeImageSingleEvent(blobAndFile.file, inGameBackgroundElement, inGameBackgroundFile);
     });
 
     fetchLocalFile(relativePath + config.LoadingScreenIconPath).then(blobAndFile => {
         loadingScreenIconFile.file = new File([blobAndFile.file], config.LoadingScreenIconPath);
+        addChangeImageSingleEvent(blobAndFile.file, loadingScreenIconElement, loadingScreenIconFile);
     });
 
     fetchLocalFile(relativePath + config.PlayerSkinPath).then(blobAndFile => {
         playerSkinFile.file = new File([blobAndFile.file], config.PlayerSkinPath);
+        addChangeImageSingleEvent(blobAndFile.file, playerSkinElement, playerSkinFile);
     });
 
     for (const audioData of config.MergeSoundsAudios) {
@@ -286,6 +296,7 @@ async function initUsingLocalFiles(config, relativePath) {
 
     fetchLocalFile(relativePath + config.MainMenuBackgroundPath).then(blobAndFile => {
         mainMenuBackgroundFile.file = new File([blobAndFile.file], config.MainMenuBackgroundPath);
+        addChangeImageSingleEvent(blobAndFile.file, mainMenuBackgroundElement, mainMenuBackgroundFile);
     });
 }
 
@@ -379,7 +390,7 @@ function loadSuikaSkinsImages(filesObject, parsedConfig) {
     }
 
     for (const file of suikaSkinsImagesFileAndBlob) {
-        addImage(file, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob);
+        addImage(file, file.name, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob, false);
     }
 }
 
@@ -392,7 +403,7 @@ function loadSuikaIcons(filesObject, parsedConfig) {
     }
 
     for (const file of suikaIconsImagesFileAndBlob) {
-        addImage(file, suikaIconsImageElement, suikaIconsImagesFileAndBlob);
+        addImage(file, file.name, suikaIconsImageElement, suikaIconsImagesFileAndBlob, false);
     }
 }
 
@@ -434,32 +445,29 @@ function showImage(imageFile, elementId, reference) {
     const img = document.querySelector(`#${elementId}`);
     img.style.display = "block";
     img.src = tempPath;
+    addChangeImageSingleEvent(imageFile, img, reference);
+}
+
+function addChangeImageSingleEvent(imageFile, img, reference) {
     img.onclick = () => {
         changeImageSingle(imageFile, img, reference);
     }
 }
 
-function addImage(imageFile, element, array) {
+function addImage(imageFile, name, element, array, isLocal) {
     const li = document.createElement("li");
     const item = document.createElement("img");
     li.appendChild(item);
     item.className = "image";
-    item.src = URL.createObjectURL(imageFile);
+    item.alt = name
+    if (isLocal) {
+        item.src = imageFile;
+    } else {
+        item.src = URL.createObjectURL(imageFile);
+    }
+
     item.onclick = () => {
         changeImageArray(imageFile, imageFile.name, element, li, array);
-    }
-    element.append(li);
-}
-
-function addImageLocalFiles(imageFile, name, element, array) {
-    const li = document.createElement("li");
-    const item = document.createElement("img");
-    li.appendChild(item);
-    item.className = "image";
-    item.src = imageFile;
-    item.alt = name;
-    item.onclick = () => {
-        changeImageArray(imageFile, name, element, li, array);
     }
     element.append(li);
 }
@@ -494,7 +502,7 @@ function changeImageArray(imageFile, name, element, item, array) {
         }
 
         URL.revokeObjectURL(imageFile);
-        
+
         removeSpecificNode(element, index);
 
         addImageAtIndex(newFile, element, index, array, blob);
@@ -522,7 +530,7 @@ function addImageAtIndex(imageFile, element, index, array, blob) {
 
 function removeSpecificNode(element, index) {
     const children = element.children;
-    if(children.length > 0) {
+    if (children.length > 0) {
         element.removeChild(children[index]);
     }
 }
