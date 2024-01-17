@@ -15,74 +15,75 @@
     <link rel="stylesheet" href="styles.css" type="text/css">
 </head>
 <body>
-<div id="top-div">
-    <label for="mod-title">Mod title:</label><input type="text" id="mod-title">
-    <div id="child-top-div">
-        <div class="child-of-child-top-div">
-            <p>Mod icon</p>
-            <img alt="Mod icon" class="image" id="mod-icon" src="ModExample/gura.png"/>
-        </div>
-        <div class="child-of-child-top-div">
-            <p>Container image</p>
-            <img alt="Container" class="image" id="container-image" src="ModExample/container.png"/>
+<div id="wrapper">
+    <div id="top-div">
+        <label for="mod-title">Mod title:</label><input type="text" id="mod-title">
+        <div id="child-top-div">
+            <div class="child-of-child-top-div">
+                <p>Mod icon</p>
+                <img alt="Mod icon" class="image" id="mod-icon" src="ModExample/gura.png"/>
+            </div>
+            <div class="child-of-child-top-div">
+                <p>Container image</p>
+                <img alt="Container" class="image" id="container-image" src="ModExample/container.png"/>
+            </div>
         </div>
     </div>
+
+    <p>Suika skins</p>
+    <ul class="column-list" id="suika-skins-images"></ul>
+    <p>Suika icons</p>
+    <ul class="column-list" id="suika-icons-images"></ul>
+    <p>Suika audios</p>
+    <ul class="column-list" id="suika-audios"></ul>
+    <p>Drop chances</p>
+    <form action="index.html" method="post">
+        <label>First drop chance
+            <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+        </label><br>
+        <label>Second drop chance
+            <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+        </label><br>
+        <label>Third drop chance
+            <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+        </label><br>
+        <label>Fourth drop chance
+            <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+        </label><br>
+        <label>Fifth drop chance
+            <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+        </label><br>
+        <button type="button" id="download">Set drop chances</button>
+    </form>
+
+    <form action="index.html" method="post">
+        <p>Time before trigger</p>
+        <label for="timeBeforeTrigger">Time before trigger</label><input type="number" id="timeBeforeTrigger"/>
+        <p>Timer start time</p>
+        <label for="timerStartTime">Timer start time</label><input type="number" id="timerStartTime"/>
+        <button type="button" id="s">Set timer values</button>
+    </form>
+
+    <p>Suika merge audios</p>
+    <ul class="column-list" id="suika-merge-audios"></ul>
+
+    <p>In game background</p>
+    <img alt="In game background" class="image" id="in-game-background-image" src="ModExample/background.png"/>
+    <p>Loading screen background</p>
+    <img alt="Loading screen background" class="image" id="loading-screen-background-image"
+         src="ModExample/background.png"/>
+    <p>Loading screen icon</p>
+    <img alt="Loading screen icon" class="image" id="loading-screen-icon-image" src="ModExample/gura.png"/>
+    <p>Player skin</p>
+    <img alt="Player skin" class="image" id="player-skin-image" src="ModExample/gura.png"/>
+    <p>Main menu background</p>
+    <img alt="Main menu background" class="image" id="main-menu-background-image" src="ModExample/background.png"/>
+
+    <label id="load-mod-button">Load mod
+        <input type="file" webkitdirectory multiple/>
+    </label>
+    <button id="download-mod-button">Download mod</button>
 </div>
-
-<p>Suika skins</p>
-<ul class="column-list" id="suika-skins-images"></ul>
-<p>Suika icons</p>
-<ul class="column-list" id="suika-icons-images"></ul>
-<p>Suika audios</p>
-<ul class="column-list" id="suika-audios"></ul>
-<p>Drop chances</p>
-<form action="index.html" method="post">
-    <label>First drop chance
-        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-    </label><br>
-    <label>Second drop chance
-        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-    </label><br>
-    <label>Third drop chance
-        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-    </label><br>
-    <label>Fourth drop chance
-        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-    </label><br>
-    <label>Fifth drop chance
-        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-    </label><br>
-    <button type="button" id="download">Set drop chances</button>
-</form>
-
-<form action="index.html" method="post">
-    <p>Time before trigger</p>
-    <label for="timeBeforeTrigger">Time before trigger</label><input type="number" id="timeBeforeTrigger"/>
-    <p>Timer start time</p>
-    <label for="timerStartTime">Timer start time</label><input type="number" id="timerStartTime"/>
-    <button type="button" id="s">Set timer values</button>
-</form>
-
-<p>Suika merge audios</p>
-<ul class="column-list" id="suika-merge-audios"></ul>
-
-<p>In game background</p>
-<img alt="In game background" class="image" id="in-game-background-image" src="ModExample/background.png"/>
-<p>Loading screen background</p>
-<img alt="Loading screen background" class="image" id="loading-screen-background-image"
-     src="ModExample/background.png"/>
-<p>Loading screen icon</p>
-<img alt="Loading screen icon" class="image" id="loading-screen-icon-image" src="ModExample/gura.png"/>
-<p>Player skin</p>
-<img alt="Player skin" class="image" id="player-skin-image" src="ModExample/gura.png"/>
-<p>Main menu background</p>
-<img alt="Main menu background" class="image" id="main-menu-background-image" src="ModExample/background.png"/>
-
-<label id="load-mod-button">Load mod
-    <input type="file" webkitdirectory multiple/>
-</label>
-<button id="download-mod-button">Download mod</button>
-
 <script type="module" src="client-zip.js"></script>
 <script type="module" src="script.js"></script>
 </body>

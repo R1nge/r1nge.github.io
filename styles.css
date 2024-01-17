@@ -31,6 +31,7 @@ label {
     align-items: center;
     margin: auto;
     width: 100%;
+    padding: 32px;
 }
 
 #child-top-div{
