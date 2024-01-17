@@ -161,10 +161,12 @@ async function initUsingLocalFiles(config, relativePath) {
     }
     addImagesFromPaths(config.SuikaIconsPaths, loadedFiles, suikaIconsImagesFileAndBlob, suikaIconsImageElement);
 
+    //TODO: fix
     for (const audioData of config.SuikaAudios) {
         await createFileAndData(relativePath, audioData, loadedFiles, suikaAudiosFileAndData, suikaAudiosElement);
     }
 
+    //TODO: fix
     for (const audioData of config.MergeSoundsAudios) {
         await createFileAndData(relativePath, audioData, loadedFiles, suikaMergeAudiosFileAndData, suikaMergeAudioElement);
     }
@@ -340,8 +342,7 @@ function loadSuikaSkinsImages(filesObject, parsedConfig) {
             suikaSkinsImagesFileAndBlob.push({file: file, blob: blob});
         }
     }
-
-    //TODO: load file and blob
+    
     for (const fileAndBlob of suikaSkinsImagesFileAndBlob) {
         addImage(fileAndBlob, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob, false);
     }
@@ -547,9 +548,21 @@ async function downloadMod() {
         gameConfig.SuikaAudios[i].volume = suikaAudiosFileAndData[i].audio.volume;
     }
 
+    //TODO: fix
     const mergeAudioFiles = [];
 
-    for (let i = 1; i < gameConfig.MergeSoundsAudios.length; i++) {
+    for (let i = 0; i < gameConfig.MergeSoundsAudios.length; i++) {
+        
+        if(gameConfig.MergeSoundsAudios[i] === null){
+            console.log("Skipping audio: " + i);
+            continue;
+        }
+        
+        if(gameConfig.MergeSoundsAudios[i].path === "null") {
+            console.log("Skipping audio: " + i);
+            continue;
+        }
+        
         mergeAudioFiles.push(suikaMergeAudiosFileAndData[i].file);
         gameConfig.MergeSoundsAudios[i].path = suikaMergeAudiosFileAndData[i].file.name;
         gameConfig.MergeSoundsAudios[i].volume = suikaMergeAudiosFileAndData[i].audio.volume;
