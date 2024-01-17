@@ -143,69 +143,29 @@ async function initUsingLocalFiles(config, relativePath) {
     await fetchAndSetFile(relativePath, config.LoadingScreenIconPath, loadingScreenIconElement, loadingScreenIconFile);
     await fetchAndSetFile(relativePath, config.PlayerSkinPath, playerSkinElement, playerSkinFile);
     await fetchAndSetFile(relativePath, config.MainMenuBackgroundPath, mainMenuBackgroundElement, mainMenuBackgroundFile);
-    
+
     for (const path of config.SuikaSkinsImagesPaths) {
-        await fetchLocalFile(relativePath + path).then(blobAndFile => {
-            const file = new File([blobAndFile.file], path);
-
-            const fileAndBlob = {file: file, blob: blobAndFile.blob};
-
-            if (!loadedFiles.has(file.name)) {
-                loadedFiles.set(file.name, fileAndBlob);
-            }
-
-            suikaSkinsImagesFileAndBlob.push(fileAndBlob);
-
-        })
+        await fetchAndStoreFile(relativePath, path, loadedFiles, suikaSkinsImagesFileAndBlob);
     }
 
-    config.SuikaSkinsImagesPaths.forEach((path, index) => {
-        for (const fileAndBlob of suikaSkinsImagesFileAndBlob) {
-            if (fileAndBlob.file.name === path) {
-                addImage(fileAndBlob.blob, fileAndBlob.file.name, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob, true);
-            }
-        }
-    });
-
+    addImagesFromPaths(config.SuikaSkinsImagesPaths, loadedFiles, suikaSkinsImagesFileAndBlob, suikaSkinsImageElement);
 
     for (const path of config.SuikaIconsPaths) {
         if (loadedFiles.has(path)) {
-            //It uses the same references???
             const fileAndBlob = loadedFiles.get(path);
-
-            const newFileAndBlob = {
+            suikaIconsImagesFileAndBlob.push({
                 file: fileAndBlob.file,
                 blob: fileAndBlob.blob
-            }
-
-            suikaIconsImagesFileAndBlob.push(newFileAndBlob);
-            //TODO: display if already has one???
+            });
         } else {
-
-
-            await fetchLocalFile(relativePath + path).then(blobAndFile => {
-                const file = new File([blobAndFile.file], path);
-
-                const fileAndBlob = {file: file, blob: blobAndFile.blob};
-
-                if (!loadedFiles.has(file.name)) {
-                    loadedFiles.set(file.name, fileAndBlob);
-                }
-
-                suikaSkinsImagesFileAndBlob.push(fileAndBlob);
-
-            })
+            await fetchAndStoreFile(relativePath, path, loadedFiles, suikaSkinsImagesFileAndBlob);
         }
     }
 
-    config.SuikaSkinsImagesPaths.forEach((path, index) => {
-        for (const fileAndBlob of suikaIconsImagesFileAndBlob) {
-            if (fileAndBlob.file.name === path) {
-                addImage(fileAndBlob.blob, fileAndBlob.file.name, suikaIconsImageElement, suikaIconsImagesFileAndBlob, true);
-            }
-        }
-    });
+    addImagesFromPaths(config.SuikaIconsPaths, loadedFiles, suikaIconsImagesFileAndBlob, suikaIconsImageElement);
 
+    
+    
     for (const audioData of config.SuikaAudios) {
         if (loadedFiles.has(audioData.path)) {
             let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
@@ -273,6 +233,28 @@ async function initUsingLocalFiles(config, relativePath) {
             });
         }
     }
+}
+
+async function fetchAndStoreFile(relativePath, path, loadedFiles, suikaSkinsImagesFileAndBlob) {
+    const blobAndFile = await fetchLocalFile(relativePath + path);
+    const file = new File([blobAndFile.file], path);
+    const fileAndBlob = {file: file, blob: blobAndFile.blob};
+
+    if (!loadedFiles.has(file.name)) {
+        loadedFiles.set(file.name, fileAndBlob);
+    }
+
+    suikaSkinsImagesFileAndBlob.push(fileAndBlob);
+}
+
+function addImagesFromPaths(paths, loadedFiles, suikaImagesFileAndBlob, imageElement) {
+    paths.forEach((path) => {
+        for (const fileAndBlob of suikaImagesFileAndBlob) {
+            if (fileAndBlob.file.name === path) {
+                addImage(fileAndBlob.blob, fileAndBlob.file.name, imageElement, suikaImagesFileAndBlob, true);
+            }
+        }
+    });
 }
 
 async function fetchAndSetFile(relativePath, filePath, element, fileObject) {
