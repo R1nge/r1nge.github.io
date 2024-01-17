@@ -136,16 +136,14 @@ await initUsingLocalFiles(gameConfig, "ModExample/");
 async function initUsingLocalFiles(config, relativePath) {
     modTitleElement.value = config.ModName;
 
-    fetchLocalFile(relativePath + config.ModIconPath).then(blobAndFile => {
-        modIconFile.file = new File([blobAndFile.file], config.ModIconPath);
-        addChangeImageSingleEvent(blobAndFile.file, modIconElement, modIconFile);
-    });
-
-    fetchLocalFile(relativePath + config.ContainerImagePath).then(blobAndFile => {
-        containerImageFile.file = new File([blobAndFile.file], config.ContainerImagePath);
-        addChangeImageSingleEvent(blobAndFile.file, containerImageElement, containerImageFile);
-    });
-
+    await fetchAndSetFile(relativePath, config.ModIconPath, modIconElement, modIconFile);
+    await fetchAndSetFile(relativePath, config.ContainerImagePath, containerImageElement, containerImageFile);
+    await fetchAndSetFile(relativePath, config.LoadingScreenBackgroundPath, loadingScreenBackgroundElement, loadingScreenBackgroundFile);
+    await fetchAndSetFile(relativePath, config.InGameBackgroundPath, inGameBackgroundElement, inGameBackgroundFile);
+    await fetchAndSetFile(relativePath, config.LoadingScreenIconPath, loadingScreenIconElement, loadingScreenIconFile);
+    await fetchAndSetFile(relativePath, config.PlayerSkinPath, playerSkinElement, playerSkinFile);
+    await fetchAndSetFile(relativePath, config.MainMenuBackgroundPath, mainMenuBackgroundElement, mainMenuBackgroundFile);
+    
     for (const path of config.SuikaSkinsImagesPaths) {
         await fetchLocalFile(relativePath + path).then(blobAndFile => {
             const file = new File([blobAndFile.file], path);
@@ -243,25 +241,7 @@ async function initUsingLocalFiles(config, relativePath) {
 //TODO: timer start time
 //
 
-    fetchLocalFile(relativePath + config.LoadingScreenBackgroundPath).then(blobAndFile => {
-        loadingScreenBackgroundFile.file = new File([blobAndFile.file], config.LoadingScreenBackgroundPath);
-        addChangeImageSingleEvent(blobAndFile.file, loadingScreenBackgroundElement, loadingScreenBackgroundFile);
-    });
-
-    fetchLocalFile(relativePath + config.InGameBackgroundPath).then(blobAndFile => {
-        inGameBackgroundFile.file = new File([blobAndFile.file], config.InGameBackgroundPath);
-        addChangeImageSingleEvent(blobAndFile.file, inGameBackgroundElement, inGameBackgroundFile);
-    });
-
-    fetchLocalFile(relativePath + config.LoadingScreenIconPath).then(blobAndFile => {
-        loadingScreenIconFile.file = new File([blobAndFile.file], config.LoadingScreenIconPath);
-        addChangeImageSingleEvent(blobAndFile.file, loadingScreenIconElement, loadingScreenIconFile);
-    });
-
-    fetchLocalFile(relativePath + config.PlayerSkinPath).then(blobAndFile => {
-        playerSkinFile.file = new File([blobAndFile.file], config.PlayerSkinPath);
-        addChangeImageSingleEvent(blobAndFile.file, playerSkinElement, playerSkinFile);
-    });
+   
 
     for (const audioData of config.MergeSoundsAudios) {
         if (audioData.path === "null" || audioData.path === "") {
@@ -293,11 +273,12 @@ async function initUsingLocalFiles(config, relativePath) {
             });
         }
     }
+}
 
-    fetchLocalFile(relativePath + config.MainMenuBackgroundPath).then(blobAndFile => {
-        mainMenuBackgroundFile.file = new File([blobAndFile.file], config.MainMenuBackgroundPath);
-        addChangeImageSingleEvent(blobAndFile.file, mainMenuBackgroundElement, mainMenuBackgroundFile);
-    });
+async function fetchAndSetFile(relativePath, filePath, element, fileObject) {
+    const blobAndFile = await fetchLocalFile(relativePath + filePath);
+    fileObject.file = new File([blobAndFile.file], filePath);
+    addChangeImageSingleEvent(blobAndFile.file, element, fileObject);
 }
 
 function fetchLocalFile(relativePath, fileName) {
@@ -456,10 +437,9 @@ function addChangeImageSingleEvent(imageFile, img, reference) {
 
 function addImage(imageFile, name, element, array, isLocal) {
     const li = document.createElement("li");
-    const item = document.createElement("img");
+    const item = createImageElement();
     li.appendChild(item);
-    item.className = "image";
-    item.alt = name
+    item.alt = name;
     if (isLocal) {
         item.src = imageFile;
     } else {
@@ -467,9 +447,9 @@ function addImage(imageFile, name, element, array, isLocal) {
     }
 
     item.onclick = () => {
-        changeImageArray(imageFile, imageFile.name, element, li, array);
+        changeImageArray(imageFile, imageFile.name, element, item, array);
     }
-    element.append(li);
+    element.append(item);
 }
 
 function changeImageSingle(imageFile, item, reference) {
@@ -512,20 +492,25 @@ function changeImageArray(imageFile, name, element, item, array) {
 
 function addImageAtIndex(imageFile, element, index, array, blob) {
     const li = document.createElement("li");
-    const item = document.createElement("img");
+    const item = createImageElement();
     li.appendChild(item);
-    item.className = "image";
     item.src = blob;
     item.onclick = () => {
         changeImageArray(imageFile, element, item, array);
     }
 
     if (index === element.children.length) {
-        element.appendChild(li);
+        element.appendChild(item);
     } else {
         const referenceNode = element.children[index];
-        element.insertBefore(li, referenceNode);
+        element.insertBefore(item, referenceNode);
     }
+}
+
+function createImageElement() {
+    const item = document.createElement("img");
+    item.className = "image";
+    return item;
 }
 
 function removeSpecificNode(element, index) {
