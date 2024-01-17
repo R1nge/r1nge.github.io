@@ -24,14 +24,21 @@ label {
     color: azure;
 }
 
-#top-div {
+#wrapper{
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
     margin: auto;
     width: 100%;
-    padding: 32px;
+}
+
+#top-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    width: 100%;
 }
 
 #child-top-div{
@@ -41,6 +48,18 @@ label {
 
 .child-of-child-top-div{
     padding: 32px 16px 32px;
+}
+
+#suika-skins{
+    width: 370px;
+}
+
+.column-list{
+    display: grid;
+    align-items: center;
+    grid-column: 3;
+    width: 440px;
+    grid-template-columns: 1fr 1fr 1fr
 }
 
 .image {
@@ -69,14 +88,8 @@ label {
     bottom: 20px; /* adjust this value to change the distance from the bottom */
 }
 
-#suika-skins-images {
+#suika-skins-list {
 }
 
-#suika-audios {
-}
-
-.column-list {
-    columns: 3;
-    -webkit-columns: 3;
-    -moz-columns: 3;
+#suika-audios-list {
 }

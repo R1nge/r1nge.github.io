@@ -94,9 +94,9 @@ const modTitleElement = document.querySelector('#mod-title');
 const modIconElement = document.querySelector('#mod-icon');
 const containerImageElement = document.querySelector('#container-image');
 
-const suikaSkinsImageElement = document.querySelector('#suika-skins-images');
-const suikaIconsImageElement = document.querySelector('#suika-icons-images');
-const suikaAudiosElement = document.querySelector('#suika-audios');
+const suikaSkinsImageElement = document.querySelector('#suika-skins-list');
+const suikaIconsImageElement = document.querySelector('#suika-icons-list');
+const suikaAudiosElement = document.querySelector('#suika-audios-list');
 
 const suikaMergeAudioElement = document.querySelector('#suika-merge-audios');
 
