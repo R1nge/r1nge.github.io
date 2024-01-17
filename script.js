@@ -156,7 +156,7 @@ async function initUsingLocalFiles(config, relativePath) {
                 blob: fileAndBlob.blob
             });
         } else {
-            await fetchAndStoreFile(relativePath, path, loadedFiles, suikaSkinsImagesFileAndBlob);
+            await fetchAndStoreFile(relativePath, path, loadedFiles, suikaIconsImagesFileAndBlob);
         }
     }
     addImagesFromPaths(config.SuikaIconsPaths, loadedFiles, suikaIconsImagesFileAndBlob, suikaIconsImageElement);
@@ -164,7 +164,7 @@ async function initUsingLocalFiles(config, relativePath) {
     for (const audioData of config.SuikaAudios) {
         await createFileAndData(relativePath, audioData, loadedFiles, suikaAudiosFiles, suikaAudiosElement);
     }
-    
+
     for (const audioData of config.MergeSoundsAudios) {
 
         if (audioData.path === "null" || audioData.path === "") {
@@ -210,7 +210,7 @@ async function createFileAndData(relativePath, audioData, loadedFiles, fileArray
     }
 }
 
-async function fetchAndStoreFile(relativePath, path, loadedFiles, suikaSkinsImagesFileAndBlob) {
+async function fetchAndStoreFile(relativePath, path, loadedFiles, filesAndBlobs) {
     const blobAndFile = await fetchLocalFile(relativePath + path);
     const file = new File([blobAndFile.file], path);
     const fileAndBlob = {file: file, blob: blobAndFile.blob};
@@ -219,7 +219,7 @@ async function fetchAndStoreFile(relativePath, path, loadedFiles, suikaSkinsImag
         loadedFiles.set(file.name, fileAndBlob);
     }
 
-    suikaSkinsImagesFileAndBlob.push(fileAndBlob);
+    filesAndBlobs.push(fileAndBlob);
 }
 
 function addImagesFromPaths(paths, loadedFiles, suikaImagesFileAndBlob, imageElement) {
@@ -323,7 +323,8 @@ function loadSuikaSkinsImages(filesObject, parsedConfig) {
     for (const suikaSkinsImagePath of parsedConfig.SuikaSkinsImagesPaths) {
         const file = filesObject[suikaSkinsImagePath];
         if (file) {
-            suikaSkinsImagesFileAndBlob.push(file);
+            const blob = URL.createObjectURL(file);
+            suikaSkinsImagesFileAndBlob.push({file: file, blob: blob});
         }
     }
 
@@ -337,11 +338,11 @@ function loadSuikaIcons(filesObject, parsedConfig) {
     for (const suikaIconPath of parsedConfig.SuikaIconsPaths) {
         const file = filesObject[suikaIconPath];
         if (file) {
-            suikaIconsImagesFileAndBlob.push(file);
+            const blob = URL.createObjectURL(file);
+            suikaIconsImagesFileAndBlob.push({file: file, blob: blob});
         }
     }
-
-    //TODO: load file and blob
+    
     for (const fileAndBlob of suikaIconsImagesFileAndBlob) {
         addImage(fileAndBlob, suikaIconsImageElement, suikaIconsImagesFileAndBlob, false);
     }
@@ -399,14 +400,10 @@ function addImage(imageFileAndBlob, element, array, isLocal) {
     const item = createImageElement();
     li.appendChild(item);
     item.alt = name;
-    if (isLocal) {
-        item.src = imageFileAndBlob.blob;
-    } else {
-        item.src = URL.createObjectURL(imageFileAndBlob.file);
-    }
+    item.src = imageFileAndBlob.blob;
 
     item.onclick = () => {
-        changeImageArray(imageFileAndBlob.file, imageFileAndBlob.file.name, element, array);
+        changeImageArray(imageFileAndBlob.file, element, array);
     }
     element.append(item);
 }
@@ -424,7 +421,7 @@ function changeImageSingle(imageFile, item, reference) {
     input.click();
 }
 
-function changeImageArray(imageFile, name, element, array) {
+function changeImageArray(imageFile, element, array) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.png, .jpg';
@@ -433,7 +430,7 @@ function changeImageArray(imageFile, name, element, array) {
         const newFile = event.target.files[0];
         const blob = URL.createObjectURL(newFile);
 
-        const index = array.findIndex(data => data['file'].name === name);
+        const index = array.findIndex(data => data['file'].name === imageFile.name);
 
         if (index !== -1) {
             array[index].file = newFile;
@@ -455,7 +452,7 @@ function addImageAtIndex(imageFile, element, index, array, blob) {
     li.appendChild(item);
     item.src = blob;
     item.onclick = () => {
-        changeImageArray(imageFile, imageFile.name, element, array);
+        changeImageArray(imageFile, element, array);
     }
 
     if (index === element.children.length) {
@@ -567,7 +564,7 @@ async function downloadModZip(modName, configData, suikaSkinsFiles, suikaIconsFi
         });
     }
 
-    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile.file, containerImageFile.file, ...suikaSkinsFiles, ...suikaIconsFiles, ...suikaAudiosFiles, ...suikaMergeAudioFiles, loadingScreenIconFile.file, inGameBackgroundFile.file, mainMenuBackgroundFile.file, playerSkinFile.file])];
+    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile.file, containerImageFile.file, ...suikaSkinsFiles, ...suikaIconsFiles, ...suikaMergeAudioFiles, loadingScreenIconFile.file, inGameBackgroundFile.file, mainMenuBackgroundFile.file, playerSkinFile.file])]; //...suikaAudiosFiles, 
     const blob = await downloadZip(uniqueFiles).blob();
 
     const link = document.createElement("a");
