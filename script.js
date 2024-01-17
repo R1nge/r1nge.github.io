@@ -9,6 +9,8 @@
 //TODO: allow only mp3, ogg
 
 //TODO: refactor
+//TODO: extract new methods
+//TODO: create a component for audio control, buttons(?)
 
 import {downloadZip} from "./client-zip.js";
 
@@ -60,13 +62,6 @@ let gameConfig = {
     ],
     SuikaDropChances: [
         0.1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
         1,
         1,
         1,
