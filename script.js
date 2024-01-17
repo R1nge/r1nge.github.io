@@ -226,7 +226,7 @@ function addImagesFromPaths(paths, loadedFiles, suikaImagesFileAndBlob, imageEle
     paths.forEach((path) => {
         for (const fileAndBlob of suikaImagesFileAndBlob) {
             if (fileAndBlob.file.name === path) {
-                addImage(fileAndBlob.blob, fileAndBlob.file.name, imageElement, suikaImagesFileAndBlob, true);
+                addImage(fileAndBlob, imageElement, suikaImagesFileAndBlob, true);
             }
         }
     });
@@ -327,8 +327,9 @@ function loadSuikaSkinsImages(filesObject, parsedConfig) {
         }
     }
 
-    for (const file of suikaSkinsImagesFileAndBlob) {
-        addImage(file, file.name, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob, false);
+    //TODO: load file and blob
+    for (const fileAndBlob of suikaSkinsImagesFileAndBlob) {
+        addImage(fileAndBlob, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob, false);
     }
 }
 
@@ -340,8 +341,9 @@ function loadSuikaIcons(filesObject, parsedConfig) {
         }
     }
 
-    for (const file of suikaIconsImagesFileAndBlob) {
-        addImage(file, file.name, suikaIconsImageElement, suikaIconsImagesFileAndBlob, false);
+    //TODO: load file and blob
+    for (const fileAndBlob of suikaIconsImagesFileAndBlob) {
+        addImage(fileAndBlob, suikaIconsImageElement, suikaIconsImagesFileAndBlob, false);
     }
 }
 
@@ -392,19 +394,19 @@ function addChangeImageSingleEvent(imageFile, img, reference) {
     }
 }
 
-function addImage(imageFile, name, element, array, isLocal) {
+function addImage(imageFileAndBlob, element, array, isLocal) {
     const li = document.createElement("li");
     const item = createImageElement();
     li.appendChild(item);
     item.alt = name;
     if (isLocal) {
-        item.src = imageFile;
+        item.src = imageFileAndBlob.blob;
     } else {
-        item.src = URL.createObjectURL(imageFile);
+        item.src = URL.createObjectURL(imageFileAndBlob.file);
     }
 
     item.onclick = () => {
-        changeImageArray(imageFile, imageFile.name, element, item, array);
+        changeImageArray(imageFileAndBlob.file, imageFileAndBlob.file.name, element, array);
     }
     element.append(item);
 }
@@ -422,7 +424,7 @@ function changeImageSingle(imageFile, item, reference) {
     input.click();
 }
 
-function changeImageArray(imageFile, name, element, item, array) {
+function changeImageArray(imageFile, name, element, array) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.png, .jpg';
@@ -453,7 +455,7 @@ function addImageAtIndex(imageFile, element, index, array, blob) {
     li.appendChild(item);
     item.src = blob;
     item.onclick = () => {
-        changeImageArray(imageFile, element, item, array);
+        changeImageArray(imageFile, imageFile.name, element, array);
     }
 
     if (index === element.children.length) {
