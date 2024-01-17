@@ -1,4 +1,3 @@
-
 //TODO: create a component for audio control, buttons(?)
 //TODO: add an ability to change audios
 //TODO: allow only mp3, ogg
@@ -147,7 +146,6 @@ async function initUsingLocalFiles(config, relativePath) {
     for (const path of config.SuikaSkinsImagesPaths) {
         await fetchAndStoreFile(relativePath, path, loadedFiles, suikaSkinsImagesFileAndBlob);
     }
-
     addImagesFromPaths(config.SuikaSkinsImagesPaths, loadedFiles, suikaSkinsImagesFileAndBlob, suikaSkinsImageElement);
 
     for (const path of config.SuikaIconsPaths) {
@@ -161,77 +159,54 @@ async function initUsingLocalFiles(config, relativePath) {
             await fetchAndStoreFile(relativePath, path, loadedFiles, suikaSkinsImagesFileAndBlob);
         }
     }
-
     addImagesFromPaths(config.SuikaIconsPaths, loadedFiles, suikaIconsImagesFileAndBlob, suikaIconsImageElement);
 
-    
-    
     for (const audioData of config.SuikaAudios) {
-        if (loadedFiles.has(audioData.path)) {
-            let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
-            suikaAudiosFiles.push(file);
-
-            let fileAndData = {
-                file: file,
-                audio: audioData
-            };
-
-            addAudioControl(fileAndData, suikaAudiosElement);
-        } else {
-            await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
-                let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
-                suikaAudiosFiles.push(file);
-
-                let fileAndData = {
-                    file: file,
-                    audio: audioData
-                };
-
-                loadedFiles.set(audioData.path, file);
-
-                addAudioControl(fileAndData, suikaAudiosElement);
-            });
-        }
+        await createFileAndData(relativePath, audioData, loadedFiles, suikaAudiosFiles, suikaAudiosElement);
     }
-
-    loadSuikaDropChances(gameConfig);
-
-//TODO: time before timer trigger
-//
-//TODO: timer start time
-//
-
-   
-
+    
     for (const audioData of config.MergeSoundsAudios) {
+
         if (audioData.path === "null" || audioData.path === "") {
             console.log("Skipping " + audioData.path);
             continue;
         }
+        await createFileAndData(relativePath, audioData, loadedFiles, suikaMergeAudioFiles, suikaMergeAudioElement);
 
-        if (loadedFiles.has(audioData.path)) {
-            let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
-            suikaMergeAudioFiles.push(file);
+    }
+
+    loadSuikaDropChances(gameConfig);
+
+    //TODO: time before timer trigger
+
+    //TODO: timer start time
+}
+
+async function createFileAndData(relativePath, audioData, loadedFiles, fileArray, element) {
+    if (loadedFiles.has(audioData.path)) {
+        let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
+        fileArray.push(file);
+
+        let fileAndData = {
+            file: file,
+            audio: audioData
+        };
+
+        addAudioControl(fileAndData, element);
+    } else {
+        await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
+            let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
+            fileArray.push(file);
 
             let fileAndData = {
                 file: file,
                 audio: audioData
             };
 
-            addAudioControl(fileAndData, suikaAudiosElement);
-        } else {
-            await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
-                let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
-                suikaMergeAudioFiles.push(file);
+            loadedFiles.set(audioData.path, file);
 
-                let fileAndData = {
-                    file: file,
-                    audio: audioData
-                };
-
-                addAudioControl(fileAndData, suikaMergeAudioElement);
-            });
-        }
+            addAudioControl(fileAndData, element);
+        });
     }
 }
 
