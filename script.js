@@ -86,6 +86,8 @@ let gameConfig = {
     MainMenuBackgroundPath: "background.png"
 }
 
+const audioPlayer = document.querySelector('audio-player');
+
 const modTitleElement = document.querySelector('#mod-title');
 const modIconElement = document.querySelector('#mod-icon');
 const containerImageElement = document.querySelector('#container-image');
@@ -107,6 +109,11 @@ const dropChancesButton = document.querySelector('#download-mod-button');
 dropChancesButton.addEventListener('click', submitDropChances);
 
 const loadModButtonElement = document.querySelector('#load-mod-button').children[0];
+
+loadModButtonElement.addEventListener('change', (event) => {
+    readFiles(event.target.files);
+});
+
 const downloadModButtonElement = document.querySelector('#download-mod-button');
 downloadModButtonElement.addEventListener('click', downloadMod);
 
@@ -543,6 +550,8 @@ async function downloadMod() {
         gameConfig.SuikaAudios[i].path = suikaAudiosFileAndData[i].file.name;
         gameConfig.SuikaAudios[i].volume = suikaAudiosFileAndData[i].audio.volume;
     }
+    
+    await audioPlayer.openFileDialog().then(file => logFileName(file));
 
     //TODO: FIX !!!!
     for (let i = 0; i < gameConfig.MergeSoundsAudios.length; i++) {
@@ -588,12 +597,7 @@ async function downloadModZip(modName, configData, suikaSkinsFiles, suikaIconsFi
     URL.revokeObjectURL(blob);
 }
 
-loadModButtonElement.addEventListener('change', (event) => {
-    readFiles(event.target.files);
-});
 
-class CustomMusicPlayer extends HTMLAudioElement {
-    constructor() {
-        super();
-    }
+function logFileName(file){
+    console.log(file.name);
 }
