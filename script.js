@@ -1,9 +1,10 @@
-//TODO: fix audios doesn't change (paths, volume)
-//TODO: fix form elements do not have associated labels
-//TODO: make player more stylish
+
+//TODO: make audio player more stylish
 //TODO: redo input fields
 //TODO: change suika mod sounds to a smaller file
+
 //TODO: spawn images and audio players right away and populate with data, when it's available???
+//TODO: fix form elements do not have associated labels???
 
 import {downloadZip} from "./client-zip.js";
 
@@ -103,7 +104,6 @@ const timeBeforeTimerTriggerElement = document.querySelector('#time-before-timer
 const timerStartTimeElement = document.querySelector('#timer-start-time');
 
 const loadModButtonElement = document.querySelector('#load-mod-button');
-
 loadModButtonElement.addEventListener('click', (event) => {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -628,10 +628,15 @@ async function downloadMod() {
     }
 
     gameConfig.ModName = modTitleElement.value;
+    
+    gameConfig.ModIconPath = modIconFile.file.name;
+    gameConfig.ContainerImagePath = containerImageFile.file.name;
+    gameConfig.PlayerSkinPath = playerSkinFile.file.name;
+    gameConfig.LoadingScreenIconPath = loadingScreenIconFile.file.name;
+    
     gameConfig.LoadingScreenBackgroundPath = loadingScreenIconFile.file.name;
     gameConfig.InGameBackgroundPath = inGameBackgroundFile.file.name;
     gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.file.name;
-    gameConfig.PlayerSkinPath = playerSkinFile.file.name;
 
     gameConfig.TimerStartTime = timerStartTimeElement.value;
     gameConfig.TimeBeforeTimerTrigger = timeBeforeTimerTriggerElement.value;
