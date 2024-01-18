@@ -68,32 +68,24 @@
     <ul id="suika-merge-audios"></ul>
     
     <p>Drop chances</p>
-    <form action="index.html" method="post">
-        <label>First drop chance
-            <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-        </label><br>
-        <label>Second drop chance
-            <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-        </label><br>
-        <label>Third drop chance
-            <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-        </label><br>
-        <label>Fourth drop chance
-            <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-        </label><br>
-        <label>Fifth drop chance
-            <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-        </label><br>
-        <button type="button" id="download">Set drop chances</button>
-    </form>
-
-    <form action="index.html" method="post">
-        <p>Time before trigger</p>
-        <label for="timeBeforeTrigger">Time before trigger</label><input type="number" id="timeBeforeTrigger"/>
-        <p>Timer start time</p>
-        <label for="timerStartTime">Timer start time</label><input type="number" id="timerStartTime"/>
-        <button type="button" id="s">Set timer values</button>
-    </form>
+    <label>First drop chance
+        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+    </label><br>
+    <label>Second drop chance
+        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+    </label><br>
+    <label>Third drop chance
+        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+    </label><br>
+    <label>Fourth drop chance
+        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+    </label><br>
+    <label>Fifth drop chance
+        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+    </label><br>
+    
+    <label for="time-before-timer-trigger">Time before trigger</label><input type="number" id="time-before-timer-trigger"/>
+    <label for="timer-start-time">Timer start time</label><input type="number" id="timer-start-time"/>
 
     <label id="load-mod-button">Load mod
         <input type="file" webkitdirectory multiple/>
@@ -114,4 +106,10 @@
         <input type="range" id="volume-bar" min="0" max="100">
         <button id="change-file-button">Change File</button>
     </div>
+    
+    <style>
+        .audio-player {
+            margin: 10px;
+        }
+    </style>
 </template>

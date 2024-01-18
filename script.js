@@ -1,8 +1,4 @@
 
-//TODO: load/save trigger start delay, timer start time
-
-//TODO: more spacing between audio players
-
 //TODO: change suika mod sounds to a smaller file
 
 import {downloadZip} from "./client-zip.js";
@@ -99,6 +95,9 @@ const suikaAudiosElement = document.querySelector('#suika-audios-list');
 
 const suikaMergeAudioElement = document.querySelector('#suika-merge-audios');
 
+const timeBeforeTimerTriggerElement = document.querySelector('#time-before-timer-trigger');
+const timerStartTimeElement = document.querySelector('#timer-start-time');
+
 const loadModButtonElement = document.querySelector('#load-mod-button').children[0];
 
 loadModButtonElement.addEventListener('change', (event) => {
@@ -159,8 +158,7 @@ async function initUsingLocalFiles(config, relativePath) {
     for (const audioData of config.SuikaAudios) {
         await createFileAndData(relativePath, audioData, loadedFiles, suikaAudiosFileAndData, suikaAudiosElement);
     }
-
-    //TODO: fix !!!
+    
     for (const audioData of config.MergeSoundsAudios) {
         if (audioData.path === "" || audioData.path === null || audioData.path === "null") {
             console.log("skipping audio")
@@ -175,12 +173,10 @@ async function initUsingLocalFiles(config, relativePath) {
 
     loadSuikaDropChances(gameConfig);
 
-    //TODO: time before timer trigger
-
-    //TODO: timer start time
+    timeBeforeTimerTriggerElement.value = gameConfig.TimeBeforeTimerTrigger;
+    timerStartTimeElement.value = gameConfig.TimerStartTime;
 }
 
-//TODO: fix
 async function createFileAndData(relativePath, audioData, loadedFiles, fileArray, element) {
     if (loadedFiles.has(audioData.path)) {
         let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
@@ -568,8 +564,10 @@ async function downloadMod() {
     gameConfig.InGameBackgroundPath = inGameBackgroundFile.file.name;
     gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.file.name;
     gameConfig.PlayerSkinPath = playerSkinFile.file.name;
-
-    //TODO: FIX !!!!
+    
+    gameConfig.TimerStartTime = timerStartTimeElement.value;
+    gameConfig.TimeBeforeTimerTrigger = timeBeforeTimerTriggerElement.value;
+    
     await downloadModZip(gameConfig.ModName, gameConfig, suikaSkinsFiles, suikaIconsFiles, audioFiles, mergeFiles);
 }
 
