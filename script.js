@@ -399,7 +399,7 @@ function addImage(imageFileAndBlob, element, array, isLocal) {
     item.onclick = () => {
         changeImageArray(imageFileAndBlob.file, element, array);
     }
-    element.append(item);
+    element.append(li);
 }
 
 function changeImageSingle(imageFile, item, reference) {
@@ -450,10 +450,10 @@ function addImageAtIndex(imageFile, element, index, array, blob) {
     }
 
     if (index === element.children.length) {
-        element.appendChild(item);
+        element.appendChild(li);
     } else {
         const referenceNode = element.children[index];
-        element.insertBefore(item, referenceNode);
+        element.insertBefore(li, referenceNode);
     }
 }
 
