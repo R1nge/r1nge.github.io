@@ -244,11 +244,10 @@ function addImagesFromPaths(paths, loadedFiles, suikaImagesFileAndBlob, imageEle
     });
 }
 
-function fetchAndSetFile(relativePath, filePath, element, fileObject) {
-    fetchLocalFile(relativePath + filePath).then(blobAndFile => {
-        fileObject.file = new File([blobAndFile.file], filePath);
-        addChangeImageSingleEvent(blobAndFile.file, element, fileObject);
-    });
+async function fetchAndSetFile(relativePath, filePath, element, fileObject) {
+    let blobAndFile = await fetchLocalFile(relativePath + filePath);
+    fileObject.file = new File([blobAndFile.file], filePath);
+    addChangeImageSingleEvent(blobAndFile.file, element, fileObject);
 }
 
 function fetchLocalFile(relativePath, fileName) {
