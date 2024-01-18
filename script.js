@@ -508,7 +508,6 @@ function addAudioControl(fileAndData, element) {
     const audioFile = URL.createObjectURL(fileAndData.file);
     link.href = fileAndData.file;
     audioElement.setAttribute('src', audioFile);
-    //audioElement.src = fileAndData.file;
     audioElement.controls = true;
     audioElement.volume = fileAndData.audio.volume;
     element.append(li);
@@ -551,9 +550,6 @@ async function downloadMod() {
         gameConfig.SuikaAudios[i].path = suikaAudiosFileAndData[i].file.name;
         gameConfig.SuikaAudios[i].volume = suikaAudiosFileAndData[i].audio.volume;
     }
-    
-    //TODO: redo
-    await audioPlayer.openFileDialog().then(file => logFileName(file));
 
     //TODO: FIX !!!!
     for (let i = 0; i < gameConfig.MergeSoundsAudios.length; i++) {
