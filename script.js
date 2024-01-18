@@ -164,6 +164,14 @@ async function initUsingLocalFiles(config, relativePath) {
     }
     
     for (const audioData of config.MergeSoundsAudios) {
+        if(audioData.path === "" || audioData.path === null || audioData.path === "null") {
+            console.log("skipping audio")
+            const nullFileAndData = {file: null, audio: audioData};
+            suikaMergeAudiosFileAndData.push();
+            addAudioControl(nullFileAndData, suikaMergeAudioElement);
+            continue;
+        }
+        
         await createFileAndData(relativePath, audioData, loadedFiles, suikaMergeAudiosFileAndData, suikaMergeAudioElement);
     }
 
@@ -174,6 +182,7 @@ async function initUsingLocalFiles(config, relativePath) {
     //TODO: timer start time
 }
 
+//TODO: fix
 async function createFileAndData(relativePath, audioData, loadedFiles, fileArray, element) {
     if (loadedFiles.has(audioData.path)) {
         let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
@@ -481,6 +490,15 @@ function addAudioControl(fileAndData, element) {
     const audioElement = document.createElement("audio");
     li.appendChild(audioElement);
     const link = document.createElement("a");
+    if(fileAndData === null || fileAndData.file === null) {
+        console.log("Adding an empty audio control element")
+        link.href = null;
+        audioElement.src = null;
+        audioElement.controls = true;
+        audioElement.volume = 0;
+        element.append(li);    
+        return;
+    }
     const audioFile = URL.createObjectURL(fileAndData.file);
     link.href = audioFile;
     audioElement.src = audioFile;
@@ -532,6 +550,7 @@ async function downloadMod() {
 
     let index = 0;
 
+    //TODO: fix
     for (let i = 0; i < gameConfig.MergeSoundsAudios.length; i++) {
 
         if (gameConfig.MergeSoundsAudios[i] === null || gameConfig.MergeSoundsAudios[i].path === "null") {
