@@ -1,15 +1,12 @@
 body {
     height: 100%;
     margin: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
     background-color: #141516;
 }
 
 p {
     color: azure;
+    text-align: center;
 }
 
 ul {
@@ -27,10 +24,71 @@ label {
     color: azure;
 }
 
+#wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    margin: auto;
+    width: 100%;
+}
+
+#top-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    width: 100%;
+}
+
+#child-top-div {
+    display: inline-flex;
+    margin: auto;
+}
+
+.child-of-child-top-div {
+    padding: 32px 16px 32px;
+}
+
+#suika-skins {
+    width: 370px;
+}
+
+#bottom-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    width: 100%;
+}
+
+#child-bottom-div {
+    display: inline-flex;
+    margin: auto;
+}
+
+.child-of-child-bottom-div {
+    width: 128px;
+    height: auto;
+    margin: 12px;
+}
+
+.column-list {
+    display: grid;
+    align-items: center;
+    grid-column: 3;
+    width: 440px;
+    grid-template-columns: 1fr 1fr 1fr
+}
+
 .image {
     display: block;
     width: 128px;
     height: auto;
+}
+
+.image:hover {
+    cursor: pointer;
 }
 
 #load-mod-button {
@@ -51,16 +109,4 @@ label {
     cursor: pointer;
     position: fixed;
     bottom: 20px; /* adjust this value to change the distance from the bottom */
-}
-
-#suika-skins-images {
-}
-
-#suika-audios {
-}
-
-.column-list {
-    columns: 3;
-    -webkit-columns: 3;
-    -moz-columns: 3;
 }
