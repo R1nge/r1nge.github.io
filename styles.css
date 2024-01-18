@@ -87,6 +87,10 @@ label {
     height: auto;
 }
 
+.image:hover {
+    cursor: pointer;
+}
+
 #load-mod-button {
     padding: 10px 20px;
     background-color: #4CAF50;
