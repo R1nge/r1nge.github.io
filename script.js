@@ -1,5 +1,4 @@
-
-//TODO: fix audios doesn't change (after the mod has been loaded???)
+//TODO: fix audios doesn't change (paths, volume)
 //TODO: fix form elements do not have associated labels
 //TODO: make player more stylish
 //TODO: redo input fields
@@ -169,20 +168,22 @@ async function initUsingLocalFiles(config, relativePath) {
     }
     addImagesFromPaths(config.SuikaIconsPaths, loadedFiles, suikaIconsImagesFileAndBlob, suikaIconsImageElement);
 
-    for (const audioData of config.SuikaAudios) {
-        await createFileAndData(relativePath, audioData, loadedFiles, suikaAudiosFileAndData, suikaAudiosElement);
+    for (let i = 0; i < config.SuikaAudios.length; i++){
+        const audioData = config.SuikaAudios[i];
+        await createFileAndData(relativePath, audioData, loadedFiles, suikaAudiosFileAndData, suikaAudiosElement, i);
     }
 
-    for (const audioData of config.MergeSoundsAudios) {
+    for (let i = 0; i < config.MergeSoundsAudios.length; i++){
+        const audioData = config.MergeSoundsAudios[i];
         if (audioData.path === "" || audioData.path === null || audioData.path === "null") {
             console.log("skipping audio")
             const nullFileAndData = {file: null, audio: audioData};
             suikaMergeAudiosFileAndData.push();
-            addAudioControl(nullFileAndData, suikaMergeAudioElement);
+            addAudioControl(nullFileAndData, suikaMergeAudioElement, suikaMergeAudiosFileAndData, i);
             continue;
         }
 
-        await createFileAndData(relativePath, audioData, loadedFiles, suikaMergeAudiosFileAndData, suikaMergeAudioElement);
+        await createFileAndData(relativePath, audioData, loadedFiles, suikaMergeAudiosFileAndData, suikaMergeAudioElement, i);
     }
 
     loadSuikaDropChances(gameConfig);
@@ -191,7 +192,7 @@ async function initUsingLocalFiles(config, relativePath) {
     timerStartTimeElement.value = gameConfig.TimerStartTime;
 }
 
-async function createFileAndData(relativePath, audioData, loadedFiles, fileArray, element) {
+async function createFileAndData(relativePath, audioData, loadedFiles, fileArray, element, index) {
     if (loadedFiles.has(audioData.path)) {
         let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
 
@@ -202,7 +203,7 @@ async function createFileAndData(relativePath, audioData, loadedFiles, fileArray
 
         fileArray.push(fileAndData);
 
-        addAudioControl(fileAndData, element);
+        addAudioControl(fileAndData, element, fileArray, index);
     } else {
         await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
             let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
@@ -216,7 +217,7 @@ async function createFileAndData(relativePath, audioData, loadedFiles, fileArray
 
             loadedFiles.set(audioData.path, file);
 
-            addAudioControl(fileAndData, element);
+            addAudioControl(fileAndData, element, fileArray, index);
         });
     }
 }
@@ -442,6 +443,7 @@ function addImage(imageFileAndBlob, element, array) {
     element.append(li);
 }
 
+
 //TODO: fix reference is undefined when loaded mod
 function changeImageSingle(imageFile, item, reference) {
     const input = document.createElement('input');
@@ -519,11 +521,16 @@ function removeAllChildren(element, array) {
     array.splice(0, array.length);
 }
 
-function addAudioControl(fileAndData, element) {
+function addAudioControl(fileAndData, element, array, index) {
     const li = document.createElement("li");
     const audioElement = document.createElement("audio-player");
     li.appendChild(audioElement);
     const link = document.createElement("a");
+    audioElement.changeFileButton.addEventListener('click', () => {
+        openFileDialogAudio(audioElement).then(file => {
+            array[index].file = file;
+        });
+    });
     if (fileAndData === null || fileAndData.file === null) {
         console.log("Adding an empty audio control element")
         link.href = null;
@@ -550,6 +557,26 @@ function submitDropChances() {
         let a = input[i];
         suikaDropChancesOrdered.push(parseFloat(a.value));
     }
+}
+
+function openFileDialogAudio(audioElement) {
+    return new Promise((resolve, reject) => {
+        const inputFile = document.createElement('input');
+        inputFile.type = 'file';
+        inputFile.accept = '.mp3, .ogg, .wav';
+        inputFile.click();
+
+        inputFile.onchange = (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                audioElement.audio.src = URL.createObjectURL(file);
+                audioElement.togglePlayButton(true);
+                resolve(file);
+            } else {
+                reject(new Error('No file selected'));
+            }
+        };
+    });
 }
 
 async function downloadMod() {
