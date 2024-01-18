@@ -26,8 +26,8 @@
 
     attributeChangedCallback(attrName, oldVal, newVal) {
         if (attrName === 'src') {
-            this.audio.src = newVal;
             console.log('Changed src to ' + newVal);
+            this.audio.src = newVal;
         }
     };
 
@@ -36,7 +36,6 @@
     }
 
     togglePlayback() {
-
         if (this.audio.paused) {
             this.audio.play();
             this.togglePlayButton(false);

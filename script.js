@@ -506,8 +506,9 @@ function addAudioControl(fileAndData, element) {
         return;
     }
     const audioFile = URL.createObjectURL(fileAndData.file);
-    link.href = audioFile;
-    audioElement.src = audioFile;
+    link.href = fileAndData.file;
+    audioElement.setAttribute('src', audioFile);
+    //audioElement.src = fileAndData.file;
     audioElement.controls = true;
     audioElement.volume = fileAndData.audio.volume;
     element.append(li);
