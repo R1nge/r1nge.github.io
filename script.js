@@ -1,10 +1,10 @@
 
-//TODO: fix changeImageSingle reference is undefined
+//TODO: fix audios doesn't change (after the mod has been loaded???)
 //TODO: fix form elements do not have associated labels
-//TODO: spawn images and audio players right away and populate with data, when it's available
 //TODO: make player more stylish
 //TODO: redo input fields
 //TODO: change suika mod sounds to a smaller file
+//TODO: spawn images and audio players right away and populate with data, when it's available???
 
 import {downloadZip} from "./client-zip.js";
 
@@ -172,7 +172,7 @@ async function initUsingLocalFiles(config, relativePath) {
     for (const audioData of config.SuikaAudios) {
         await createFileAndData(relativePath, audioData, loadedFiles, suikaAudiosFileAndData, suikaAudiosElement);
     }
-    
+
     for (const audioData of config.MergeSoundsAudios) {
         if (audioData.path === "" || audioData.path === null || audioData.path === "null") {
             console.log("skipping audio")
@@ -237,7 +237,7 @@ function addImagesFromPaths(paths, loadedFiles, suikaImagesFileAndBlob, imageEle
     paths.forEach((path) => {
         for (const fileAndBlob of suikaImagesFileAndBlob) {
             if (fileAndBlob.file.name === path) {
-                addImage(fileAndBlob, imageElement, suikaImagesFileAndBlob, true);
+                addImage(fileAndBlob, imageElement, suikaImagesFileAndBlob);
             }
         }
     });
@@ -246,7 +246,7 @@ function addImagesFromPaths(paths, loadedFiles, suikaImagesFileAndBlob, imageEle
 function fetchAndSetFile(relativePath, filePath, element, fileObject) {
     fetchLocalFile(relativePath + filePath).then().then(blobAndFile => {
         fileObject.file = new File([blobAndFile.file], filePath);
-        addChangeImageSingleEvent(blobAndFile.file, element, fileObject);    
+        addChangeImageSingleEvent(blobAndFile.file, element, fileObject);
     });
 }
 
@@ -306,12 +306,37 @@ function init(parsedConfig, files) {
     for (const file of files) {
         if (file.name === parsedConfig.ModIconPath) {
             modIconFile.file = file;
-            showImage(file, modIconElement.id);
+            showImage(file, modIconElement.id, modIconFile);
         }
 
         if (file.name === parsedConfig.ContainerImagePath) {
             containerImageFile.file = file;
-            showImage(file, containerImageElement.id);
+            showImage(file, containerImageElement.id, containerImageFile);
+        }
+
+        if (file.name === parsedConfig.PlayerSkinPath) {
+            playerSkinFile.file = file;
+            showImage(file, playerSkinElement.id, playerSkinFile);
+        }
+
+        if (file.name === parsedConfig.LoadingScreenIconPath) {
+            loadingScreenIconFile.file = file;
+            showImage(file, loadingScreenIconElement.id, loadingScreenIconFile);
+        }
+
+        if (file.name === parsedConfig.InGameBackgroundPath) {
+            inGameBackgroundFile.file = file;
+            showImage(file, inGameBackgroundElement.id, inGameBackgroundFile);
+        }
+
+        if (file.name === parsedConfig.LoadingScreenBackgroundPath) {
+            loadingScreenBackgroundFile.file = file;
+            showImage(file, loadingScreenBackgroundElement.id, loadingScreenBackgroundFile);
+        }
+
+        if (file.name === parsedConfig.MainMenuBackgroundPath) {
+            mainMenuBackgroundFile.file = file;
+            showImage(file, mainMenuBackgroundElement.id, mainMenuBackgroundFile);
         }
     }
 
@@ -341,7 +366,7 @@ function loadSuikaSkinsImages(filesObject, parsedConfig) {
     }
 
     for (const fileAndBlob of suikaSkinsImagesFileAndBlob) {
-        addImage(fileAndBlob, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob, false);
+        addImage(fileAndBlob, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob);
     }
 }
 
@@ -355,7 +380,7 @@ function loadSuikaIcons(filesObject, parsedConfig) {
     }
 
     for (const fileAndBlob of suikaIconsImagesFileAndBlob) {
-        addImage(fileAndBlob, suikaIconsImageElement, suikaIconsImagesFileAndBlob, false);
+        addImage(fileAndBlob, suikaIconsImageElement, suikaIconsImagesFileAndBlob);
     }
 }
 
@@ -404,7 +429,7 @@ function addChangeImageSingleEvent(imageFile, img, reference) {
     }
 }
 
-function addImage(imageFileAndBlob, element, array, isLocal) {
+function addImage(imageFileAndBlob, element, array) {
     const li = document.createElement("li");
     const item = createImageElement();
     li.appendChild(item);
@@ -417,6 +442,7 @@ function addImage(imageFileAndBlob, element, array, isLocal) {
     element.append(li);
 }
 
+//TODO: fix reference is undefined when loaded mod
 function changeImageSingle(imageFile, item, reference) {
     const input = document.createElement('input');
     input.type = 'file';
@@ -527,9 +553,9 @@ function submitDropChances() {
 }
 
 async function downloadMod() {
-    
+
     submitDropChances();
-    
+
     for (let i = 0; i < suikaDropChancesOrdered.length; i++) {
         gameConfig.SuikaDropChances[i] = suikaDropChancesOrdered[i];
     }
@@ -555,21 +581,21 @@ async function downloadMod() {
         gameConfig.SuikaAudios[i].path = suikaAudiosFileAndData[i].file.name;
         gameConfig.SuikaAudios[i].volume = suikaAudiosFileAndData[i].audio.volume;
     }
-    
+
     const mergeFiles = [];
     const missingIndexes = [];
-    
+
     for (let i = 0; i < suikaMergeAudiosFileAndData.length; i++) {
-        if(gameConfig.MergeSoundsAudios[i].path === "" || gameConfig.MergeSoundsAudios[i].path === null || gameConfig.MergeSoundsAudios[i].path === undefined || gameConfig.MergeSoundsAudios[i].path === "null") {
+        if (gameConfig.MergeSoundsAudios[i].path === "" || gameConfig.MergeSoundsAudios[i].path === null || gameConfig.MergeSoundsAudios[i].path === undefined || gameConfig.MergeSoundsAudios[i].path === "null") {
             gameConfig.MergeSoundsAudios[i].path = "silence.mp3";
             missingIndexes.push(i);
             continue;
         }
         mergeFiles.push(suikaMergeAudiosFileAndData[i].file);
     }
-    
+
     for (let i = 0; i < mergeFiles.length; i++) {
-        if(missingIndexes.includes(i)) continue;
+        if (missingIndexes.includes(i)) continue;
         gameConfig.MergeSoundsAudios[i].volume = suikaMergeAudiosFileAndData[i].audio.volume;
         gameConfig.MergeSoundsAudios[i].path = mergeFiles[i].name;
     }
@@ -579,10 +605,10 @@ async function downloadMod() {
     gameConfig.InGameBackgroundPath = inGameBackgroundFile.file.name;
     gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.file.name;
     gameConfig.PlayerSkinPath = playerSkinFile.file.name;
-    
+
     gameConfig.TimerStartTime = timerStartTimeElement.value;
     gameConfig.TimeBeforeTimerTrigger = timeBeforeTimerTriggerElement.value;
-    
+
     await downloadModZip(gameConfig.ModName, gameConfig, suikaSkinsFiles, suikaIconsFiles, audioFiles, mergeFiles);
 }
 
