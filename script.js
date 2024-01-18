@@ -493,7 +493,7 @@ function removeAllChildren(element, array) {
 
 function addAudioControl(fileAndData, element) {
     const li = document.createElement("li");
-    const audioElement = document.createElement("audio");
+    const audioElement = document.createElement("audio-player");
     li.appendChild(audioElement);
     const link = document.createElement("a");
     if (fileAndData === null || fileAndData.file === null) {
@@ -551,6 +551,7 @@ async function downloadMod() {
         gameConfig.SuikaAudios[i].volume = suikaAudiosFileAndData[i].audio.volume;
     }
     
+    //TODO: redo
     await audioPlayer.openFileDialog().then(file => logFileName(file));
 
     //TODO: FIX !!!!
