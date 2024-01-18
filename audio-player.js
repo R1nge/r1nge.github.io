@@ -20,16 +20,30 @@
     }
 
     togglePlayback() {
-        this.audio.play();
+
+        if (this.audio.paused) {
+            this.audio.play();
+            this.togglePlayButton(false);
+        } else {
+            this.audio.pause();
+            this.togglePlayButton(true);
+        }
         console.log("Toggle playback");
-        // Add your code to play/pause the audio
+    }
+
+    togglePlayButton(paused) {
+        if (paused) {
+            this.playPauseButton.textContent = "Play";
+        } else {
+            this.playPauseButton.textContent = "Pause";
+        }
     }
 
     adjustVolume() {
         this.audio.volume = this.volumeBar.value / 100;
         console.log("Adjusted volume" + this.volumeBar.value);
-        // Add your code to manipulate the volume
     }
+
     openFileDialog() {
         return new Promise((resolve, reject) => {
             const inputFile = document.createElement('input');
@@ -41,6 +55,7 @@
                 const file = event.target.files[0];
                 if (file) {
                     this.audio.src = URL.createObjectURL(file);
+                    this.togglePlayButton(true);
                     resolve(file); // Resolve the promise with the selected file
                 } else {
                     reject('No file selected'); // Reject the promise if no file is selected
