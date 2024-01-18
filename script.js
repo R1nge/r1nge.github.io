@@ -1,4 +1,3 @@
-
 //TODO: create a component for audio control, buttons(?)
 //TODO: add an ability to change audios
 //TODO: allow only mp3, ogg
@@ -162,16 +161,17 @@ async function initUsingLocalFiles(config, relativePath) {
     for (const audioData of config.SuikaAudios) {
         await createFileAndData(relativePath, audioData, loadedFiles, suikaAudiosFileAndData, suikaAudiosElement);
     }
-    
+
+    //TODO: fix !!!
     for (const audioData of config.MergeSoundsAudios) {
-        if(audioData.path === "" || audioData.path === null || audioData.path === "null") {
+        if (audioData.path === "" || audioData.path === null || audioData.path === "null") {
             console.log("skipping audio")
             const nullFileAndData = {file: null, audio: audioData};
             suikaMergeAudiosFileAndData.push();
             addAudioControl(nullFileAndData, suikaMergeAudioElement);
             continue;
         }
-        
+
         await createFileAndData(relativePath, audioData, loadedFiles, suikaMergeAudiosFileAndData, suikaMergeAudioElement);
     }
 
@@ -186,7 +186,6 @@ async function initUsingLocalFiles(config, relativePath) {
 async function createFileAndData(relativePath, audioData, loadedFiles, fileArray, element) {
     if (loadedFiles.has(audioData.path)) {
         let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
-
 
         let fileAndData = {
             file: file,
@@ -490,13 +489,13 @@ function addAudioControl(fileAndData, element) {
     const audioElement = document.createElement("audio");
     li.appendChild(audioElement);
     const link = document.createElement("a");
-    if(fileAndData === null || fileAndData.file === null) {
+    if (fileAndData === null || fileAndData.file === null) {
         console.log("Adding an empty audio control element")
         link.href = null;
         audioElement.src = null;
         audioElement.controls = true;
         audioElement.volume = 0;
-        element.append(li);    
+        element.append(li);
         return;
     }
     const audioFile = URL.createObjectURL(fileAndData.file);
@@ -519,7 +518,6 @@ async function submitDropChances() {
 }
 
 async function downloadMod() {
-
     for (let i = 0; i < suikaDropChancesOrdered.length; i++) {
         gameConfig.SuikaDropChances[i] = suikaDropChancesOrdered[i];
     }
@@ -546,23 +544,10 @@ async function downloadMod() {
         gameConfig.SuikaAudios[i].volume = suikaAudiosFileAndData[i].audio.volume;
     }
 
-    const mergeAudioFiles = [];
-
-    let index = 0;
-
-    //TODO: fix
+    //TODO: FIX !!!!
     for (let i = 0; i < gameConfig.MergeSoundsAudios.length; i++) {
-
-        if (gameConfig.MergeSoundsAudios[i] === null || gameConfig.MergeSoundsAudios[i].path === "null") {
-            console.log("Skipping audio: " + i);
-            index++;
-            continue;
-        }
-
-        mergeAudioFiles.push(suikaMergeAudiosFileAndData[index].file);
-        gameConfig.MergeSoundsAudios[i].path = suikaMergeAudiosFileAndData[index].file.name;
-        gameConfig.MergeSoundsAudios[i].volume = suikaMergeAudiosFileAndData[index].audio.volume;
-        index++;
+        gameConfig.MergeSoundsAudios[i].path = suikaMergeAudiosFileAndData[i].file.name;
+        gameConfig.MergeSoundsAudios[i].volume = suikaMergeAudiosFileAndData[i].audio.volume;
     }
 
     gameConfig.ModName = modTitleElement.value;
@@ -571,7 +556,8 @@ async function downloadMod() {
     gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.file.name;
     gameConfig.PlayerSkinPath = playerSkinFile.file.name;
 
-    await downloadModZip(gameConfig.ModName, gameConfig, suikaSkinsFiles, suikaIconsFiles, audioFiles, mergeAudioFiles);
+    //TODO: FIX !!!!
+    await downloadModZip(gameConfig.ModName, gameConfig, suikaSkinsFiles, suikaIconsFiles, audioFiles, suikaMergeAudiosFileAndData);
 }
 
 async function downloadModZip(modName, configData, suikaSkinsFiles, suikaIconsFiles, suikaAudioFiles, suikaMergeAudioFiles) {

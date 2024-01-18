@@ -55,6 +55,8 @@
         </div>
     </div>
 
+    <audio-player></audio-player>
+
     <p>Suika skins</p>
     <ul class="column-list" id="suika-skins-list"></ul>
 
@@ -99,7 +101,17 @@
     </label>
     <button id="download-mod-button">Download mod</button>
 </div>
+<script type="module" src="audio-player.js"></script>
 <script type="module" src="client-zip.js"></script>
 <script type="module" src="script.js"></script>
 </body>
 </html>
+
+
+<template id="audio-player-template">
+    <div class="audio-player">
+        <button id="play-pause-button">Play/Pause</button>
+        <input type="range" id="volume-bar" min="0" max="100">
+        <button id="change-file-button">Change File</button>
+    </div>
+</template>
