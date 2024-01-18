@@ -64,13 +64,12 @@ label {
 
 #child-bottom-div {
     display: inline-flex;
-    margin: auto;
 }
 
 .child-of-child-bottom-div {
     width: 128px;
     height: auto;
-    margin: 12px;
+    margin: 2px;
 }
 
 .column-list {

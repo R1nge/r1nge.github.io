@@ -1,10 +1,7 @@
-//TODO: create a component for audio control, buttons(?)
-//TODO: add an ability to change audios
-//TODO: allow only mp3, ogg
-
-//TODO: Interactive elements like buttons and links should be large enough (48x48px) (download button, dropChancesInput)
 
 //TODO: load/save trigger start delay, timer start time
+
+//TODO: more spacing between audio players
 
 //TODO: change suika mod sounds to a smaller file
 
@@ -86,8 +83,6 @@ let gameConfig = {
     MainMenuBackgroundPath: "background.png"
 }
 
-const audioPlayer = document.querySelector('audio-player');
-
 const modTitleElement = document.querySelector('#mod-title');
 const modIconElement = document.querySelector('#mod-icon');
 const containerImageElement = document.querySelector('#container-image');
@@ -103,10 +98,6 @@ const suikaIconsImageElement = document.querySelector('#suika-icons-list');
 const suikaAudiosElement = document.querySelector('#suika-audios-list');
 
 const suikaMergeAudioElement = document.querySelector('#suika-merge-audios');
-
-//TODO: fix
-const dropChancesButton = document.querySelector('#download-mod-button');
-dropChancesButton.addEventListener('click', submitDropChances);
 
 const loadModButtonElement = document.querySelector('#load-mod-button').children[0];
 
@@ -513,7 +504,7 @@ function addAudioControl(fileAndData, element) {
     element.append(li);
 }
 
-async function submitDropChances() {
+function submitDropChances() {
     let input = document.getElementsByName('dropChances[]');
 
     suikaDropChancesOrdered.splice(0, suikaDropChancesOrdered.length);
@@ -525,6 +516,9 @@ async function submitDropChances() {
 }
 
 async function downloadMod() {
+    
+    submitDropChances();
+    
     for (let i = 0; i < suikaDropChancesOrdered.length; i++) {
         gameConfig.SuikaDropChances[i] = suikaDropChancesOrdered[i];
     }
