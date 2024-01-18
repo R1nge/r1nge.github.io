@@ -14,9 +14,25 @@
         this.changeFileButton = this.shadowRoot.getElementById('change-file-button');
         this.audio = this.shadowRoot.querySelector('audio');
 
+
         this.playPauseButton.addEventListener('click', this.togglePlayback.bind(this));
         this.volumeBar.addEventListener('input', this.adjustVolume.bind(this));
         this.changeFileButton.addEventListener('click', this.openFileDialog.bind(this));
+    }
+
+    static get observedAttributes() {
+        return ['src'];
+    }
+
+    attributeChangedCallback(attrName, oldVal, newVal) {
+        if (attrName === 'src') {
+            this.audio.src = newVal;
+            console.log('Changed src to ' + newVal);
+        }
+    };
+
+    connectedCallback() {
+        console.log("Custom element added to page.");
     }
 
     togglePlayback() {
@@ -56,9 +72,9 @@
                 if (file) {
                     this.audio.src = URL.createObjectURL(file);
                     this.togglePlayButton(true);
-                    resolve(file); // Resolve the promise with the selected file
+                    resolve(file);
                 } else {
-                    reject('No file selected'); // Reject the promise if no file is selected
+                    reject('No file selected');
                 }
             };
         });
