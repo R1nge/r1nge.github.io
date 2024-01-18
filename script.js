@@ -1,6 +1,10 @@
 
-//TODO: change suika mod sounds to a smaller file
+//TODO: fix changeImageSingle reference is undefined
+//TODO: fix form elements do not have associated labels
 //TODO: spawn images and audio players right away and populate with data, when it's available
+//TODO: make player more stylish
+//TODO: redo input fields
+//TODO: change suika mod sounds to a smaller file
 
 import {downloadZip} from "./client-zip.js";
 
@@ -99,15 +103,24 @@ const suikaMergeAudioElement = document.querySelector('#suika-merge-audios');
 const timeBeforeTimerTriggerElement = document.querySelector('#time-before-timer-trigger');
 const timerStartTimeElement = document.querySelector('#timer-start-time');
 
-const loadModButtonElement = document.querySelector('#load-mod-button').children[0];
+const loadModButtonElement = document.querySelector('#load-mod-button');
 
-loadModButtonElement.addEventListener('change', (event) => {
-    readFiles(event.target.files);
+loadModButtonElement.addEventListener('click', (event) => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.webkitdirectory = true;
+    fileInput.style.display = 'none';
+    fileInput.click();
+    fileInput.onchange = (event) => {
+        const files = event.target.files;
+        if (files) {
+            readFiles(files);
+        }
+    }
 });
 
 const downloadModButtonElement = document.querySelector('#download-mod-button');
 downloadModButtonElement.addEventListener('click', downloadMod);
-
 
 const loadedFiles = new Map();
 
@@ -597,6 +610,5 @@ async function downloadModZip(modName, configData, suikaSkinsFiles, suikaIconsFi
     link.download = modName;
     link.click();
     link.remove();
-
     URL.revokeObjectURL(blob);
 }
