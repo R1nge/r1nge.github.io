@@ -1,5 +1,6 @@
 
 //TODO: change suika mod sounds to a smaller file
+//TODO: spawn images and audio players right away and populate with data, when it's available
 
 import {downloadZip} from "./client-zip.js";
 
@@ -129,13 +130,13 @@ await initUsingLocalFiles(gameConfig, "ModExample/");
 async function initUsingLocalFiles(config, relativePath) {
     modTitleElement.value = config.ModName;
 
-    await fetchAndSetFile(relativePath, config.ModIconPath, modIconElement, modIconFile);
-    await fetchAndSetFile(relativePath, config.ContainerImagePath, containerImageElement, containerImageFile);
-    await fetchAndSetFile(relativePath, config.LoadingScreenBackgroundPath, loadingScreenBackgroundElement, loadingScreenBackgroundFile);
-    await fetchAndSetFile(relativePath, config.InGameBackgroundPath, inGameBackgroundElement, inGameBackgroundFile);
-    await fetchAndSetFile(relativePath, config.LoadingScreenIconPath, loadingScreenIconElement, loadingScreenIconFile);
-    await fetchAndSetFile(relativePath, config.PlayerSkinPath, playerSkinElement, playerSkinFile);
-    await fetchAndSetFile(relativePath, config.MainMenuBackgroundPath, mainMenuBackgroundElement, mainMenuBackgroundFile);
+    fetchAndSetFile(relativePath, config.ModIconPath, modIconElement, modIconFile);
+    fetchAndSetFile(relativePath, config.ContainerImagePath, containerImageElement, containerImageFile);
+    fetchAndSetFile(relativePath, config.LoadingScreenBackgroundPath, loadingScreenBackgroundElement, loadingScreenBackgroundFile);
+    fetchAndSetFile(relativePath, config.InGameBackgroundPath, inGameBackgroundElement, inGameBackgroundFile);
+    fetchAndSetFile(relativePath, config.LoadingScreenIconPath, loadingScreenIconElement, loadingScreenIconFile);
+    fetchAndSetFile(relativePath, config.PlayerSkinPath, playerSkinElement, playerSkinFile);
+    fetchAndSetFile(relativePath, config.MainMenuBackgroundPath, mainMenuBackgroundElement, mainMenuBackgroundFile);
 
     for (const path of config.SuikaSkinsImagesPaths) {
         await fetchAndStoreFile(relativePath, path, loadedFiles, suikaSkinsImagesFileAndBlob);
@@ -229,10 +230,11 @@ function addImagesFromPaths(paths, loadedFiles, suikaImagesFileAndBlob, imageEle
     });
 }
 
-async function fetchAndSetFile(relativePath, filePath, element, fileObject) {
-    const blobAndFile = await fetchLocalFile(relativePath + filePath);
-    fileObject.file = new File([blobAndFile.file], filePath);
-    addChangeImageSingleEvent(blobAndFile.file, element, fileObject);
+function fetchAndSetFile(relativePath, filePath, element, fileObject) {
+    fetchLocalFile(relativePath + filePath).then().then(blobAndFile => {
+        fileObject.file = new File([blobAndFile.file], filePath);
+        addChangeImageSingleEvent(blobAndFile.file, element, fileObject);    
+    });
 }
 
 function fetchLocalFile(relativePath, fileName) {
