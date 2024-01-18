@@ -1,3 +1,4 @@
+
 //TODO: create a component for audio control, buttons(?)
 //TODO: add an ability to change audios
 //TODO: allow only mp3, ogg
@@ -5,9 +6,6 @@
 //TODO: Interactive elements like buttons and links should be large enough (48x48px) (download button, dropChancesInput)
 
 //TODO: load/save trigger start delay, timer start time
-
-//TODO: refactor
-//TODO: extract new methods
 
 //TODO: change suika mod sounds to a smaller file
 
@@ -161,12 +159,10 @@ async function initUsingLocalFiles(config, relativePath) {
     }
     addImagesFromPaths(config.SuikaIconsPaths, loadedFiles, suikaIconsImagesFileAndBlob, suikaIconsImageElement);
 
-    //TODO: fix
     for (const audioData of config.SuikaAudios) {
         await createFileAndData(relativePath, audioData, loadedFiles, suikaAudiosFileAndData, suikaAudiosElement);
     }
-
-    //TODO: fix
+    
     for (const audioData of config.MergeSoundsAudios) {
         await createFileAndData(relativePath, audioData, loadedFiles, suikaMergeAudiosFileAndData, suikaMergeAudioElement);
     }
@@ -192,22 +188,6 @@ async function createFileAndData(relativePath, audioData, loadedFiles, fileArray
 
         addAudioControl(fileAndData, element);
     } else {
-        //TODO: add audio source but don't populate with data
-        if(audioData.path === "null" || audioData.path === "") {
-            console.log("Skipping audio: " + audioData.path);
-
-            let fileAndData = {
-                file: null,
-                audio: null
-            };
-
-            fileArray.push(fileAndData);
-
-            addAudioControl(fileAndData, element);
-            
-            return;
-        }
-        
         await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
             let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
 
@@ -342,7 +322,7 @@ function loadSuikaSkinsImages(filesObject, parsedConfig) {
             suikaSkinsImagesFileAndBlob.push({file: file, blob: blob});
         }
     }
-    
+
     for (const fileAndBlob of suikaSkinsImagesFileAndBlob) {
         addImage(fileAndBlob, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob, false);
     }
@@ -548,24 +528,22 @@ async function downloadMod() {
         gameConfig.SuikaAudios[i].volume = suikaAudiosFileAndData[i].audio.volume;
     }
 
-    //TODO: fix
     const mergeAudioFiles = [];
 
+    let index = 0;
+
     for (let i = 0; i < gameConfig.MergeSoundsAudios.length; i++) {
-        
-        if(gameConfig.MergeSoundsAudios[i] === null){
+
+        if (gameConfig.MergeSoundsAudios[i] === null || gameConfig.MergeSoundsAudios[i].path === "null") {
             console.log("Skipping audio: " + i);
+            index++;
             continue;
         }
-        
-        if(gameConfig.MergeSoundsAudios[i].path === "null") {
-            console.log("Skipping audio: " + i);
-            continue;
-        }
-        
-        mergeAudioFiles.push(suikaMergeAudiosFileAndData[i].file);
-        gameConfig.MergeSoundsAudios[i].path = suikaMergeAudiosFileAndData[i].file.name;
-        gameConfig.MergeSoundsAudios[i].volume = suikaMergeAudiosFileAndData[i].audio.volume;
+
+        mergeAudioFiles.push(suikaMergeAudiosFileAndData[index].file);
+        gameConfig.MergeSoundsAudios[i].path = suikaMergeAudiosFileAndData[index].file.name;
+        gameConfig.MergeSoundsAudios[i].volume = suikaMergeAudiosFileAndData[index].audio.volume;
+        index++;
     }
 
     gameConfig.ModName = modTitleElement.value;
