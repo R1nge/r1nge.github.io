@@ -245,7 +245,7 @@ function addImagesFromPaths(paths, loadedFiles, suikaImagesFileAndBlob, imageEle
 }
 
 function fetchAndSetFile(relativePath, filePath, element, fileObject) {
-    fetchLocalFile(relativePath + filePath).then().then(blobAndFile => {
+    fetchLocalFile(relativePath + filePath).then(blobAndFile => {
         fileObject.file = new File([blobAndFile.file], filePath);
         addChangeImageSingleEvent(blobAndFile.file, element, fileObject);
     });
