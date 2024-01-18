@@ -70,7 +70,7 @@ let gameConfig = {
     LoadingScreenIconPath: "gura.png",
     PlayerSkinPath: "gura.png",
     MergeSoundsAudios: [
-        {"path": "null", "volume": 0},
+        {"path": "silence.mp3", "volume": 1},
         {"path": "sana.ogg", "volume": 0.25},
         {"path": "ollie.ogg", "volume": 0.1},
         {"path": "aqua.ogg", "volume": 0.25},
@@ -508,8 +508,8 @@ function addAudioControl(fileAndData, element) {
     const audioFile = URL.createObjectURL(fileAndData.file);
     link.href = fileAndData.file;
     audioElement.setAttribute('src', audioFile);
+    audioElement.setAttribute('volume', fileAndData.audio.volume);
     audioElement.controls = true;
-    audioElement.volume = fileAndData.audio.volume;
     element.append(li);
 }
 

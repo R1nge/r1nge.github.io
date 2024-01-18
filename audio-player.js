@@ -21,13 +21,17 @@
     }
 
     static get observedAttributes() {
-        return ['src'];
+        return ['src', 'volume'];
     }
 
     attributeChangedCallback(attrName, oldVal, newVal) {
         if (attrName === 'src') {
             console.log('Changed src to ' + newVal);
             this.audio.src = newVal;
+        } else if (attrName === 'volume') {
+            console.log('Changed volume to ' + newVal);
+            this.audio.volume = newVal;
+            this.volumeBar.value = newVal * 100;
         }
     };
 
