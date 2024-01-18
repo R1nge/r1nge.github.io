@@ -550,11 +550,23 @@ async function downloadMod() {
         gameConfig.SuikaAudios[i].path = suikaAudiosFileAndData[i].file.name;
         gameConfig.SuikaAudios[i].volume = suikaAudiosFileAndData[i].audio.volume;
     }
-
-    //TODO: FIX !!!!
-    for (let i = 0; i < gameConfig.MergeSoundsAudios.length; i++) {
-        gameConfig.MergeSoundsAudios[i].path = suikaMergeAudiosFileAndData[i].file.name;
+    
+    const mergeFiles = [];
+    const missingIndexes = [];
+    
+    for (let i = 0; i < suikaMergeAudiosFileAndData.length; i++) {
+        if(gameConfig.MergeSoundsAudios[i].path === "" || gameConfig.MergeSoundsAudios[i].path === null || gameConfig.MergeSoundsAudios[i].path === undefined || gameConfig.MergeSoundsAudios[i].path === "null") {
+            gameConfig.MergeSoundsAudios[i].path = "silence.mp3";
+            missingIndexes.push(i);
+            continue;
+        }
+        mergeFiles.push(suikaMergeAudiosFileAndData[i].file);
+    }
+    
+    for (let i = 0; i < mergeFiles.length; i++) {
+        if(missingIndexes.includes(i)) continue;
         gameConfig.MergeSoundsAudios[i].volume = suikaMergeAudiosFileAndData[i].audio.volume;
+        gameConfig.MergeSoundsAudios[i].path = mergeFiles[i].name;
     }
 
     gameConfig.ModName = modTitleElement.value;
@@ -564,7 +576,7 @@ async function downloadMod() {
     gameConfig.PlayerSkinPath = playerSkinFile.file.name;
 
     //TODO: FIX !!!!
-    await downloadModZip(gameConfig.ModName, gameConfig, suikaSkinsFiles, suikaIconsFiles, audioFiles, suikaMergeAudiosFileAndData);
+    await downloadModZip(gameConfig.ModName, gameConfig, suikaSkinsFiles, suikaIconsFiles, audioFiles, mergeFiles);
 }
 
 async function downloadModZip(modName, configData, suikaSkinsFiles, suikaIconsFiles, suikaAudioFiles, suikaMergeAudioFiles) {
@@ -593,9 +605,4 @@ async function downloadModZip(modName, configData, suikaSkinsFiles, suikaIconsFi
     link.remove();
 
     URL.revokeObjectURL(blob);
-}
-
-
-function logFileName(file){
-    console.log(file.name);
 }
