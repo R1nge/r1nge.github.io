@@ -1,1 +1,602 @@
-import{downloadZip as e}from"./client-zip.js";let n={ModName:"Default",ModIconPath:"gura.png",ContainerImagePath:"container.png",SuikaSkinsImagesPaths:["yagoo.png","sana.png","ollie.png","aqua.png","ayame.png","fubuki.png","gura.png","hakos.png","mio.png","kobo.png","koyori.png","towa.png"],SuikaIconsPaths:["yagoo.png","sana.png","ollie.png","aqua.png","ayame.png","fubuki.png","gura.png","hakos.png","mio.png","kobo.png","koyori.png","towa.png"],SuikaAudios:[{path:"silence.mp3",volume:1},{path:"silence.mp3",volume:1},{path:"song1.mp3",volume:.1},{path:"song1.mp3",volume:.1},{path:"song1.mp3",volume:.1},{path:"song1.mp3",volume:.1},{path:"silence.mp3",volume:1},{path:"silence.mp3",volume:1},{path:"silence.mp3",volume:1},{path:"silence.mp3",volume:1},{path:"silence.mp3",volume:1},{path:"silence.mp3",volume:1}],SuikaDropChances:[.1,1,1,1,1],TimeBeforeTimerTrigger:1,TimerStartTime:5,InGameBackgroundPath:"background.png",LoadingScreenBackgroundPath:"background.png",LoadingScreenIconPath:"gura.png",PlayerSkinPath:"gura.png",MergeSoundsAudios:[{path:"silence.mp3",volume:1},{path:"sana.ogg",volume:.25},{path:"ollie.ogg",volume:.1},{path:"aqua.ogg",volume:.25},{path:"ayame.ogg",volume:.15},{path:"fubuki.ogg",volume:.5},{path:"gura.ogg",volume:.25},{path:"hakos.ogg",volume:.2},{path:"mio.ogg",volume:.3},{path:"kobo.ogg",volume:.25},{path:"koyori.ogg",volume:.25},{path:"towa.ogg",volume:.25}],MainMenuBackgroundPath:"background.png"};const o=document.querySelector("#mod-title"),t=document.querySelector("#mod-icon"),a=document.querySelector("#container-image"),i=document.querySelector("#in-game-background-image"),l=document.querySelector("#loading-screen-background-image"),u=document.querySelector("#loading-screen-icon-image"),c=document.querySelector("#player-skin-image"),s=document.querySelector("#main-menu-background-image"),r=document.querySelector("#suika-skins-list"),m=document.querySelector("#suika-icons-list"),g=document.querySelector("#suika-audios-list"),d=document.querySelector("#suika-merge-audios"),f=document.querySelector("#time-before-timer-trigger"),p=document.querySelector("#timer-start-time");document.querySelector("#load-mod-button").children[0].addEventListener("change",(e=>{!function(e){for(const o of e)if("config.json"===o.name){const t=new FileReader;t.readAsText(o,"UTF-8"),t.onload=o=>{const t=o.target.result,a=JSON.parse(t);n=a,B(a,e)}}}(e.target.files)}));document.querySelector("#download-mod-button").addEventListener("click",(async function(){!function(){let e=document.getElementsByName("dropChances[]");P.splice(0,P.length);for(let n=0;n<e.length;n++){let o=e[n];P.push(parseFloat(o.value))}}();for(let e=0;e<P.length;e++)n.SuikaDropChances[e]=P[e];const t=[];for(let e=0;e<n.SuikaSkinsImagesPaths.length;e++)t.push(b[e].file),n.SuikaSkinsImagesPaths[e]=b[e].file.name;const a=[];for(let e=0;e<n.SuikaIconsPaths.length;e++)a.push(v[e].file),n.SuikaIconsPaths[e]=v[e].file.name;const i=[];for(let e=0;e<n.SuikaAudios.length;e++)i.push(y[e].file),n.SuikaAudios[e].path=y[e].file.name,n.SuikaAudios[e].volume=y[e].audio.volume;const l=[],u=[];for(let e=0;e<w.length;e++)""!==n.MergeSoundsAudios[e].path&&null!==n.MergeSoundsAudios[e].path&&void 0!==n.MergeSoundsAudios[e].path&&"null"!==n.MergeSoundsAudios[e].path?l.push(w[e].file):(n.MergeSoundsAudios[e].path="silence.mp3",u.push(e));for(let e=0;e<l.length;e++)u.includes(e)||(n.MergeSoundsAudios[e].volume=w[e].audio.volume,n.MergeSoundsAudios[e].path=l[e].name);n.ModName=o.value,n.LoadingScreenBackgroundPath=I.file.name,n.InGameBackgroundPath=L.file.name,n.MainMenuBackgroundPath=q.file.name,n.PlayerSkinPath=R.file.name,n.TimerStartTime=p.value,n.TimeBeforeTimerTrigger=f.value,await async function(n,o,t,a,i,l){const u=JSON.stringify(o),c={name:"config.json",lastModified:new Date,input:u},s=[c,...(e=>{const n=new Map;return e.filter((e=>!n.has(e.name)&&(n.set(e.name,!0),n)))})([k.file,S.file,...t,...a,...i,...l,I.file,L.file,q.file,R.file])],r=await e(s).blob(),m=document.createElement("a");m.href=URL.createObjectURL(r),m.download=n,m.click(),m.remove(),URL.revokeObjectURL(r)}(n.ModName,n,t,a,i,l)}));const h=new Map;let k={file:null},S={file:null};const b=[],v=[],y=[],P=[],w=[];let L={file:null},M={file:null},I={file:null},R={file:null},q={file:null};async function U(e,n,o,t,a){if(o.has(n.path)){let e={file:new File([o.get(n.path)],n.path,{type:"audio"}),audio:n};t.push(e),J(e,a)}else await j(e+n.path).then((e=>{let i=new File([e.file],n.path,{type:"audio"}),l={file:i,audio:n};t.push(l),o.set(n.path,i),J(l,a)}))}async function A(e,n,o,t){const a=await j(e+n),i=new File([a.file],n),l={file:i,blob:a.blob};o.has(i.name)||o.set(i.name,l),t.push(l)}function T(e,n,o,t){e.forEach((e=>{for(const n of o)n.file.name===e&&F(n,t,o,!0)}))}async function C(e,n,o,t){const a=await j(e+n);t.file=new File([a.file],n),N(a.file,o,t)}function j(e,n){return fetch(e).then((e=>{const n=e.body.getReader();return new ReadableStream({start:e=>function o(){return n.read().then((({done:n,value:t})=>{if(!n)return e.enqueue(t),o();e.close()}))}()})})).then((e=>new Response(e))).then((e=>e.blob())).then((e=>({blob:URL.createObjectURL(e),file:new File([e],n)}))).catch((e=>console.error(e)))}function B(e,i){o.value=n.ModName;for(const n of i)n.name===e.ModIconPath&&(k.file=n,O(n,t.id)),n.name===e.ContainerImagePath&&(S.file=n,O(n,a.id));const l={};for(const e of i)l[e.name]=e;G(r,b),G(m,v),G(g,y),function(e,n){for(const o of n.SuikaSkinsImagesPaths){const n=e[o];if(n){const e=URL.createObjectURL(n);b.push({file:n,blob:e})}}for(const e of b)F(e,r,b,!1)}(l,e),function(e,n){for(const o of n.SuikaIconsPaths){const n=e[o];if(n){const e=URL.createObjectURL(n);v.push({file:n,blob:e})}}for(const e of v)F(e,m,v,!1)}(l,e),function(e,n){for(const o of n.SuikaAudios){const n=e[o.path];let t={file:n,audio:o};n&&y.push(t)}for(const e of y)J(e,g)}(l,e),E(e)}function E(e){for(const n of e.SuikaDropChances)P.push(n);let n=document.getElementsByName("dropChances[]");for(let e=0;e<n.length;e++){n[e].value=P[e]}}function O(e,n,o){const t=URL.createObjectURL(e),a=document.querySelector(`#${n}`);a.style.display="block",a.src=t,N(e,a,o)}function N(e,n,o){n.onclick=()=>{!function(e,n,o){const t=document.createElement("input");t.type="file",t.accept=".png, .jpg",t.onchange=e=>{const t=e.target.files[0];n.src=URL.createObjectURL(t),o.file=t},t.click()}(0,n,o)}}function F(e,n,o,t){const a=document.createElement("li"),i=x();a.appendChild(i),i.alt=name,i.src=e.blob,i.onclick=()=>{D(e.file,n,o)},n.append(a)}function D(e,n,o){const t=document.createElement("input");t.type="file",t.accept=".png, .jpg",t.onchange=t=>{const a=t.target.files[0],i=URL.createObjectURL(a),l=o.findIndex((n=>n.file.name===e.name));-1!==l&&(o[l].file=a,o[l].blob=i),URL.revokeObjectURL(e),function(e,n){const o=e.children;o.length>0&&e.removeChild(o[n])}(n,l),function(e,n,o,t,a){const i=document.createElement("li"),l=x();if(i.appendChild(l),l.src=a,l.onclick=()=>{D(e,n,t)},o===n.children.length)n.appendChild(i);else{const e=n.children[o];n.insertBefore(i,e)}}(a,n,l,o,i)},t.click()}function x(){const e=document.createElement("img");return e.className="image",e}function G(e,n){for(;e.firstChild;)e.removeChild(e.firstChild);n.splice(0,n.length)}function J(e,n){const o=document.createElement("li"),t=document.createElement("audio-player");o.appendChild(t);const a=document.createElement("a");if(null===e||null===e.file)return console.log("Adding an empty audio control element"),a.href=null,t.src=null,t.controls=!0,t.volume=0,void n.append(o);const i=URL.createObjectURL(e.file);a.href=e.file,t.setAttribute("src",i),t.setAttribute("volume",e.audio.volume),t.controls=!0,n.append(o)}await async function(e,P){o.value=e.ModName,await C(P,e.ModIconPath,t,k),await C(P,e.ContainerImagePath,a,S),await C(P,e.LoadingScreenBackgroundPath,l,M),await C(P,e.InGameBackgroundPath,i,L),await C(P,e.LoadingScreenIconPath,u,I),await C(P,e.PlayerSkinPath,c,R),await C(P,e.MainMenuBackgroundPath,s,q);for(const n of e.SuikaSkinsImagesPaths)await A(P,n,h,b);T(e.SuikaSkinsImagesPaths,h,b,r);for(const n of e.SuikaIconsPaths)if(h.has(n)){const e=h.get(n);v.push({file:e.file,blob:e.blob})}else await A(P,n,h,v);T(e.SuikaIconsPaths,h,v,m);for(const n of e.SuikaAudios)await U(P,n,h,y,g);for(const n of e.MergeSoundsAudios)if(""!==n.path&&null!==n.path&&"null"!==n.path)await U(P,n,h,w,d);else{console.log("skipping audio");const e={file:null,audio:n};w.push(),J(e,d)}E(n),f.value=n.TimeBeforeTimerTrigger,p.value=n.TimerStartTime}(n,"ModExample/");
+
+//TODO: change suika mod sounds to a smaller file
+//TODO: spawn images and audio players right away and populate with data, when it's available
+
+import {downloadZip} from "./client-zip.js";
+
+let gameConfig = {
+    ModName: "Default",
+    ModIconPath: "gura.png",
+    ContainerImagePath: "container.png",
+    SuikaSkinsImagesPaths: [
+        "yagoo.png",
+        "sana.png",
+        "ollie.png",
+        "aqua.png",
+        "ayame.png",
+        "fubuki.png",
+        "gura.png",
+        "hakos.png",
+        "mio.png",
+        "kobo.png",
+        "koyori.png",
+        "towa.png"
+    ],
+    SuikaIconsPaths: [
+        "yagoo.png",
+        "sana.png",
+        "ollie.png",
+        "aqua.png",
+        "ayame.png",
+        "fubuki.png",
+        "gura.png",
+        "hakos.png",
+        "mio.png",
+        "kobo.png",
+        "koyori.png",
+        "towa.png"
+    ],
+    SuikaAudios: [
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "song1.mp3", "volume": 0.1},
+        {"path": "song1.mp3", "volume": 0.1},
+        {"path": "song1.mp3", "volume": 0.1},
+        {"path": "song1.mp3", "volume": 0.1},
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "silence.mp3", "volume": 1}
+    ],
+    SuikaDropChances: [
+        0.1,
+        1,
+        1,
+        1,
+        1
+    ],
+    TimeBeforeTimerTrigger: 1,
+    TimerStartTime: 5,
+    InGameBackgroundPath: "background.png",
+    LoadingScreenBackgroundPath: "background.png",
+    LoadingScreenIconPath: "gura.png",
+    PlayerSkinPath: "gura.png",
+    MergeSoundsAudios: [
+        {"path": "silence.mp3", "volume": 1},
+        {"path": "sana.ogg", "volume": 0.25},
+        {"path": "ollie.ogg", "volume": 0.1},
+        {"path": "aqua.ogg", "volume": 0.25},
+        {"path": "ayame.ogg", "volume": 0.15},
+        {"path": "fubuki.ogg", "volume": 0.5},
+        {"path": "gura.ogg", "volume": 0.25},
+        {"path": "hakos.ogg", "volume": 0.2},
+        {"path": "mio.ogg", "volume": 0.3},
+        {"path": "kobo.ogg", "volume": 0.25},
+        {"path": "koyori.ogg", "volume": 0.25},
+        {"path": "towa.ogg", "volume": 0.25}
+    ],
+    MainMenuBackgroundPath: "background.png"
+}
+
+const modTitleElement = document.querySelector('#mod-title');
+const modIconElement = document.querySelector('#mod-icon');
+const containerImageElement = document.querySelector('#container-image');
+
+const inGameBackgroundElement = document.querySelector('#in-game-background-image');
+const loadingScreenBackgroundElement = document.querySelector('#loading-screen-background-image');
+const loadingScreenIconElement = document.querySelector('#loading-screen-icon-image');
+const playerSkinElement = document.querySelector('#player-skin-image');
+const mainMenuBackgroundElement = document.querySelector('#main-menu-background-image');
+
+const suikaSkinsImageElement = document.querySelector('#suika-skins-list');
+const suikaIconsImageElement = document.querySelector('#suika-icons-list');
+const suikaAudiosElement = document.querySelector('#suika-audios-list');
+
+const suikaMergeAudioElement = document.querySelector('#suika-merge-audios');
+
+const timeBeforeTimerTriggerElement = document.querySelector('#time-before-timer-trigger');
+const timerStartTimeElement = document.querySelector('#timer-start-time');
+
+const loadModButtonElement = document.querySelector('#load-mod-button').children[0];
+
+loadModButtonElement.addEventListener('change', (event) => {
+    readFiles(event.target.files);
+});
+
+const downloadModButtonElement = document.querySelector('#download-mod-button');
+downloadModButtonElement.addEventListener('click', downloadMod);
+
+
+const loadedFiles = new Map();
+
+let modIconFile = {file: null};
+let containerImageFile = {file: null};
+const suikaSkinsImagesFileAndBlob = [];
+const suikaIconsImagesFileAndBlob = [];
+const suikaAudiosFileAndData = [];
+const suikaDropChancesOrdered = [];
+const suikaMergeAudiosFileAndData = [];
+
+let inGameBackgroundFile = {file: null};
+let loadingScreenBackgroundFile = {file: null};
+let loadingScreenIconFile = {file: null};
+let playerSkinFile = {file: null};
+let mainMenuBackgroundFile = {file: null};
+
+await initUsingLocalFiles(gameConfig, "ModExample/");
+
+async function initUsingLocalFiles(config, relativePath) {
+    modTitleElement.value = config.ModName;
+
+    fetchAndSetFile(relativePath, config.ModIconPath, modIconElement, modIconFile);
+    fetchAndSetFile(relativePath, config.ContainerImagePath, containerImageElement, containerImageFile);
+    fetchAndSetFile(relativePath, config.LoadingScreenBackgroundPath, loadingScreenBackgroundElement, loadingScreenBackgroundFile);
+    fetchAndSetFile(relativePath, config.InGameBackgroundPath, inGameBackgroundElement, inGameBackgroundFile);
+    fetchAndSetFile(relativePath, config.LoadingScreenIconPath, loadingScreenIconElement, loadingScreenIconFile);
+    fetchAndSetFile(relativePath, config.PlayerSkinPath, playerSkinElement, playerSkinFile);
+    fetchAndSetFile(relativePath, config.MainMenuBackgroundPath, mainMenuBackgroundElement, mainMenuBackgroundFile);
+
+    for (const path of config.SuikaSkinsImagesPaths) {
+        await fetchAndStoreFile(relativePath, path, loadedFiles, suikaSkinsImagesFileAndBlob);
+    }
+    addImagesFromPaths(config.SuikaSkinsImagesPaths, loadedFiles, suikaSkinsImagesFileAndBlob, suikaSkinsImageElement);
+
+    for (const path of config.SuikaIconsPaths) {
+        if (loadedFiles.has(path)) {
+            const fileAndBlob = loadedFiles.get(path);
+            suikaIconsImagesFileAndBlob.push({
+                file: fileAndBlob.file,
+                blob: fileAndBlob.blob
+            });
+        } else {
+            await fetchAndStoreFile(relativePath, path, loadedFiles, suikaIconsImagesFileAndBlob);
+        }
+    }
+    addImagesFromPaths(config.SuikaIconsPaths, loadedFiles, suikaIconsImagesFileAndBlob, suikaIconsImageElement);
+
+    for (const audioData of config.SuikaAudios) {
+        await createFileAndData(relativePath, audioData, loadedFiles, suikaAudiosFileAndData, suikaAudiosElement);
+    }
+    
+    for (const audioData of config.MergeSoundsAudios) {
+        if (audioData.path === "" || audioData.path === null || audioData.path === "null") {
+            console.log("skipping audio")
+            const nullFileAndData = {file: null, audio: audioData};
+            suikaMergeAudiosFileAndData.push();
+            addAudioControl(nullFileAndData, suikaMergeAudioElement);
+            continue;
+        }
+
+        await createFileAndData(relativePath, audioData, loadedFiles, suikaMergeAudiosFileAndData, suikaMergeAudioElement);
+    }
+
+    loadSuikaDropChances(gameConfig);
+
+    timeBeforeTimerTriggerElement.value = gameConfig.TimeBeforeTimerTrigger;
+    timerStartTimeElement.value = gameConfig.TimerStartTime;
+}
+
+async function createFileAndData(relativePath, audioData, loadedFiles, fileArray, element) {
+    if (loadedFiles.has(audioData.path)) {
+        let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
+
+        let fileAndData = {
+            file: file,
+            audio: audioData
+        };
+
+        fileArray.push(fileAndData);
+
+        addAudioControl(fileAndData, element);
+    } else {
+        await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
+            let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
+
+            let fileAndData = {
+                file: file,
+                audio: audioData
+            };
+
+            fileArray.push(fileAndData);
+
+            loadedFiles.set(audioData.path, file);
+
+            addAudioControl(fileAndData, element);
+        });
+    }
+}
+
+async function fetchAndStoreFile(relativePath, path, loadedFiles, filesAndBlobs) {
+    const blobAndFile = await fetchLocalFile(relativePath + path);
+    const file = new File([blobAndFile.file], path);
+    const fileAndBlob = {file: file, blob: blobAndFile.blob};
+
+    if (!loadedFiles.has(file.name)) {
+        loadedFiles.set(file.name, fileAndBlob);
+    }
+
+    filesAndBlobs.push(fileAndBlob);
+}
+
+function addImagesFromPaths(paths, loadedFiles, suikaImagesFileAndBlob, imageElement) {
+    paths.forEach((path) => {
+        for (const fileAndBlob of suikaImagesFileAndBlob) {
+            if (fileAndBlob.file.name === path) {
+                addImage(fileAndBlob, imageElement, suikaImagesFileAndBlob, true);
+            }
+        }
+    });
+}
+
+function fetchAndSetFile(relativePath, filePath, element, fileObject) {
+    fetchLocalFile(relativePath + filePath).then().then(blobAndFile => {
+        fileObject.file = new File([blobAndFile.file], filePath);
+        addChangeImageSingleEvent(blobAndFile.file, element, fileObject);    
+    });
+}
+
+function fetchLocalFile(relativePath, fileName) {
+    return fetch(relativePath)
+        .then((response) => {
+            const reader = response.body.getReader();
+            return new ReadableStream({
+                start(controller) {
+                    return pump();
+
+                    function pump() {
+                        return reader.read().then(({done, value}) => {
+                            // When no more data needs to be consumed, close the stream
+                            if (done) {
+                                controller.close();
+                                return;
+                            }
+                            // Enqueue the next data chunk into our target stream
+                            controller.enqueue(value);
+                            return pump();
+                        });
+                    }
+                },
+            });
+        })
+        .then((stream) => new Response(stream))
+        .then((response) => response.blob())
+        .then((blob) => {
+            let blobURL = URL.createObjectURL(blob);
+            let file = new File([blob], fileName);
+            return {blob: blobURL, file: file};
+        })
+        .catch((err) => console.error(err));
+}
+
+function readFiles(files) {
+    for (const file of files) {
+        if (file.name === "config.json") {
+            const reader = new FileReader();
+            reader.readAsText(file, 'UTF-8');
+
+            reader.onload = readerEvent => {
+                //May return an array buffer instead of a string?
+                const configJson = readerEvent.target.result;
+                const parsedConfig = JSON.parse(configJson);
+                gameConfig = parsedConfig;
+                init(parsedConfig, files);
+            }
+        }
+    }
+}
+
+function init(parsedConfig, files) {
+    modTitleElement.value = gameConfig.ModName;
+
+    for (const file of files) {
+        if (file.name === parsedConfig.ModIconPath) {
+            modIconFile.file = file;
+            showImage(file, modIconElement.id);
+        }
+
+        if (file.name === parsedConfig.ContainerImagePath) {
+            containerImageFile.file = file;
+            showImage(file, containerImageElement.id);
+        }
+    }
+
+    const filesObject = {};
+
+    for (const file of files) {
+        filesObject[file.name] = file;
+    }
+
+    removeAllChildren(suikaSkinsImageElement, suikaSkinsImagesFileAndBlob);
+    removeAllChildren(suikaIconsImageElement, suikaIconsImagesFileAndBlob);
+    removeAllChildren(suikaAudiosElement, suikaAudiosFileAndData);
+
+    loadSuikaSkinsImages(filesObject, parsedConfig);
+    loadSuikaIcons(filesObject, parsedConfig);
+    loadSuikaAudios(filesObject, parsedConfig);
+    loadSuikaDropChances(parsedConfig);
+}
+
+function loadSuikaSkinsImages(filesObject, parsedConfig) {
+    for (const suikaSkinsImagePath of parsedConfig.SuikaSkinsImagesPaths) {
+        const file = filesObject[suikaSkinsImagePath];
+        if (file) {
+            const blob = URL.createObjectURL(file);
+            suikaSkinsImagesFileAndBlob.push({file: file, blob: blob});
+        }
+    }
+
+    for (const fileAndBlob of suikaSkinsImagesFileAndBlob) {
+        addImage(fileAndBlob, suikaSkinsImageElement, suikaSkinsImagesFileAndBlob, false);
+    }
+}
+
+function loadSuikaIcons(filesObject, parsedConfig) {
+    for (const suikaIconPath of parsedConfig.SuikaIconsPaths) {
+        const file = filesObject[suikaIconPath];
+        if (file) {
+            const blob = URL.createObjectURL(file);
+            suikaIconsImagesFileAndBlob.push({file: file, blob: blob});
+        }
+    }
+
+    for (const fileAndBlob of suikaIconsImagesFileAndBlob) {
+        addImage(fileAndBlob, suikaIconsImageElement, suikaIconsImagesFileAndBlob, false);
+    }
+}
+
+function loadSuikaAudios(filesObject, parsedConfig) {
+    for (const suikaAudio of parsedConfig.SuikaAudios) {
+        const file = filesObject[suikaAudio.path];
+
+        let fileAndData = {
+            file: file,
+            audio: suikaAudio
+        }
+
+        if (file) {
+            suikaAudiosFileAndData.push(fileAndData);
+        }
+    }
+
+    for (const fileAndData of suikaAudiosFileAndData) {
+        addAudioControl(fileAndData, suikaAudiosElement);
+    }
+}
+
+function loadSuikaDropChances(parsedConfig) {
+    for (const suikaDropChance of parsedConfig.SuikaDropChances) {
+        suikaDropChancesOrdered.push(suikaDropChance);
+    }
+
+    let input = document.getElementsByName('dropChances[]');
+    for (let i = 0; i < input.length; i++) {
+        let a = input[i];
+        a.value = suikaDropChancesOrdered[i];
+    }
+}
+
+function showImage(imageFile, elementId, reference) {
+    const tempPath = URL.createObjectURL(imageFile);
+    const img = document.querySelector(`#${elementId}`);
+    img.style.display = "block";
+    img.src = tempPath;
+    addChangeImageSingleEvent(imageFile, img, reference);
+}
+
+function addChangeImageSingleEvent(imageFile, img, reference) {
+    img.onclick = () => {
+        changeImageSingle(imageFile, img, reference);
+    }
+}
+
+function addImage(imageFileAndBlob, element, array, isLocal) {
+    const li = document.createElement("li");
+    const item = createImageElement();
+    li.appendChild(item);
+    item.alt = name;
+    item.src = imageFileAndBlob.blob;
+
+    item.onclick = () => {
+        changeImageArray(imageFileAndBlob.file, element, array);
+    }
+    element.append(li);
+}
+
+function changeImageSingle(imageFile, item, reference) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.png, .jpg';
+
+    input.onchange = (event) => {
+        const newFile = event.target.files[0];
+        item.src = URL.createObjectURL(newFile);
+        reference.file = newFile;
+    };
+    input.click();
+}
+
+function changeImageArray(imageFile, element, array) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.png, .jpg';
+    input.onchange = (event) => {
+
+        const newFile = event.target.files[0];
+        const blob = URL.createObjectURL(newFile);
+
+        const index = array.findIndex(data => data['file'].name === imageFile.name);
+
+        if (index !== -1) {
+            array[index].file = newFile;
+            array[index].blob = blob;
+        }
+
+        URL.revokeObjectURL(imageFile);
+
+        removeSpecificNode(element, index);
+
+        addImageAtIndex(newFile, element, index, array, blob);
+    };
+    input.click();
+}
+
+function addImageAtIndex(imageFile, element, index, array, blob) {
+    const li = document.createElement("li");
+    const item = createImageElement();
+    li.appendChild(item);
+    item.src = blob;
+    item.onclick = () => {
+        changeImageArray(imageFile, element, array);
+    }
+
+    if (index === element.children.length) {
+        element.appendChild(li);
+    } else {
+        const referenceNode = element.children[index];
+        element.insertBefore(li, referenceNode);
+    }
+}
+
+function createImageElement() {
+    const item = document.createElement("img");
+    item.className = "image";
+    return item;
+}
+
+function removeSpecificNode(element, index) {
+    const children = element.children;
+    if (children.length > 0) {
+        element.removeChild(children[index]);
+    }
+}
+
+function removeAllChildren(element, array) {
+    while (element.firstChild) {
+        element.removeChild(element.firstChild);
+    }
+
+    array.splice(0, array.length);
+}
+
+function addAudioControl(fileAndData, element) {
+    const li = document.createElement("li");
+    const audioElement = document.createElement("audio-player");
+    li.appendChild(audioElement);
+    const link = document.createElement("a");
+    if (fileAndData === null || fileAndData.file === null) {
+        console.log("Adding an empty audio control element")
+        link.href = null;
+        audioElement.src = null;
+        audioElement.controls = true;
+        audioElement.volume = 0;
+        element.append(li);
+        return;
+    }
+    const audioFile = URL.createObjectURL(fileAndData.file);
+    link.href = fileAndData.file;
+    audioElement.setAttribute('src', audioFile);
+    audioElement.setAttribute('volume', fileAndData.audio.volume);
+    audioElement.controls = true;
+    element.append(li);
+}
+
+function submitDropChances() {
+    let input = document.getElementsByName('dropChances[]');
+
+    suikaDropChancesOrdered.splice(0, suikaDropChancesOrdered.length);
+
+    for (let i = 0; i < input.length; i++) {
+        let a = input[i];
+        suikaDropChancesOrdered.push(parseFloat(a.value));
+    }
+}
+
+async function downloadMod() {
+    
+    submitDropChances();
+    
+    for (let i = 0; i < suikaDropChancesOrdered.length; i++) {
+        gameConfig.SuikaDropChances[i] = suikaDropChancesOrdered[i];
+    }
+
+    const suikaSkinsFiles = [];
+
+    for (let i = 0; i < gameConfig.SuikaSkinsImagesPaths.length; i++) {
+        suikaSkinsFiles.push(suikaSkinsImagesFileAndBlob[i].file);
+        gameConfig.SuikaSkinsImagesPaths[i] = suikaSkinsImagesFileAndBlob[i].file.name;
+    }
+
+    const suikaIconsFiles = [];
+
+    for (let i = 0; i < gameConfig.SuikaIconsPaths.length; i++) {
+        suikaIconsFiles.push(suikaIconsImagesFileAndBlob[i].file);
+        gameConfig.SuikaIconsPaths[i] = suikaIconsImagesFileAndBlob[i].file.name;
+    }
+
+    const audioFiles = [];
+
+    for (let i = 0; i < gameConfig.SuikaAudios.length; i++) {
+        audioFiles.push(suikaAudiosFileAndData[i].file);
+        gameConfig.SuikaAudios[i].path = suikaAudiosFileAndData[i].file.name;
+        gameConfig.SuikaAudios[i].volume = suikaAudiosFileAndData[i].audio.volume;
+    }
+    
+    const mergeFiles = [];
+    const missingIndexes = [];
+    
+    for (let i = 0; i < suikaMergeAudiosFileAndData.length; i++) {
+        if(gameConfig.MergeSoundsAudios[i].path === "" || gameConfig.MergeSoundsAudios[i].path === null || gameConfig.MergeSoundsAudios[i].path === undefined || gameConfig.MergeSoundsAudios[i].path === "null") {
+            gameConfig.MergeSoundsAudios[i].path = "silence.mp3";
+            missingIndexes.push(i);
+            continue;
+        }
+        mergeFiles.push(suikaMergeAudiosFileAndData[i].file);
+    }
+    
+    for (let i = 0; i < mergeFiles.length; i++) {
+        if(missingIndexes.includes(i)) continue;
+        gameConfig.MergeSoundsAudios[i].volume = suikaMergeAudiosFileAndData[i].audio.volume;
+        gameConfig.MergeSoundsAudios[i].path = mergeFiles[i].name;
+    }
+
+    gameConfig.ModName = modTitleElement.value;
+    gameConfig.LoadingScreenBackgroundPath = loadingScreenIconFile.file.name;
+    gameConfig.InGameBackgroundPath = inGameBackgroundFile.file.name;
+    gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.file.name;
+    gameConfig.PlayerSkinPath = playerSkinFile.file.name;
+    
+    gameConfig.TimerStartTime = timerStartTimeElement.value;
+    gameConfig.TimeBeforeTimerTrigger = timeBeforeTimerTriggerElement.value;
+    
+    await downloadModZip(gameConfig.ModName, gameConfig, suikaSkinsFiles, suikaIconsFiles, audioFiles, mergeFiles);
+}
+
+async function downloadModZip(modName, configData, suikaSkinsFiles, suikaIconsFiles, suikaAudioFiles, suikaMergeAudioFiles) {
+    const configDataString = JSON.stringify(configData);
+
+    const configFile = {name: "config.json", lastModified: new Date(), input: configDataString};
+
+    const uniqueFilesOnly = (files) => {
+        const seen = new Map();
+        return files.filter(file => {
+            if (seen.has(file.name)) {
+                return false;
+            }
+            seen.set(file.name, true);
+            return seen;
+        });
+    }
+
+    const uniqueFiles = [configFile, ...uniqueFilesOnly([modIconFile.file, containerImageFile.file, ...suikaSkinsFiles, ...suikaIconsFiles, ...suikaAudioFiles, ...suikaMergeAudioFiles, loadingScreenIconFile.file, inGameBackgroundFile.file, mainMenuBackgroundFile.file, playerSkinFile.file])];
+    const blob = await downloadZip(uniqueFiles).blob();
+
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = modName;
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(blob);
+}
