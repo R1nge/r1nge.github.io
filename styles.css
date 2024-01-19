@@ -31,6 +31,7 @@ label {
 .numeric-input-field-div {
     display: inline-block;
     width: 380px;
+    padding: 8px 0 8px 0;
 }
 
 .numeric-input-field {
