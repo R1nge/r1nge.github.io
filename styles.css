@@ -116,4 +116,6 @@ label {
     color: black;
     border: none;
     cursor: pointer;
+    width: 200px;
+    margin: 10px;
 }
