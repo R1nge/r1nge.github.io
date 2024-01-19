@@ -11,6 +11,7 @@
 
         this.playPauseButton = this.shadowRoot.getElementById('play-pause-button');
         this.volumeBar = this.shadowRoot.getElementById('volume-bar');
+        this.volumeBarPercent = this.shadowRoot.getElementById('volume-bar-percent');
         this.changeFileButton = this.shadowRoot.getElementById('change-file-button');
         this.audio = this.shadowRoot.querySelector('audio');
 
@@ -28,6 +29,7 @@
         } else if (attrName === 'volume') {
             this.audio.volume = newVal;
             this.volumeBar.value = newVal * 100;
+            this.adjustVolume();
         }
     };
 
@@ -51,7 +53,7 @@
 
     adjustVolume() {
         this.audio.volume = this.volumeBar.value / 100;
-        this.volumeBar.setAttribute('title', `Volume ${this.volumeBar.value}%`);
+        this.volumeBarPercent.textContent = `Volume ${this.volumeBar.value}%`;
     }
 }
 
