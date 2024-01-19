@@ -11,7 +11,6 @@ p {
 
 ul {
     list-style-type: none;
-    padding: 0;
     margin: 0;
 }
 
@@ -66,7 +65,16 @@ label {
     display: grid;
     align-items: center;
     width: 440px;
-    grid-template-columns: 1fr 1fr 1fr
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 0;
+}
+
+#suika-audios-list{
+    padding: 0;
+}
+
+#suika-merge-audios{
+    padding: 0;
 }
 
 .grid-item {
