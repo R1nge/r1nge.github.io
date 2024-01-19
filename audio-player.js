@@ -53,7 +53,7 @@
 
     adjustVolume() {
         this.audio.volume = this.volumeBar.value / 100;
-        this.volumeBarPercent.textContent = `Volume ${this.volumeBar.value}%`;
+        this.volumeBarPercent.textContent = `${this.volumeBar.value}%`;
     }
 }
 
