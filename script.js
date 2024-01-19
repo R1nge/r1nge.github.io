@@ -431,6 +431,7 @@ function addChangeImageSingleEvent(imageFile, img, reference) {
 
 function addImage(imageFileAndBlob, element, array) {
     const li = document.createElement("li");
+    li.className = "grid-item";
     const item = createImageElement();
     li.appendChild(item);
     item.alt = name;
