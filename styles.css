@@ -65,9 +65,17 @@ label {
 .column-list {
     display: grid;
     align-items: center;
-    grid-column: 3;
     width: 440px;
     grid-template-columns: 1fr 1fr 1fr
+}
+
+.grid-item {
+    padding: 5px;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    width: 128px;
+    height: auto;
 }
 
 .image {
