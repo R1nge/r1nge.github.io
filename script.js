@@ -1,3 +1,4 @@
+
 //TODO: make audio player more stylish
 
 //TODO: change suika mod sounds to a smaller file
@@ -405,8 +406,9 @@ function loadSuikaAudios(filesObject, parsedConfig) {
         }
     }
 
-    for (const fileAndData of suikaAudiosFileAndData) {
-        addAudioControl(fileAndData, suikaAudiosElement);
+    for (let i = 0; i < suikaAudiosFileAndData.length; i++) {
+        const audioElement = addAudioControl(suikaAudiosElement, suikaAudiosFileAndData, i);
+        setAudioControlData(audioElement, suikaAudiosFileAndData[i]);
     }
 }
 
@@ -425,8 +427,8 @@ function loadSuikaMergeAudios(filesObject, parsedConfig) {
     }
 
     for (let i = 0; i < suikaMergeAudiosFileAndData.length; i++) {
-        const fileAndData = suikaMergeAudiosFileAndData[i];
-        addAudioControl(fileAndData, suikaMergeAudioElement, i);
+        const audioElement = addAudioControl(suikaMergeAudioElement, suikaMergeAudiosFileAndData, i);
+        setAudioControlData(audioElement, suikaMergeAudiosFileAndData[i]);
     }
 }
 
