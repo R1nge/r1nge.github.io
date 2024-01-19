@@ -545,6 +545,7 @@ function removeAllChildren(element, array) {
     array.splice(0, array.length);
 }
 
+//TODO: separate data setting from creation
 function addAudioControl(fileAndData, element, array, index) {
     const li = document.createElement("li");
     const audioElement = document.createElement("audio-player");
@@ -568,6 +569,11 @@ function addAudioControl(fileAndData, element, array, index) {
     link.href = fileAndData.file;
     audioElement.setAttribute('src', audioFile);
     audioElement.setAttribute('volume', fileAndData.audio.volume);
+    
+    audioElement.volumeBar.addEventListener('input', () => {
+        fileAndData.audio.volume = audioElement.volumeBar.value / 100;
+    })
+    
     audioElement.controls = true;
     element.append(li);
 }
