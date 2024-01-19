@@ -1,7 +1,6 @@
 
 //TODO: make audio player more stylish
 
-//TODO: spawn audio players right away and populate with data, when it's available???
 //TODO: change suika mod sounds to a smaller file
 //TODO: fix form elements do not have associated labels???
 
@@ -167,22 +166,29 @@ async function initUsingLocalFiles(config, relativePath) {
     }
     addImagesFromPaths(config.SuikaIconsPaths, loadedFiles, suikaIconsImagesFileAndBlob, suikaIconsImageElement);
 
+    const audioControls = [];
+
+    for (let i = 0; i < config.SuikaAudios.length; i++) {
+        const audioControl = addAudioControl(suikaAudiosElement, suikaAudiosFileAndData, i);
+        audioControls.push(audioControl);
+    }
+
+    const mergeAudioControls = [];
+
+    for (let i = 0; i < config.MergeSoundsAudios.length; i++) {
+        const audioControl = addAudioControl(suikaMergeAudioElement, suikaMergeAudiosFileAndData, i);
+        mergeAudioControls.push(audioControl);
+    }
+
     for (let i = 0; i < config.SuikaAudios.length; i++) {
         const audioData = config.SuikaAudios[i];
-        await createFileAndData(relativePath, audioData, loadedFiles, suikaAudiosFileAndData, suikaAudiosElement, i);
+        await createFileAndData(audioControls[i], relativePath, audioData, loadedFiles, suikaAudiosFileAndData);
+
     }
 
     for (let i = 0; i < config.MergeSoundsAudios.length; i++) {
         const audioData = config.MergeSoundsAudios[i];
-        if (audioData.path === "" || audioData.path === null || audioData.path === "null") {
-            console.log("skipping audio")
-            const nullFileAndData = {file: null, audio: audioData};
-            suikaMergeAudiosFileAndData.push();
-            addAudioControl(nullFileAndData, suikaMergeAudioElement, suikaMergeAudiosFileAndData, i);
-            continue;
-        }
-
-        await createFileAndData(relativePath, audioData, loadedFiles, suikaMergeAudiosFileAndData, suikaMergeAudioElement, i);
+        await createFileAndData(mergeAudioControls[i], relativePath, audioData, loadedFiles, suikaMergeAudiosFileAndData);
     }
 
     loadSuikaDropChances(gameConfig);
@@ -191,7 +197,7 @@ async function initUsingLocalFiles(config, relativePath) {
     timerStartTimeElement.value = gameConfig.TimerStartTime;
 }
 
-async function createFileAndData(relativePath, audioData, loadedFiles, fileArray, element, index) {
+async function createFileAndData(audioElement, relativePath, audioData, loadedFiles, fileArray) {
     if (loadedFiles.has(audioData.path)) {
         let file = new File([loadedFiles.get(audioData.path)], audioData.path, {type: 'audio'});
 
@@ -202,7 +208,7 @@ async function createFileAndData(relativePath, audioData, loadedFiles, fileArray
 
         fileArray.push(fileAndData);
 
-        addAudioControl(fileAndData, element, fileArray, index);
+        setAudioControlData(audioElement, fileAndData);
     } else {
         await fetchLocalFile(relativePath + audioData.path).then(blobAndFile => {
             let file = new File([blobAndFile.file], audioData.path, {type: 'audio'})
@@ -216,7 +222,7 @@ async function createFileAndData(relativePath, audioData, loadedFiles, fileArray
 
             loadedFiles.set(audioData.path, file);
 
-            addAudioControl(fileAndData, element, fileArray, index);
+            setAudioControlData(audioElement, fileAndData);
         });
     }
 }
@@ -420,8 +426,9 @@ function loadSuikaMergeAudios(filesObject, parsedConfig) {
         }
     }
 
-    for (const fileAndData of suikaMergeAudiosFileAndData) {
-        addAudioControl(fileAndData, suikaMergeAudioElement);
+    for (let i = 0; i < suikaMergeAudiosFileAndData.length; i++) {
+        const fileAndData = suikaMergeAudiosFileAndData[i];
+        addAudioControl(fileAndData, suikaMergeAudioElement, i);
     }
 }
 
@@ -552,26 +559,34 @@ function removeAllChildren(element, array) {
 }
 
 //TODO: separate data setting from creation
-function addAudioControl(fileAndData, element, array, index) {
+function addAudioControl(element, array, index) {
     const li = document.createElement("li");
     const audioElement = document.createElement("audio-player");
     li.appendChild(audioElement);
-    const link = document.createElement("a");
+
     audioElement.changeFileButton.addEventListener('click', () => {
         openFileDialogAudio(audioElement).then(file => {
             array[index].file = file;
+            setAudioControlData(audioElement, array[index])
         });
     });
+
+    element.append(li);
+
+    return audioElement;
+}
+
+function setAudioControlData(audioElement, fileAndData) {
     if (fileAndData === null || fileAndData.file === null) {
-        console.log("Adding an empty audio control element")
-        link.href = null;
+        console.log("Audio data not found");
         audioElement.src = null;
         audioElement.controls = true;
         audioElement.volume = 0;
-        element.append(li);
-        return;
     }
+
     const audioFile = URL.createObjectURL(fileAndData.file);
+    //TODO: is there even a reason for a link element?
+    const link = document.createElement("a");
     link.href = fileAndData.file;
     audioElement.setAttribute('src', audioFile);
     audioElement.setAttribute('volume', fileAndData.audio.volume);
@@ -581,7 +596,6 @@ function addAudioControl(fileAndData, element, array, index) {
     })
 
     audioElement.controls = true;
-    element.append(li);
 }
 
 function submitDropChances() {
