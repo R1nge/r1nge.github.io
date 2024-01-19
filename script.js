@@ -1,6 +1,4 @@
 
-//TODO: load/save trigger delays
-
 //TODO: make audio player more stylish
 //TODO: redo input fields
 
@@ -170,12 +168,12 @@ async function initUsingLocalFiles(config, relativePath) {
     }
     addImagesFromPaths(config.SuikaIconsPaths, loadedFiles, suikaIconsImagesFileAndBlob, suikaIconsImageElement);
 
-    for (let i = 0; i < config.SuikaAudios.length; i++){
+    for (let i = 0; i < config.SuikaAudios.length; i++) {
         const audioData = config.SuikaAudios[i];
         await createFileAndData(relativePath, audioData, loadedFiles, suikaAudiosFileAndData, suikaAudiosElement, i);
     }
 
-    for (let i = 0; i < config.MergeSoundsAudios.length; i++){
+    for (let i = 0; i < config.MergeSoundsAudios.length; i++) {
         const audioData = config.MergeSoundsAudios[i];
         if (audioData.path === "" || audioData.path === null || audioData.path === "null") {
             console.log("skipping audio")
@@ -358,6 +356,8 @@ function init(parsedConfig, files) {
     loadSuikaAudios(filesObject, parsedConfig);
     loadSuikaMergeAudios(filesObject, parsedConfig);
     loadSuikaDropChances(parsedConfig);
+    loadTimeBeforeTrigger(parsedConfig);
+    loadTimerStartTime(parsedConfig);
 }
 
 function loadSuikaSkinsImages(filesObject, parsedConfig) {
@@ -410,12 +410,12 @@ function loadSuikaAudios(filesObject, parsedConfig) {
 function loadSuikaMergeAudios(filesObject, parsedConfig) {
     for (const suikaMergeAudio of parsedConfig.MergeSoundsAudios) {
         const file = filesObject[suikaMergeAudio.path];
-        
+
         let fileAndData = {
             file: file,
             audio: suikaMergeAudio
         }
-        
+
         if (file) {
             suikaMergeAudiosFileAndData.push(fileAndData);
         }
@@ -428,7 +428,7 @@ function loadSuikaMergeAudios(filesObject, parsedConfig) {
 
 function loadSuikaDropChances(parsedConfig) {
     suikaDropChancesOrdered.splice(0, suikaDropChancesOrdered.length);
-    
+
     for (const suikaDropChance of parsedConfig.SuikaDropChances) {
         suikaDropChancesOrdered.push(suikaDropChance);
     }
@@ -438,6 +438,14 @@ function loadSuikaDropChances(parsedConfig) {
         let a = input[i];
         a.value = suikaDropChancesOrdered[i];
     }
+}
+
+function loadTimeBeforeTrigger(parsedConfig) {
+    timeBeforeTimerTriggerElement.value = parsedConfig.TimeBeforeTimerTrigger;
+}
+
+function loadTimerStartTime(parsedConfig) {
+    timerStartTimeElement.value = parsedConfig.TimerStartTime;
 }
 
 function showImage(imageFile, elementId, reference) {
@@ -468,8 +476,6 @@ function addImage(imageFileAndBlob, element, array) {
     element.append(li);
 }
 
-
-//TODO: fix reference is undefined when loaded mod
 function changeImageSingle(imageFile, item, reference) {
     const input = document.createElement('input');
     input.type = 'file';
@@ -570,11 +576,11 @@ function addAudioControl(fileAndData, element, array, index) {
     link.href = fileAndData.file;
     audioElement.setAttribute('src', audioFile);
     audioElement.setAttribute('volume', fileAndData.audio.volume);
-    
+
     audioElement.volumeBar.addEventListener('input', () => {
         fileAndData.audio.volume = audioElement.volumeBar.value / 100;
     })
-    
+
     audioElement.controls = true;
     element.append(li);
 }
@@ -659,12 +665,12 @@ async function downloadMod() {
     }
 
     gameConfig.ModName = modTitleElement.value;
-    
+
     gameConfig.ModIconPath = modIconFile.file.name;
     gameConfig.ContainerImagePath = containerImageFile.file.name;
     gameConfig.PlayerSkinPath = playerSkinFile.file.name;
     gameConfig.LoadingScreenIconPath = loadingScreenIconFile.file.name;
-    
+
     gameConfig.LoadingScreenBackgroundPath = loadingScreenIconFile.file.name;
     gameConfig.InGameBackgroundPath = inGameBackgroundFile.file.name;
     gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.file.name;
