@@ -1,6 +1,5 @@
 
-//TODO: save audio data
-//TODO: change drop chances when the mod is loaded
+//TODO: load/save trigger delays
 
 //TODO: make audio player more stylish
 //TODO: redo input fields
