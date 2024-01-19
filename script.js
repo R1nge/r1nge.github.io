@@ -1,7 +1,9 @@
 
+//TODO: change audio player data when the mod is loaded
+//TODO: change drop chances when the mod is loaded
+
 //TODO: make audio player more stylish
 //TODO: redo input fields
-//TODO: change audio player data when the mod is loaded
 
 //TODO: change suika mod sounds to a smaller file
 //TODO: spawn images and audio players right away and populate with data, when it's available???
@@ -350,10 +352,12 @@ function init(parsedConfig, files) {
     removeAllChildren(suikaSkinsImageElement, suikaSkinsImagesFileAndBlob);
     removeAllChildren(suikaIconsImageElement, suikaIconsImagesFileAndBlob);
     removeAllChildren(suikaAudiosElement, suikaAudiosFileAndData);
+    removeAllChildren(suikaMergeAudioElement, suikaMergeAudiosFileAndData);
 
     loadSuikaSkinsImages(filesObject, parsedConfig);
     loadSuikaIcons(filesObject, parsedConfig);
     loadSuikaAudios(filesObject, parsedConfig);
+    loadSuikaMergeAudios(filesObject, parsedConfig);
     loadSuikaDropChances(parsedConfig);
 }
 
@@ -401,6 +405,25 @@ function loadSuikaAudios(filesObject, parsedConfig) {
 
     for (const fileAndData of suikaAudiosFileAndData) {
         addAudioControl(fileAndData, suikaAudiosElement);
+    }
+}
+
+function loadSuikaMergeAudios(filesObject, parsedConfig) {
+    for (const suikaMergeAudio of parsedConfig.MergeSoundsAudios) {
+        const file = filesObject[suikaMergeAudio.path];
+        
+        let fileAndData = {
+            file: file,
+            audio: suikaMergeAudio
+        }
+        
+        if (file) {
+            suikaMergeAudiosFileAndData.push(fileAndData);
+        }
+    }
+
+    for (const fileAndData of suikaMergeAudiosFileAndData) {
+        addAudioControl(fileAndData, suikaMergeAudioElement);
     }
 }
 
