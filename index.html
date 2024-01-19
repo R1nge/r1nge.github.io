@@ -67,26 +67,47 @@
     <p>Suika merge audios</p>
     <ul id="suika-merge-audios"></ul>
 
-    <p>Drop chances</p>
-    <label>First drop chance
-        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-    </label><br>
-    <label>Second drop chance
-        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-    </label><br>
-    <label>Third drop chance
-        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-    </label><br>
-    <label>Fourth drop chance
-        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-    </label><br>
-    <label>Fifth drop chance
-        <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
-    </label><br>
+    <p>Game settings</p>
 
-    <label for="time-before-timer-trigger">Time before trigger</label><input type="number"
-                                                                             id="time-before-timer-trigger"/>
-    <label for="timer-start-time">Timer start time</label><input type="number" id="timer-start-time"/>
+    <div class="numeric-input-field-div">
+        <label>First drop chance
+            <input class="numeric-input-field" type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+        </label><br>
+    </div>
+
+    <div class="numeric-input-field-div">
+        <label>Second drop chance
+            <input class="numeric-input-field" type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+        </label><br>
+    </div>
+
+    <div class="numeric-input-field-div">
+        <label>Third drop chance
+            <input class="numeric-input-field" type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+        </label><br>
+    </div>
+
+    <div class="numeric-input-field-div">
+        <label>Fourth drop chance
+            <input class="numeric-input-field" type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+        </label><br>
+    </div>
+
+    <div class="numeric-input-field-div">
+        <label>Fifth drop chance
+            <input class="numeric-input-field" type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
+        </label><br>
+    </div>
+
+    <div class="numeric-input-field-div">
+        <label for="time-before-timer-trigger">Time before trigger</label><input class="numeric-input-field" type="number"
+                                                                                 id="time-before-timer-trigger"/>
+    </div>
+
+    <div class="numeric-input-field-div">
+        <label for="timer-start-time">Timer start time</label><input class="numeric-input-field" type="number"
+                                                                     id="timer-start-time"/>
+    </div>
 
     <button id="load-mod-button">Load mod</button>
     <button id="download-mod-button">Download mod</button>
@@ -117,7 +138,7 @@
         }
 
         /*SLIDER*/
-        
+
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
@@ -126,9 +147,9 @@
             height: 48px;
             margin: 0 10px 0 10px;
         }
-        
+
         /*SLIDER TRACK*/
-        
+
         input[type="range"]::-webkit-slider-runnable-track {
             background: #4CAF50;
             height: 4px;

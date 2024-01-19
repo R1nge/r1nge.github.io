@@ -14,13 +14,30 @@ ul {
     margin: 0;
 }
 
-input[type="number"] {
-    padding: 20px 10px;
-    line-height: 28px;
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
 }
 
 label {
     color: azure;
+}
+
+.numeric-input-field-div {
+    display: inline-block;
+    width: 380px;
+}
+
+.numeric-input-field {
+    line-height: 24px;
+    width: 100px;
+    font-size: 12px;
+    float: right;
 }
 
 #wrapper {
@@ -33,7 +50,7 @@ label {
 }
 
 #top-div,
-#bottom-div{
+#bottom-div {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -64,16 +81,12 @@ label {
 .column-list {
     display: grid;
     align-items: center;
-    /*width: 440px;*/
     grid-template-columns: 1fr 1fr 1fr;
     padding: 0;
 }
 
-#suika-audios-list{
-    padding: 0;
-}
-
-#suika-merge-audios{
+#suika-audios-list,
+#suika-merge-audios {
     padding: 0;
 }
 
@@ -103,4 +116,6 @@ label {
     color: black;
     border: none;
     cursor: pointer;
+    width: 200px;
+    margin: 10px;
 }
