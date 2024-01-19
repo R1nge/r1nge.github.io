@@ -64,7 +64,7 @@ label {
 .column-list {
     display: grid;
     align-items: center;
-    width: 440px;
+    /*width: 440px;*/
     grid-template-columns: 1fr 1fr 1fr;
     padding: 0;
 }
