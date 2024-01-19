@@ -51,6 +51,7 @@
 
     adjustVolume() {
         this.audio.volume = this.volumeBar.value / 100;
+        this.volumeBar.setAttribute('title', `Volume ${this.volumeBar.value}%`);
     }
 }
 

@@ -1,8 +1,8 @@
 
 //TODO: make audio player more stylish
+//TODO: add roundish percent fields?
 
 //TODO: change suika mod sounds to a smaller file
-//TODO: fix form elements do not have associated labels???
 
 import {downloadZip} from "./client-zip.js";
 
@@ -558,7 +558,6 @@ function removeAllChildren(element, array) {
     array.splice(0, array.length);
 }
 
-//TODO: separate data setting from creation
 function addAudioControl(element, array, index) {
     const li = document.createElement("li");
     const audioElement = document.createElement("audio-player");
