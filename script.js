@@ -1,4 +1,3 @@
-
 //TODO: make audio player more stylish
 
 //TODO: change suika mod sounds to a smaller file
@@ -148,6 +147,20 @@ async function initUsingLocalFiles(config, relativePath) {
     fetchAndSetFile(relativePath, config.PlayerSkinPath, playerSkinElement, playerSkinFile);
     fetchAndSetFile(relativePath, config.MainMenuBackgroundPath, mainMenuBackgroundElement, mainMenuBackgroundFile);
 
+    const audioControls = [];
+
+    for (let i = 0; i < config.SuikaAudios.length; i++) {
+        const audioControl = addAudioControl(suikaAudiosElement, suikaAudiosFileAndData, i);
+        audioControls.push(audioControl);
+    }
+
+    const mergeAudioControls = [];
+
+    for (let i = 0; i < config.MergeSoundsAudios.length; i++) {
+        const audioControl = addAudioControl(suikaMergeAudioElement, suikaMergeAudiosFileAndData, i);
+        mergeAudioControls.push(audioControl);
+    }
+
     for (const path of config.SuikaSkinsImagesPaths) {
         await fetchAndStoreFile(relativePath, path, loadedFiles, suikaSkinsImagesFileAndBlob);
     }
@@ -166,24 +179,9 @@ async function initUsingLocalFiles(config, relativePath) {
     }
     addImagesFromPaths(config.SuikaIconsPaths, loadedFiles, suikaIconsImagesFileAndBlob, suikaIconsImageElement);
 
-    const audioControls = [];
-
-    for (let i = 0; i < config.SuikaAudios.length; i++) {
-        const audioControl = addAudioControl(suikaAudiosElement, suikaAudiosFileAndData, i);
-        audioControls.push(audioControl);
-    }
-
-    const mergeAudioControls = [];
-
-    for (let i = 0; i < config.MergeSoundsAudios.length; i++) {
-        const audioControl = addAudioControl(suikaMergeAudioElement, suikaMergeAudiosFileAndData, i);
-        mergeAudioControls.push(audioControl);
-    }
-
     for (let i = 0; i < config.SuikaAudios.length; i++) {
         const audioData = config.SuikaAudios[i];
         await createFileAndData(audioControls[i], relativePath, audioData, loadedFiles, suikaAudiosFileAndData);
-
     }
 
     for (let i = 0; i < config.MergeSoundsAudios.length; i++) {
