@@ -25,7 +25,9 @@
     attributeChangedCallback(attrName, oldVal, newVal) {
         if (attrName === 'src') {
             this.audio.src = newVal;
+            console.log(`setting src to ${newVal}`);
         } else if (attrName === 'volume') {
+            console.log(`setting volume to ${newVal}`);
             this.audio.volume = newVal;
             this.volumeBar.value = newVal * 100;
         }

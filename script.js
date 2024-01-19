@@ -1,5 +1,5 @@
 
-//TODO: change audio player data when the mod is loaded
+//TODO: save audio data
 //TODO: change drop chances when the mod is loaded
 
 //TODO: make audio player more stylish
@@ -428,6 +428,8 @@ function loadSuikaMergeAudios(filesObject, parsedConfig) {
 }
 
 function loadSuikaDropChances(parsedConfig) {
+    suikaDropChancesOrdered.splice(0, suikaDropChancesOrdered.length);
+    
     for (const suikaDropChance of parsedConfig.SuikaDropChances) {
         suikaDropChancesOrdered.push(suikaDropChance);
     }
