@@ -60,13 +60,13 @@
 
     <p>Suika icons</p>
     <ul class="column-list" id="suika-icons-list"></ul>
-    
+
     <p>Suika audios</p>
     <ul id="suika-audios-list"></ul>
 
     <p>Suika merge audios</p>
     <ul id="suika-merge-audios"></ul>
-    
+
     <p>Drop chances</p>
     <label>First drop chance
         <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
@@ -83,8 +83,9 @@
     <label>Fifth drop chance
         <input type="number" step="0.01" name="dropChances[]" value="1" min="0" max="1"/>
     </label><br>
-    
-    <label for="time-before-timer-trigger">Time before trigger</label><input type="number" id="time-before-timer-trigger"/>
+
+    <label for="time-before-timer-trigger">Time before trigger</label><input type="number"
+                                                                             id="time-before-timer-trigger"/>
     <label for="timer-start-time">Timer start time</label><input type="number" id="timer-start-time"/>
 
     <button id="load-mod-button">Load mod</button>
@@ -104,10 +105,29 @@
         <input type="range" id="volume-bar" min="0" max="100">
         <button id="change-file-button">Change File</button>
     </div>
-    
+
     <style>
         .audio-player {
+            float: left;
             margin: 10px;
+        }
+
+        #volume-bar {
+            vertical-align: middle;
+        }
+
+        input[type="range"] {
+            accent-color: #4CAF50;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            /*TODO: assing image from suika list*/
+            accent-color: #4CAF50;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            /*TODO: assing image from suika list */
+            accent-color: #4CAF50;
         }
     </style>
 </template>
