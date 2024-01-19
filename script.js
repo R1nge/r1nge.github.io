@@ -1,6 +1,7 @@
 
 //TODO: make audio player more stylish
 //TODO: redo input fields
+//TODO: change audio player data when the mod is loaded
 
 //TODO: change suika mod sounds to a smaller file
 //TODO: spawn images and audio players right away and populate with data, when it's available???
