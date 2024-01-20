@@ -136,21 +136,31 @@
 
     <style>
         .audio-player {
-            width: 400px;
+            min-width: 300px;
+            max-width: 400px;
         }
 
         .audio-player {
-            float: left;
             margin: 10px;
         }
 
         #volume-bar {
             vertical-align: middle;
-            width: 36%;
+            max-width: 40%;
         }
 
         #volume-bar-percent {
             color: azure;
+        }
+
+        button {
+            width: 50px;
+            height: 48px;
+        }
+
+        #change-file-button{
+            width: 80px;
+            float: right;
         }
 
         /*SLIDER*/
@@ -215,15 +225,6 @@
             border: 1px solid azure;
             outline: 3px solid azure;
             outline-offset: 0.125rem;
-        }
-
-        button {
-            width: 90px;
-            height: 48px;
-        }
-        
-        #change-file-button{
-            float: right;
         }
     </style>
 </template>
