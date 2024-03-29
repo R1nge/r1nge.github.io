@@ -683,7 +683,7 @@ async function downloadMod() {
     gameConfig.PlayerSkinPath = playerSkinFile.file.name;
     gameConfig.LoadingScreenIconPath = loadingScreenIconFile.file.name;
 
-    gameConfig.LoadingScreenBackgroundPath = loadingScreenIconFile.file.name;
+    gameConfig.LoadingScreenBackgroundPath = loadingScreenBackgroundFile.file.name;
     gameConfig.InGameBackgroundPath = inGameBackgroundFile.file.name;
     gameConfig.MainMenuBackgroundPath = mainMenuBackgroundFile.file.name;
 
